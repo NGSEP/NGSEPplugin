@@ -1,0 +1,7 @@
+# NGSEPplugin
+
+The graphical interface of NGSEP is based on Eclipse which is one of the leading development environments for Java.
+
+NEWS: We just rebranded NGSEP as the Next Generation Sequencing Experience Platform to better reflect the different deployment and usage alternatives that we offer to our users. This change came with a complete internal redesign of the core functionalities that significantly reduced memory consumption and in some cases runtime. Some new options and one new module for allele sharing statistics was also released in this version
+
+For our latest news, follow us on Twitter: @NGSEP
