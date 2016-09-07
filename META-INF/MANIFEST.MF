@@ -1,10 +1,14 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: NGSEP
-Bundle-SymbolicName: net.sf.ngsep;singleton:=true
-Bundle-Version: 3.0.1.qualifier
+Bundle-SymbolicName: NGSEPplugin;singleton:=true
+Bundle-Version: 3.0.2.qualifier
 Bundle-Activator: net.sf.ngsep.activator.Activator
 Bundle-Vendor: Jorge Duitama
+Export-Package: net.sf.ngsep.activator,
+ net.sf.ngsep.control,
+ net.sf.ngsep.utilities,
+ net.sf.ngsep.view
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -19,5 +23,4 @@ Bundle-ClassPath: lib/jcommon-1.0.17.jar,
  lib/xchart-2.4.2.jar,
  .,
  lib/SortSam.jar,
- lib/NGSEPcore_3.0.1.jar
-
+ lib/NGSEPcore_3.0.2.jar
