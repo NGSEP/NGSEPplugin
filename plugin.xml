@@ -549,6 +549,38 @@
                      </with>
                </visibleWhen>
          </command>
+         <command commandId="KmersCounter" label="Kmers Counter" style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                     <with
+                           variable="activeMenuSelection">
+                           <iterate
+                           		ifEmpty="false"
+                           		operator="or">
+                           	<adapt
+                           		type="org.eclipse.core.resources.IFile">
+                           			<or>
+	                           			<test property="org.eclipse.core.resources.extension" value="fq" />
+	                           			<test property="org.eclipse.core.resources.extension" value="fastq" />
+	                           			<test property="org.eclipse.core.resources.extension" value="fa" />
+	                           			<test property="org.eclipse.core.resources.extension" value="fasta" />
+	                           			<test property="org.eclipse.core.resources.extension" value="txt" />
+	                           			<test property="org.eclipse.core.resources.extension" value="fna" />
+	                           			<test property="org.eclipse.core.resources.extension" value="mfa" />
+	                           			<test property="org.eclipse.core.resources.extension" value="FQ" />
+	                           			<test property="org.eclipse.core.resources.extension" value="FASTQ" />
+	                           			<test property="org.eclipse.core.resources.extension" value="FA" />
+	                           			<test property="org.eclipse.core.resources.extension" value="FASTA" />
+	                           			<test property="org.eclipse.core.resources.extension" value="TXT" />
+	                           			<test property="org.eclipse.core.resources.extension" value="FNA" />
+	                           			<test property="org.eclipse.core.resources.extension" value="MFA" />
+	                           			<test property="org.eclipse.core.resources.extension" value="gz" />
+	                           		</or>
+                           	</adapt>
+                           </iterate>
+                     </with>
+               </visibleWhen>
+         </command>
          </menu>
       </menuContribution>
    </extension>
@@ -580,6 +612,7 @@
       <command id="IntrogressionAnalysis" name="Introgression Analysis" defaultHandler="net.sf.ngsep.control.PlugVCFIntrogressionAnalysis"/>
       <command id="Deconvolution" name="Sample Deconvolution" defaultHandler="net.sf.ngsep.control.PlugDeconvolution"/>
       <command id="ReadDepthComparator" name="Read Depth Comparator" defaultHandler="net.sf.ngsep.control.PlugCNVcompare"/>
+      <command id="KmersCounter" name="Kmers Counter" defaultHandler="net.sf.ngsep.control.PlugKmersCounter"/>
    </extension>
   <extension
 		point="org.eclipse.ui.views">
