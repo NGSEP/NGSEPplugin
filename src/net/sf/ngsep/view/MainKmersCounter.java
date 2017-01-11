@@ -227,18 +227,17 @@ public class MainKmersCounter {
 		if (btnBothStrands.getSelection()) instance.setBothStrands(true);
 		if (btnIsFasta.getSelection()) instance.setFasta(true);
 		
-		String outPrefix = txtOutput.getText();
-		instance.setOutputPrefix(outPrefix);
-		
+		String outFile = txtOutput.getText();
 		
 		//Create the job and give the instance of the model with the parameters set
 		SyncKmersCounter job = new SyncKmersCounter("K-mers count analysis");
 		job.setInputFile(txtFile.getText());
+		job.setOutputFile(outFile);
 		job.setInstance(instance);
 		
-		String logFilename = outPrefix+"_VIA.log";
+		String logFilename = LoggingHelper.getLoggerFilename(outFile,"KMR");
 		job.setLogName(logFilename);
-		job.setNameProgressBar(new File(outPrefix).getName());
+		job.setNameProgressBar(new File(outFile).getName());
 		try {
 			job.schedule();
 			MessageDialog.openInformation(shell, "K-mers counter is running",LoggingHelper.MESSAGE_PROGRESS_BAR);

@@ -44,6 +44,8 @@ public class SyncKmersCounter extends Job {
 	
 	//Parameters to set before the execution of the process
 	private String inputFile=null;
+	
+	private String outputFile = null;
 
 	//Attributes to set the logger
 	private String logName;
@@ -76,6 +78,8 @@ public class SyncKmersCounter extends Job {
 			instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			if (inputFile != null) {
 				instance.processFile(inputFile);
+				out = new PrintStream(outputFile);
+				instance.printResults(out);
 			}
 			log.info("Process finished");
 			monitor.done();
@@ -102,7 +106,14 @@ public class SyncKmersCounter extends Job {
 		this.inputFile = inputFile;
 	}
 	
-	
+	public String getOutputFile() {
+		return outputFile;
+	}
+
+	public void setOutputFile(String outputFile) {
+		this.outputFile = outputFile;
+	}
+
 	public KmersCounter getInstance() {
 		return instance;
 	}
