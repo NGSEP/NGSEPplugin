@@ -30,17 +30,16 @@ import org.eclipse.core.runtime.jobs.Job;
 
 import net.sf.ngsep.utilities.DefaultProgressNotifier;
 import net.sf.ngsep.utilities.LoggingHelper;
-import ngsep.vcf.VCFSummaryStatisticsCalculator;
+import ngsep.discovery.BAMRelativeAlleleCountsCalculator;
 
 /**
- * Creation and execution of the job VCF Summary Statistics Calculator 
- * @author Juan Fernando De la Hoz, Jorge Duitama
+ * Creation and execution of BAM relative allele counts calculator
+ * @author Jorge Duitama
  *
  */
-public class SyncVCFSummaryStatistics extends Job{
-	
+public class SyncRelativeAlleleCountsCalculator extends Job {
 	//Instance of the model class with the optional parameters already set
-	private VCFSummaryStatisticsCalculator instance;
+	private BAMRelativeAlleleCountsCalculator instance;
 	
 	//Parameters to set before the execution of the process
 	private String inputFile=null;
@@ -51,20 +50,21 @@ public class SyncVCFSummaryStatistics extends Job{
 	
 	//Name for the progress bar
 	private String nameProgressBar;
-
+	
 	/**
 	 * Creates a VCFSummaryStatisticsCalculator job with the given name
 	 * @param name Name of the job
 	 */
-	public SyncVCFSummaryStatistics(String name) {
+	public SyncRelativeAlleleCountsCalculator(String name) {
 		super(name);
 	}
 	
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		FileHandler logFile = null;		
+		FileHandler logFile = null;
 		PrintStream out = null;
 		Logger log = null;
+		
 		try {
 			//Create log
 			logFile = new FileHandler(logName, false);
@@ -72,19 +72,21 @@ public class SyncVCFSummaryStatistics extends Job{
 			instance.setLog(log);
 			
 			//Start progress bar
-			monitor.beginTask(nameProgressBar, 500);
-			log.info("Started VCF Summary Statistics Calculator");
+			monitor.beginTask(nameProgressBar, 50000);
+			log.info("Started relative allele counts calculator");
 			
+			//Create progress notifier and set it to listen the model class 
 			instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			if (inputFile != null && outputFile != null) {
-				log.info("processing vcf file...");
+				log.info("Processing alignments file");
+				instance.runProcess(inputFile);
 				out = new PrintStream(outputFile);
-				instance.runStatistics(inputFile, out);
+				instance.printResults(out);
 			}
 			log.info("Process finished");
 			monitor.done();
 		} catch (Exception e) {
-			log.info("Error Calculating VCF Summary Statistics: ");
+			log.info("Error running relative allele counts calculator: ");
 			String message = LoggingHelper.serializeException(e);
 			log.severe(message);
 		} finally {
@@ -96,36 +98,45 @@ public class SyncVCFSummaryStatistics extends Job{
 		}
 		return Status.OK_STATUS;
 	}
-	
-	//Setters and getters
-	public VCFSummaryStatisticsCalculator getInstance() {
+
+	public BAMRelativeAlleleCountsCalculator getInstance() {
 		return instance;
 	}
-	public void setInstance(VCFSummaryStatisticsCalculator instance) {
+
+	public void setInstance(BAMRelativeAlleleCountsCalculator instance) {
 		this.instance = instance;
 	}
+
 	public String getInputFile() {
 		return inputFile;
 	}
+
 	public void setInputFile(String inputFile) {
 		this.inputFile = inputFile;
 	}
+
 	public String getOutputFile() {
 		return outputFile;
 	}
+
 	public void setOutputFile(String outputFile) {
 		this.outputFile = outputFile;
 	}
+
 	public String getLogName() {
 		return logName;
 	}
+
 	public void setLogName(String logName) {
 		this.logName = logName;
 	}
+
 	public String getNameProgressBar() {
 		return nameProgressBar;
 	}
+
 	public void setNameProgressBar(String nameProgressBar) {
 		this.nameProgressBar = nameProgressBar;
 	}
+	
 }

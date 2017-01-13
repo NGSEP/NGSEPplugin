@@ -23,6 +23,7 @@ package net.sf.ngsep.control;
 import java.io.PrintStream;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+
 import net.sf.ngsep.utilities.LoggingHelper;
 import ngsep.vcf.VCFDiversityCalculator;
 
@@ -33,13 +34,13 @@ import org.eclipse.core.runtime.jobs.Job;
 
 /**
  * 
- * @author Claudia Perea
+ * @author Jorge Duitama
  *
  */
 public class SyncVCFDiversityCalculator extends Job {
 	
 	//Instance of the model class with the optional parameters already set
-	private VCFDiversityCalculator vcfDiversityCalculator;
+	private VCFDiversityCalculator instance;
 
 
 	//Parameters to set just before the execution of the process
@@ -49,7 +50,6 @@ public class SyncVCFDiversityCalculator extends Job {
 
 	//Attributes to set the logger
 	private String logName;
-	private FileHandler logFile;
 
 	//Name for the progress bar
 	private String nameProgressBar;
@@ -66,28 +66,31 @@ public class SyncVCFDiversityCalculator extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-
-		//Create log
-		Logger log = LoggingHelper.createLogger(logName, logFile);
+		FileHandler logFile = null;		
 		PrintStream out = null;
-		try {	
+		Logger log = null;
+		try {
+			//Create log
+			logFile = new FileHandler(logName, false);
+			log = LoggingHelper.createLogger(logName, logFile);
+			instance.setLog(log);
+			
 			//Start progress bar
 			monitor.beginTask(getNameProgressBar(), 500);
 			log.info("Starting VCF Diversity Calculator");
 
-			//Create progress notifier and set it to listen to the model class 
-
+			//TODO: Create progress notifier and set it to listen to the model class 
+			//instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			if (vcfFile != null && outputFile != null) {
-				log.info("Reading VCF file...");
 
 				if(samplesFile!=null) {
 					log.info("Reading populations file...");
-					vcfDiversityCalculator.loadSamplesFile(samplesFile);
+					instance.loadSamplesFile(samplesFile);
 				}
 				
 				log.info("Processing VCF file...");
 				out = new PrintStream(outputFile);
-				vcfDiversityCalculator.processFile(vcfFile, out);
+				instance.processFile(vcfFile, out);
 				log.info("Process finished");		
 			}
 			
@@ -104,14 +107,15 @@ public class SyncVCFDiversityCalculator extends Job {
 		return Status.OK_STATUS;
 	}
 
-	public VCFDiversityCalculator getVcfDiversityCalculator() {
-		return vcfDiversityCalculator;
+	
+	public VCFDiversityCalculator getInstance() {
+		return instance;
 	}
 
-	public void setVcfDiversityCalculator(
-			VCFDiversityCalculator vcfDiversityCalculator) {
-		this.vcfDiversityCalculator = vcfDiversityCalculator;
+	public void setInstance(VCFDiversityCalculator instance) {
+		this.instance = instance;
 	}
+
 	public String getVcfFile() {
 		return vcfFile;
 	}
@@ -142,14 +146,6 @@ public class SyncVCFDiversityCalculator extends Job {
 
 	public void setLogName(String logName) {
 		this.logName = logName;
-	}
-
-	public FileHandler getLogFile() {
-		return logFile;
-	}
-
-	public void setLogFile(FileHandler logFile) {
-		this.logFile = logFile;
 	}
 
 	public String getNameProgressBar() {

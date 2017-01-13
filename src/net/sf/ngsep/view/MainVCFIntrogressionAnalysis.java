@@ -105,7 +105,7 @@ public class MainVCFIntrogressionAnalysis {
 	public void open(){
 		display = Display.getDefault();
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setText("VCF Summary Statistics Calculator");
+		shell.setText("VCF Introgression analysis");
 		shell.setLocation(150, 200);
 		shell.setSize(900, 600);
 		createContents();
@@ -368,7 +368,7 @@ public class MainVCFIntrogressionAnalysis {
 			}
 		}
 		if (listErrors.size() > 0) {
-			FieldValidator.paintErrors(listErrors, shell, "VCF Summary Statistics Calculator");
+			FieldValidator.paintErrors(listErrors, shell, "VCF introgression Analysis");
 			return;
 		}
 		

@@ -21,7 +21,6 @@ package net.sf.ngsep.view;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.logging.FileHandler;
 
 
 import net.sf.ngsep.control.SyncVCFDiversityCalculator;
@@ -219,12 +218,6 @@ public class MainVCFDiversityCalculator {
 				txtVcfFile.setBackground(oc);
 			}
 
-			/*if (txtPopfile.getText() != null && txtPopfile.getText().length()==0) {
-				errors.add(FieldValidator.buildMessage(lblVcfFile.getText(),FieldValidator.ERROR_MANDATORY));
-				txtPopfile.setBackground(oc);
-				
-			}
-*/
 			if (errors.size() > 0) {
 				FieldValidator.paintErrors(errors, shell,"VCF Diversity Calculator");
 				return;
@@ -237,7 +230,7 @@ public class MainVCFDiversityCalculator {
 			}
 
 			SyncVCFDiversityCalculator syncVCFDiversityCalculator = new SyncVCFDiversityCalculator("VCF Diversity Calculator");
-			syncVCFDiversityCalculator.setVcfDiversityCalculator(divCalc);
+			syncVCFDiversityCalculator.setInstance(divCalc);
 			if(samplesFile!=null) syncVCFDiversityCalculator.setSamplesFile(samplesFile);
 			syncVCFDiversityCalculator.setVcfFile(vcfFile);
 			syncVCFDiversityCalculator.setOutputFile(outputFile);
@@ -247,8 +240,6 @@ public class MainVCFDiversityCalculator {
 			syncVCFDiversityCalculator.setNameProgressBar(new File(outputFile).getName());
 
 			try {
-				FileHandler logFile = new FileHandler(logFilename, false);
-				syncVCFDiversityCalculator.setLogFile(logFile);
 				syncVCFDiversityCalculator.schedule();
 				MessageDialog.openInformation(shell, "VCF Diversity Calculator",LoggingHelper.MESSAGE_PROGRESS_BAR);
 				shell.dispose();

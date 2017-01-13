@@ -129,13 +129,13 @@ public class MainKmersCounter {
 		
 		lblOutput = new Label (shell, SWT.NONE);
 		lblOutput.setBounds(20, 140, 170, 30);
-		lblOutput.setText("(*)Output prefix:");
+		lblOutput.setText("(*)Output file:");
 		
 		txtOutput = new Text (shell, SWT.BORDER);
 		txtOutput.setBounds(200, 140, 600, 22);
 		txtOutput.addMouseListener(mouse);
 		//Suggest name for the output file
-		txtOutput.setText(SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile));
+		txtOutput.setText(SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile)+"_kmers.txt");
 		
 		btnOutput = new Button (shell, SWT.NONE);
 		btnOutput.setBounds(830, 140, 25, 25);

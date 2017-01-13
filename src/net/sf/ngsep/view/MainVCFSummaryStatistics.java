@@ -21,7 +21,6 @@ package net.sf.ngsep.view;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.logging.FileHandler;
 
 import net.sf.ngsep.control.SyncVCFSummaryStatistics;
 import net.sf.ngsep.utilities.FieldValidator;
@@ -177,7 +176,7 @@ public class MainVCFSummaryStatistics {
 	
 	public void proceed(){
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
-		VCFSummaryStatisticsCalculator vCFSummStata = new VCFSummaryStatisticsCalculator();
+		VCFSummaryStatisticsCalculator instance = new VCFSummaryStatisticsCalculator();
 		
 		//Validate fields and record errors in the list
 		ArrayList<String> listErrors = new ArrayList<String>();
@@ -195,7 +194,7 @@ public class MainVCFSummaryStatistics {
 				listErrors.add(FieldValidator.buildMessage(lblMinSamplesGenotyped.getText(), FieldValidator.ERROR_INTEGER));
 				txtMinSamplesGenotyped.setBackground(oc);
 			} else {
-				vCFSummStata.setMinSamplesGenotyped(Integer.parseInt(txtMinSamplesGenotyped.getText()));
+				instance.setMinSamplesGenotyped(Integer.parseInt(txtMinSamplesGenotyped.getText()));
 			}
 		}
 		if (listErrors.size() > 0) {
@@ -208,14 +207,13 @@ public class MainVCFSummaryStatistics {
 		String outputFile = txtOutput.getText();
 		syncVCFStata.setInputFile(txtFile.getText());
 		syncVCFStata.setOutputFile(outputFile);
-		syncVCFStata.setVCFSummStata(vCFSummStata);
+		syncVCFStata.setInstance(instance);
 		
 		//Manage the logger and the progress bar
 		String logFilename = LoggingHelper.getLoggerFilename(outputFile,"ST");
 		syncVCFStata.setLogName(logFilename);
 		syncVCFStata.setNameProgressBar(new File(outputFile).getName());
 		try {
-			syncVCFStata.setLogFile(new FileHandler(logFilename, false));
 			syncVCFStata.schedule();
 			MessageDialog.openInformation(shell, "VCF Summary Statistics Calculator is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
 			shell.dispose();

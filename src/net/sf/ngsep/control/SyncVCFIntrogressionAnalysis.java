@@ -61,18 +61,19 @@ public class SyncVCFIntrogressionAnalysis extends Job {
 	
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		//Create log
 		FileHandler logFile = null;
 		PrintStream out = null;
 		Logger log = null;
 		try {
+			//Create log
 			logFile = new FileHandler(logName, false);
 			log = LoggingHelper.createLogger(logName, logFile);
+			instance.setLog(log);
+			
 			//Start progress bar
 			monitor.beginTask(getNameProgressBar(), 1000);
 			log.info("Started VCF introgression analysis");
 			
-			instance.setLog(log);
 			instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			if (inputFile != null) {
 				instance.runIntrogressions(inputFile);
