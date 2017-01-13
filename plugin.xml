@@ -220,6 +220,27 @@
                      </with>
                </visibleWhen>
          </command>
+         <command commandId="RelativeAlleleCountsCalculator" label="Calculate relative allele counts" style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                     <with
+                           variable="activeMenuSelection">
+                           <iterate
+                           		ifEmpty="false"
+                           		operator="or">
+                           	<adapt
+                                 type="org.eclipse.core.resources.IFile">
+								<or>
+                           			<test property="org.eclipse.core.resources.extension" value="bam" />
+                           			<test property="org.eclipse.core.resources.extension" value="BAM" />
+                           			<test property="org.eclipse.core.resources.extension" value="sam" />
+                           			<test property="org.eclipse.core.resources.extension" value="SAM" />
+                           		</or>
+                           </adapt>
+                           </iterate>
+                     </with>
+               </visibleWhen>
+         </command>
          <command commandId="VariantsDetector" label="Find Variants" style="push">
                <visibleWhen
                   checkEnabled="false">
@@ -597,6 +618,7 @@
       <command id="PlotQualityStatistics" name="Plot Quality Statistics" defaultHandler="net.sf.ngsep.control.PlugPlotQualityStatistics"/>
       <command id="CoverageStatistics" name="Calculate Coverage Statistics" defaultHandler="net.sf.ngsep.control.PlugCoverageStatistics"/>
       <command id="PlotCoverageStatistics" name="Plot Coverage Statistics" defaultHandler="net.sf.ngsep.control.PlugPlotCoverageStatistics"/>
+      <command id="RelativeAlleleCountsCalculator" name="Calculate Relative Allele Counts" defaultHandler="net.sf.ngsep.control.PlugRelativeAlleleCountsCalculator"/>
       <command id="VariantsDetector" name="Variants Detector" defaultHandler="net.sf.ngsep.control.PlugVariantsDetector"/>
       <command id="MultiVariantsDetector" name="Multi Variants Detector" defaultHandler="net.sf.ngsep.control.PlugMultiVariantsDetector"/>
       <command id="MergeVCF" name="Merge VCF" defaultHandler="net.sf.ngsep.control.PlugMergeVCF"/>
