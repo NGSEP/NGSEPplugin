@@ -62,9 +62,9 @@ public class ReferenceGenomesFactory {
 	}
 	public Transcriptome getTranscriptome(String filename, Shell shell) throws IOException {
 		Transcriptome t = transcriptomes.get(filename);
-		if(transcriptomes == null) {
+		if(t == null) {
 			GFF3TranscriptomeHandler handler = new GFF3TranscriptomeHandler();
-			handler.loadMap(filename);
+			t = handler.loadMap(filename);
 			transcriptomes.put(filename, t);
 		}
 		return t;

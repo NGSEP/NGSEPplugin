@@ -220,7 +220,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="RelativeAlleleCountsCalculator" label="Calculate relative allele counts" style="push">
+         <command commandId="RelativeAlleleCountsCalculator" label="Calculate Relative Allele Counts" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with

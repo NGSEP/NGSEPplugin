@@ -95,7 +95,7 @@ public class MainRelativeAlleleCountsCalculator {
 	
 	private static final int DEF_MIN_RD = 10;
 	private static final int DEF_MAX_RD = 1000;
-	private static final int DEF_MIN_BQ = 40;
+	private static final int DEF_MIN_BQ = 20;
 	
 	
 	//---------------------------------------
@@ -154,7 +154,7 @@ public class MainRelativeAlleleCountsCalculator {
 		txtOutput.setBounds(200, 90, 600, 25);
 		txtOutput.addMouseListener(mouse);
 		//Suggest name for the output file
-		txtOutput.setText(SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile));
+		txtOutput.setText(SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile)+"_relAlleleCounts.txt");
 		
 		btnOutput = new Button (shell, SWT.NONE);
 		btnOutput.setBounds(830, 90, 25, 25);

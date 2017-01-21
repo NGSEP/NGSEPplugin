@@ -74,7 +74,7 @@ public class SyncRelativeAlleleCountsCalculator extends Job {
 			//Start progress bar
 			monitor.beginTask(nameProgressBar, 50000);
 			log.info("Started relative allele counts calculator");
-			
+			log.info("Min rd: "+instance.getMinRD()+". Max RD: "+instance.getMaxRD()+". Min BQ: "+ instance.getMinBaseQualityScore());
 			//Create progress notifier and set it to listen the model class 
 			instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			if (inputFile != null && outputFile != null) {

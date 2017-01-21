@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.jobs.Job;
 
 import net.sf.ngsep.utilities.DefaultProgressNotifier;
 import net.sf.ngsep.utilities.LoggingHelper;
+import ngsep.transcriptome.Transcriptome;
 import ngsep.vcf.AlleleSharingStatsCalculator;
 
 /**
@@ -70,7 +71,9 @@ public class SyncAlleleSharingStatistics extends Job {
 			//Start progress bar
 			monitor.beginTask(getNameProgressBar(), 1000);
 			log.info("Started Allele sharing statistics");
-					
+			Transcriptome genes = calculator.getTranscriptome();
+			if(genes==null) log.info("Window size: "+calculator.getWindowSize()+" step size: "+calculator.getStepSize());
+			else log.info("Chromosomes: "+genes.getSequenceNames().size());
 			//Create progress notifier and set it to listen to the model class
 			calculator.setLog(log);
 			calculator.setProgressNotifier(new DefaultProgressNotifier(monitor));

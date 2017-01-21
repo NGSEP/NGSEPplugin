@@ -117,7 +117,7 @@ public class MainImputeGenotype {
 		shell = new Shell(display, SWT.SHELL_TRIM);
 		shell.setLocation(150, 200);
 		shell.setSize(750, 450);
-		shell.setText("Impute Genotype   ( Beta version )");
+		shell.setText("Impute Genotype ( Inbreds )");
 
 		lblVcfFile = new Label(shell, SWT.NONE);
 		lblVcfFile.setBounds(10, 50, 130, 21);

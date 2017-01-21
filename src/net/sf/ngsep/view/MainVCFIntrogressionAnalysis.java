@@ -191,6 +191,7 @@ public class MainVCFIntrogressionAnalysis {
 		txtMinPCTGenotyped = new Text (shell, SWT.BORDER);
 		txtMinPCTGenotyped.setBounds(250, 190, 100, 25);
 		txtMinPCTGenotyped.addMouseListener(mouse);
+		txtMinPCTGenotyped.setText(String.valueOf(VCFWindowIntrogressionAnalysis.DEF_MIN_PCT_GENOTYPED));
 		
 		lblMinDiffAF = new Label (shell, SWT.NONE);
 		lblMinDiffAF.setBounds(20, 240, 200, 30);
@@ -199,6 +200,7 @@ public class MainVCFIntrogressionAnalysis {
 		txtMinDiffAF = new Text (shell, SWT.BORDER);
 		txtMinDiffAF.setBounds(250, 240, 100, 25);
 		txtMinDiffAF.addMouseListener(mouse);
+		txtMinDiffAF.setText(String.valueOf(VCFWindowIntrogressionAnalysis.DEF_MIN_DIFF_AF));
 		
 		lblMaxMAFWithin = new Label (shell, SWT.NONE);
 		lblMaxMAFWithin.setBounds(20, 290, 200, 30);
@@ -207,6 +209,7 @@ public class MainVCFIntrogressionAnalysis {
 		txtMaxMAFWithin = new Text (shell, SWT.BORDER);
 		txtMaxMAFWithin.setBounds(250, 290, 100, 25);
 		txtMaxMAFWithin.addMouseListener(mouse);
+		txtMaxMAFWithin.setText(String.valueOf(VCFWindowIntrogressionAnalysis.DEF_MAX_MAF_WITHIN));
 		
 		btnPrintVCF = new Button(shell, SWT.CHECK);
 		btnPrintVCF.setBounds(20, 340, 150, 30);
@@ -225,6 +228,7 @@ public class MainVCFIntrogressionAnalysis {
 		txtWindowSize = new Text (shell, SWT.BORDER);
 		txtWindowSize.setBounds(530, 190, 100, 25);
 		txtWindowSize.addMouseListener(mouse);
+		txtWindowSize.setText(String.valueOf(VCFWindowIntrogressionAnalysis.DEF_WINDOW_SIZE));
 		
 		lblOverlap = new Label (shell, SWT.NONE);
 		lblOverlap.setBounds(650, 190, 100, 30);
@@ -233,6 +237,7 @@ public class MainVCFIntrogressionAnalysis {
 		txtOverlap = new Text (shell, SWT.BORDER);
 		txtOverlap.setBounds(780, 190, 100, 25);
 		txtOverlap.addMouseListener(mouse);
+		txtOverlap.setText(String.valueOf(VCFWindowIntrogressionAnalysis.DEF_OVERLAP));
 		
 		lblMatchScore = new Label (shell, SWT.NONE);
 		lblMatchScore.setBounds(400, 240, 100, 30);
@@ -241,6 +246,7 @@ public class MainVCFIntrogressionAnalysis {
 		txtMatchScore = new Text (shell, SWT.BORDER);
 		txtMatchScore.setBounds(530, 240, 100, 25);
 		txtMatchScore.addMouseListener(mouse);
+		txtMatchScore.setText(String.valueOf(VCFWindowIntrogressionAnalysis.DEF_MATCH_SCORE));
 		
 		lblMismatchScore = new Label (shell, SWT.NONE);
 		lblMismatchScore.setBounds(650, 240, 100, 30);
@@ -249,6 +255,7 @@ public class MainVCFIntrogressionAnalysis {
 		txtMismatchScore = new Text (shell, SWT.BORDER);
 		txtMismatchScore.setBounds(780, 240, 100, 25);
 		txtMismatchScore.addMouseListener(mouse);
+		txtMismatchScore.setText(String.valueOf(VCFWindowIntrogressionAnalysis.DEF_MISMATCH_SCORE));
 		
 		
 		lblMinScore = new Label (shell, SWT.NONE);
@@ -258,6 +265,7 @@ public class MainVCFIntrogressionAnalysis {
 		txtMinScore = new Text (shell, SWT.BORDER);
 		txtMinScore.setBounds(700, 290, 100, 25);
 		txtMinScore.addMouseListener(mouse);
+		txtMinScore.setText(String.valueOf(VCFWindowIntrogressionAnalysis.DEF_MIN_SCORE));
 		
 		//buttons on the bottom
 		btnSubmit = new Button(shell, SWT.NONE);
