@@ -602,6 +602,26 @@
                      </with>
                </visibleWhen>
          </command>
+         <command commandId="DistanceMatrix" label="Distance Matrix" style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                     <with
+                           variable="activeMenuSelection">
+                           <iterate
+                           		ifEmpty="false"
+                           		operator="or">
+                           	<adapt
+                           		type="org.eclipse.core.resources.IFile">
+                           			<or>
+	                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
+	                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
+	                           			<test property="org.eclipse.core.resources.extension" value="gz" />
+	                           		</or>
+                           	</adapt>
+                           </iterate>
+                     </with>
+               </visibleWhen>
+         </command>
          </menu>
       </menuContribution>
    </extension>
@@ -635,6 +655,7 @@
       <command id="Deconvolution" name="Sample Deconvolution" defaultHandler="net.sf.ngsep.control.PlugDeconvolution"/>
       <command id="ReadDepthComparator" name="Read Depth Comparator" defaultHandler="net.sf.ngsep.control.PlugCNVcompare"/>
       <command id="KmersCounter" name="Kmers Counter" defaultHandler="net.sf.ngsep.control.PlugKmersCounter"/>
+      <command id="DistanceMatrix" name="Distance Matrix" defaultHandler="net.sf.ngsep.control.PlugDistanceMatrix"/>
    </extension>
   <extension
 		point="org.eclipse.ui.views">
