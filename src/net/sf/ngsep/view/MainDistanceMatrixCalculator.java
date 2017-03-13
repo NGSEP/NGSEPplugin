@@ -22,12 +22,12 @@ package net.sf.ngsep.view;
 import java.io.File;
 import java.util.ArrayList;
 
-import net.sf.ngsep.control.SyncDistanceMatrix;
+import net.sf.ngsep.control.SyncDistanceMatrixCalculator;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
-import ngsep.vcf.DistanceMatrixCalculator;
+import ngsep.vcf.VCFDistanceMatrixCalculator;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Text;
  * @author Cristian Loaiza
  *
  */
-public class MainDistanceMatrix {
+public class MainDistanceMatrixCalculator {
 	//General attributes
 	protected Shell shell;
 	private Display display;
@@ -133,7 +133,7 @@ public class MainDistanceMatrix {
 		txtOutput.setBounds(200, 140, 600, 22);
 		txtOutput.addMouseListener(mouse);
 		//Suggest name for the output file
-		txtOutput.setText(SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile)+"_kmers.txt");
+		txtOutput.setText(SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile)+"_distanceMatrix.txt");
 		
 		btnOutput = new Button (shell, SWT.NONE);
 		btnOutput.setBounds(830, 140, 25, 25);
@@ -148,18 +148,18 @@ public class MainDistanceMatrix {
 		//Mer size
 		lblPloidy = new Label (shell, SWT.NONE);
 		lblPloidy.setBounds(20, 200, 170, 30);
-		lblPloidy.setText("(*)Mer size:");
+		lblPloidy.setText("(*)Ploidy:");
 		
 		txtPloidy = new Text (shell, SWT.BORDER);
 		txtPloidy.setBounds(200, 200, 50, 22);
 		txtPloidy.addMouseListener(mouse);
-		txtPloidy.setText("31");
+		txtPloidy.setText("2");
 		
 		
 		//buttons on the bottom
 		btnSubmit = new Button(shell, SWT.NONE);
 		btnSubmit.setBounds(250, 400, 170, 25);
-		btnSubmit.setText("K-mers Counter");
+		btnSubmit.setText("Distance Matrix Calculator");
 		btnSubmit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -181,7 +181,7 @@ public class MainDistanceMatrix {
 	
 	public void proceed(){
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
-		DistanceMatrixCalculator instance = new DistanceMatrixCalculator();
+		VCFDistanceMatrixCalculator instance = new VCFDistanceMatrixCalculator();
 		
 		//Validate fields and record errors in the list
 		ArrayList<String> listErrors = new ArrayList<String>();
@@ -215,7 +215,7 @@ public class MainDistanceMatrix {
 		String outFile = txtOutput.getText();
 		
 		//Create the job and give the instance of the model with the parameters set
-		SyncDistanceMatrix job = new SyncDistanceMatrix("Distance matrix calculator");
+		SyncDistanceMatrixCalculator job = new SyncDistanceMatrixCalculator("Distance matrix calculator");
 		job.setInputFile(txtFile.getText());
 		job.setOutputFile(outFile);
 		job.setInstance(instance);
@@ -225,10 +225,10 @@ public class MainDistanceMatrix {
 		job.setNameProgressBar(new File(outFile).getName());
 		try {
 			job.schedule();
-			MessageDialog.openInformation(shell, "DistanceMatrix is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
+			MessageDialog.openInformation(shell, "VCFDistanceMatrixCalculator is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
 			shell.dispose();
 		} catch (Exception e) {
-			MessageDialog.openError(shell, "DistanceMatrix error",e.getMessage());
+			MessageDialog.openError(shell, "VCFDistanceMatrixCalculator error",e.getMessage());
 			e.printStackTrace();
 			return;
 		}

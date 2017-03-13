@@ -30,17 +30,18 @@ import org.eclipse.core.runtime.jobs.Job;
 
 import net.sf.ngsep.utilities.DefaultProgressNotifier;
 import net.sf.ngsep.utilities.LoggingHelper;
-import ngsep.vcf.DistanceMatrixCalculator;
+import ngsep.variants.DistanceMatrix;
+import ngsep.vcf.VCFDistanceMatrixCalculator;
 
 /**
  * Creation and execution of DistanceMatrix process
  * @author Cristian Loaiza
  *
  */
-public class SyncDistanceMatrix extends Job {
+public class SyncDistanceMatrixCalculator extends Job {
 	
 	//Instance of the model class with the optional parameters already set
-	private DistanceMatrixCalculator instance;
+	private VCFDistanceMatrixCalculator instance;
 	
 	//Parameters to set before the execution of the process
 	private String inputFile=null;
@@ -57,7 +58,7 @@ public class SyncDistanceMatrix extends Job {
 	 * Creates a KmersCounter job with the given name
 	 * @param name Name of the job
 	 */
-	public SyncDistanceMatrix(String name) {
+	public SyncDistanceMatrixCalculator(String name) {
 		super(name);
 	}
 	
@@ -72,14 +73,14 @@ public class SyncDistanceMatrix extends Job {
 			log = LoggingHelper.createLogger(logName, logFile);
 			//Start progress bar
 			monitor.beginTask(getNameProgressBar(), 1000);
-			log.info("Started distance matrix analysis");
+			log.info("Started distance matrix calculation");
 			
 			instance.setLog(log);
 			instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			if (inputFile != null) {
-				instance.generateMatrix(inputFile);
+				DistanceMatrix dm = instance.generateMatrix(inputFile);
 				out = new PrintStream(outputFile);
-				instance.printMatrix(out);
+				instance.printMatrix(dm, out);
 			}
 			log.info("Process finished");
 			monitor.done();
@@ -114,11 +115,11 @@ public class SyncDistanceMatrix extends Job {
 		this.outputFile = outputFile;
 	}
 
-	public DistanceMatrixCalculator getInstance() {
+	public VCFDistanceMatrixCalculator getInstance() {
 		return instance;
 	}
 
-	public void setInstance(DistanceMatrixCalculator instance) {
+	public void setInstance(VCFDistanceMatrixCalculator instance) {
 		this.instance = instance;
 	}
 

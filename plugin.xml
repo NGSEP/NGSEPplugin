@@ -602,7 +602,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="DistanceMatrix" label="Distance Matrix" style="push">
+         <command commandId="DistanceMatrixCalculator" label="Distance Matrix Calculator" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -655,7 +655,7 @@
       <command id="Deconvolution" name="Sample Deconvolution" defaultHandler="net.sf.ngsep.control.PlugDeconvolution"/>
       <command id="ReadDepthComparator" name="Read Depth Comparator" defaultHandler="net.sf.ngsep.control.PlugCNVcompare"/>
       <command id="KmersCounter" name="Kmers Counter" defaultHandler="net.sf.ngsep.control.PlugKmersCounter"/>
-      <command id="DistanceMatrix" name="Distance Matrix" defaultHandler="net.sf.ngsep.control.PlugDistanceMatrix"/>
+      <command id="DistanceMatrixCalculator" name="Distance Matrix Calculator" defaultHandler="net.sf.ngsep.control.PlugDistanceMatrixCalculator"/>
    </extension>
   <extension
 		point="org.eclipse.ui.views">

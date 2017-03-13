@@ -31,14 +31,14 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import net.sf.ngsep.view.MainDistanceMatrix;
+import net.sf.ngsep.view.MainDistanceMatrixCalculator;
 
 /**
  * 
  * @author Cristian Loaiza
  *
  */
-public class PlugDistanceMatrix extends AbstractHandler {
+public class PlugDistanceMatrixCalculator extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -52,7 +52,7 @@ public class PlugDistanceMatrix extends AbstractHandler {
 			IFile inputFile = (IFile) firstElement;
 			String selectedFile = inputFile.getLocation().toString();
 			//Create main window
-			MainDistanceMatrix window = new MainDistanceMatrix();
+			MainDistanceMatrixCalculator window = new MainDistanceMatrixCalculator();
 			window.setSelectedFile(selectedFile);
 			try {
 				//Display the window
