@@ -73,6 +73,8 @@ public class MainDistanceMatrixCalculator {
 	private Button btnOutput;
 	private Label lblPloidy;
 	private Text txtPloidy;
+	private Label lblMatrixType;
+	private Text txtMatrixType;
 
 	
 	
@@ -145,7 +147,7 @@ public class MainDistanceMatrixCalculator {
 			}
 		});
 		
-		//Mer size
+		//Ploidy
 		lblPloidy = new Label (shell, SWT.NONE);
 		lblPloidy.setBounds(20, 200, 170, 30);
 		lblPloidy.setText("(*)Ploidy:");
@@ -154,6 +156,16 @@ public class MainDistanceMatrixCalculator {
 		txtPloidy.setBounds(200, 200, 50, 22);
 		txtPloidy.addMouseListener(mouse);
 		txtPloidy.setText("2");
+		
+		//Matrix Type
+		lblMatrixType = new Label (shell, SWT.NONE);
+		lblMatrixType.setBounds(20, 260, 170, 30);
+		lblMatrixType.setText("Matrix output format:");
+		
+		txtMatrixType = new Text (shell, SWT.BORDER);
+		txtMatrixType.setBounds(200, 260, 50, 22);
+		txtMatrixType.addMouseListener(mouse);
+		txtMatrixType.setText("0");
 		
 		
 		//buttons on the bottom
@@ -200,6 +212,17 @@ public class MainDistanceMatrixCalculator {
 			}
 			listErrors.add(FieldValidator.buildMessage(lblOutput.getText(), FieldValidator.ERROR_MANDATORY));
 			txtPloidy.setBackground(oc);
+		}
+		
+		if (txtMatrixType.getText() == null || txtOutput.getText().length()==0) {
+			if (!FieldValidator.isNumeric(txtMatrixType.getText(), new Integer(0))) {
+				listErrors.add(FieldValidator.buildMessage(lblMatrixType.getText(), FieldValidator.ERROR_INTEGER));
+				txtMatrixType.setBackground(oc);
+			} else {
+				instance.setMatrixType(Integer.parseInt(txtMatrixType.getText()));
+			}
+			listErrors.add(FieldValidator.buildMessage(lblOutput.getText(), FieldValidator.ERROR_MANDATORY));
+			txtMatrixType.setBackground(oc);
 		}
 		
 		if (txtOutput.getText() == null || txtOutput.getText().length()==0) {

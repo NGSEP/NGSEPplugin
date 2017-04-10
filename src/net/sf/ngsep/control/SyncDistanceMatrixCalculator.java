@@ -80,7 +80,7 @@ public class SyncDistanceMatrixCalculator extends Job {
 			if (inputFile != null) {
 				DistanceMatrix dm = instance.generateMatrix(inputFile);
 				out = new PrintStream(outputFile);
-				instance.printMatrix(dm, out);
+				dm.printMatrix(out);
 			}
 			log.info("Process finished");
 			monitor.done();
