@@ -275,7 +275,7 @@ public class MainImputeGenotype {
 			return;
 		}
 
-		popGenotypeImpute.setFixedTransitions(btnFixedTransit.getSelection());
+		popGenotypeImpute.setSkipTransitionsTraining(btnFixedTransit.getSelection());
 		
 		List<String>parentsId=new ArrayList<String>();
 		for (int i = 0; i < tblParentsIds.getItems().length; i++) {
