@@ -83,7 +83,8 @@ public class SyncNeighborJoining extends Job {
 				DistanceMatrix dm = new DistanceMatrix(inputFile);
 				nj.loadMatrix(dm);
 				Dendrogram njTree = nj.constructNJTree();
-				njTree.printTree(System.out);
+				out = new PrintStream(outputFile);
+				njTree.printTree(out);
 			}
 			log.info("Process finished");
 			monitor.done();
