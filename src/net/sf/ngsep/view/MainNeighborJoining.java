@@ -22,12 +22,12 @@ package net.sf.ngsep.view;
 import java.io.File;
 import java.util.ArrayList;
 
-import net.sf.ngsep.control.SyncDistanceMatrixCalculator;
+import net.sf.ngsep.control.SyncNeighborJoining;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
-import ngsep.vcf.VCFDistanceMatrixCalculator;
+import ngsep.clustering.NeighborJoining;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -41,11 +41,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Main window for the DistanceMatrix menu
+ * Main window for the NeighborJoining menu
  * @author Cristian Loaiza
  *
  */
-public class MainDistanceMatrixCalculator {
+public class MainNeighborJoining {
 	//General attributes
 	protected Shell shell;
 	private Display display;
@@ -71,10 +71,6 @@ public class MainDistanceMatrixCalculator {
 	private Label lblOutput;
 	private Text txtOutput;
 	private Button btnOutput;
-	private Label lblPloidy;
-	private Text txtPloidy;
-	private Label lblMatrixType;
-	private Text txtMatrixType;
 
 	
 	
@@ -87,7 +83,7 @@ public class MainDistanceMatrixCalculator {
 	public void open(){
 		display = Display.getDefault();
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setText("Distance matrix calculator");
+		shell.setText("NeighborJoining");
 		shell.setLocation(150, 200);
 		shell.setSize(900, 600);
 		createContents();
@@ -108,7 +104,7 @@ public class MainDistanceMatrixCalculator {
 		//Input & Output
 		lblFile = new Label (shell, SWT.NONE);
 		lblFile.setBounds(20, 40, 170, 30);
-		lblFile.setText("(*)Input VCF File:");
+		lblFile.setText("(*)Input Matrix File:");
 		
 		txtFile = new Text (shell, SWT.BORDER);
 		txtFile.setBounds(200, 40, 600, 25);
@@ -135,7 +131,7 @@ public class MainDistanceMatrixCalculator {
 		txtOutput.setBounds(200, 140, 600, 22);
 		txtOutput.addMouseListener(mouse);
 		//Suggest name for the output file
-		txtOutput.setText(SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile)+"_distanceMatrix.txt");
+		txtOutput.setText(SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile)+"_nj.newick");
 		
 		btnOutput = new Button (shell, SWT.NONE);
 		btnOutput.setBounds(830, 140, 25, 25);
@@ -147,31 +143,11 @@ public class MainDistanceMatrixCalculator {
 			}
 		});
 		
-		//Ploidy
-		lblPloidy = new Label (shell, SWT.NONE);
-		lblPloidy.setBounds(20, 200, 170, 30);
-		lblPloidy.setText("(*)Ploidy:");
-		
-		txtPloidy = new Text (shell, SWT.BORDER);
-		txtPloidy.setBounds(200, 200, 50, 22);
-		txtPloidy.addMouseListener(mouse);
-		txtPloidy.setText("2");
-		
-		//Matrix Type
-		lblMatrixType = new Label (shell, SWT.NONE);
-		lblMatrixType.setBounds(20, 260, 170, 30);
-		lblMatrixType.setText("Matrix output format:");
-		
-		txtMatrixType = new Text (shell, SWT.BORDER);
-		txtMatrixType.setBounds(200, 260, 50, 22);
-		txtMatrixType.addMouseListener(mouse);
-		txtMatrixType.setText("0");
-		
 		
 		//buttons on the bottom
 		btnSubmit = new Button(shell, SWT.NONE);
 		btnSubmit.setBounds(250, 400, 170, 25);
-		btnSubmit.setText("Distance Matrix Calculator");
+		btnSubmit.setText("Neighbor-Joining clustering");
 		btnSubmit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -193,7 +169,7 @@ public class MainDistanceMatrixCalculator {
 	
 	public void proceed(){
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
-		VCFDistanceMatrixCalculator instance = new VCFDistanceMatrixCalculator();
+		NeighborJoining instance = new NeighborJoining();
 		
 		//Validate fields and record errors in the list
 		ArrayList<String> listErrors = new ArrayList<String>();
@@ -203,34 +179,12 @@ public class MainDistanceMatrixCalculator {
 			txtFile.setBackground(oc);
 		}
 		
-		if (txtPloidy.getText() == null || txtOutput.getText().length()==0) {
-			if (!FieldValidator.isNumeric(txtPloidy.getText(), new Integer(0))) {
-				listErrors.add(FieldValidator.buildMessage(lblPloidy.getText(), FieldValidator.ERROR_INTEGER));
-				txtPloidy.setBackground(oc);
-			} else {
-				instance.setPloidy(Integer.parseInt(txtPloidy.getText()));
-			}
-			listErrors.add(FieldValidator.buildMessage(lblOutput.getText(), FieldValidator.ERROR_MANDATORY));
-			txtPloidy.setBackground(oc);
-		}
-		
-		if (txtMatrixType.getText() == null || txtOutput.getText().length()==0) {
-			if (!FieldValidator.isNumeric(txtMatrixType.getText(), new Integer(0))) {
-				listErrors.add(FieldValidator.buildMessage(lblMatrixType.getText(), FieldValidator.ERROR_INTEGER));
-				txtMatrixType.setBackground(oc);
-			} else {
-				instance.setMatrixType(Integer.parseInt(txtMatrixType.getText()));
-			}
-			listErrors.add(FieldValidator.buildMessage(lblOutput.getText(), FieldValidator.ERROR_MANDATORY));
-			txtMatrixType.setBackground(oc);
-		}
-		
 		if (txtOutput.getText() == null || txtOutput.getText().length()==0) {
 			listErrors.add(FieldValidator.buildMessage(lblOutput.getText(), FieldValidator.ERROR_MANDATORY));
 			txtOutput.setBackground(oc);
 		}
 		if (listErrors.size() > 0) {
-			FieldValidator.paintErrors(listErrors, shell, "DistanceMatrix calculator");
+			FieldValidator.paintErrors(listErrors, shell, "NeighborJoining generator");
 			return;
 		}
 		
@@ -238,7 +192,7 @@ public class MainDistanceMatrixCalculator {
 		String outFile = txtOutput.getText();
 		
 		//Create the job and give the instance of the model with the parameters set
-		SyncDistanceMatrixCalculator job = new SyncDistanceMatrixCalculator("Distance matrix calculator");
+		SyncNeighborJoining job = new SyncNeighborJoining("Neighbor Joining");
 		job.setInputFile(txtFile.getText());
 		job.setOutputFile(outFile);
 		job.setInstance(instance);
@@ -248,10 +202,10 @@ public class MainDistanceMatrixCalculator {
 		job.setNameProgressBar(new File(outFile).getName());
 		try {
 			job.schedule();
-			MessageDialog.openInformation(shell, "VCFDistanceMatrixCalculator is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
+			MessageDialog.openInformation(shell, "NeighborJoining is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
 			shell.dispose();
 		} catch (Exception e) {
-			MessageDialog.openError(shell, "VCFDistanceMatrixCalculator error",e.getMessage());
+			MessageDialog.openError(shell, "NeighborJoining error",e.getMessage());
 			e.printStackTrace();
 			return;
 		}
