@@ -35,6 +35,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -71,10 +72,12 @@ public class MainDistanceMatrixCalculator {
 	private Label lblOutput;
 	private Text txtOutput;
 	private Button btnOutput;
+	private Label lblDistanceSource;
+	private Combo cmbDistanceSource;
 	private Label lblPloidy;
 	private Text txtPloidy;
 	private Label lblMatrixType;
-	private Text txtMatrixType;
+	private Combo cmbMatrixType;
 
 	
 	
@@ -147,30 +150,48 @@ public class MainDistanceMatrixCalculator {
 			}
 		});
 		
+		//Distance Source
+		lblDistanceSource = new Label (shell, SWT.NONE);
+		lblDistanceSource.setBounds(20, 200, 250, 30);
+		lblDistanceSource.setText("(*)Distance source from calculation:");
+		
+		cmbDistanceSource = new Combo(shell, SWT.READ_ONLY);
+		
+		String itemsDistanceSource[] = { "Genotypes simple", "Genotypes copy number", "Copy number","Allele depth"};
+		cmbDistanceSource.setItems(itemsDistanceSource);
+		cmbDistanceSource.setVisible(true);
+		cmbDistanceSource.select(0);
+		cmbDistanceSource.setBounds(320, 190, 250, 28);
+		
+		
 		//Ploidy
 		lblPloidy = new Label (shell, SWT.NONE);
-		lblPloidy.setBounds(20, 200, 170, 30);
-		lblPloidy.setText("(*)Ploidy:");
+		lblPloidy.setBounds(20, 260, 170, 30);
+		lblPloidy.setText("Ploidy:");
 		
 		txtPloidy = new Text (shell, SWT.BORDER);
-		txtPloidy.setBounds(200, 200, 50, 22);
+		txtPloidy.setBounds(320, 260, 50, 22);
 		txtPloidy.addMouseListener(mouse);
 		txtPloidy.setText("2");
 		
 		//Matrix Type
 		lblMatrixType = new Label (shell, SWT.NONE);
-		lblMatrixType.setBounds(20, 260, 170, 30);
+		lblMatrixType.setBounds(20, 320, 170, 30);
 		lblMatrixType.setText("Matrix output format:");
 		
-		txtMatrixType = new Text (shell, SWT.BORDER);
-		txtMatrixType.setBounds(200, 260, 50, 22);
-		txtMatrixType.addMouseListener(mouse);
-		txtMatrixType.setText("0");
+		
+		cmbMatrixType = new Combo(shell, SWT.READ_ONLY);
+		
+		String itemsMatrixType[] = { "Full matrix", "Lower-left matrix", "Upper-right matrix"};
+		cmbMatrixType.setItems(itemsMatrixType);
+		cmbMatrixType.setVisible(true);
+		cmbMatrixType.select(0);
+		cmbMatrixType.setBounds(320, 310, 250, 28);
 		
 		
 		//buttons on the bottom
 		btnSubmit = new Button(shell, SWT.NONE);
-		btnSubmit.setBounds(250, 400, 170, 25);
+		btnSubmit.setBounds(220, 400, 280, 25);
 		btnSubmit.setText("Distance Matrix Calculator");
 		btnSubmit.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -180,7 +201,7 @@ public class MainDistanceMatrixCalculator {
 		});	
 		
 		btnCancel = new Button(shell, SWT.NONE);
-		btnCancel.setBounds(500, 400, 130, 25);
+		btnCancel.setBounds(620, 400, 130, 25);
 		btnCancel.setText("Cancel");
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -203,6 +224,8 @@ public class MainDistanceMatrixCalculator {
 			txtFile.setBackground(oc);
 		}
 		
+		instance.setDistanceSource(cmbDistanceSource.getSelectionIndex());
+		
 		if (txtPloidy.getText() == null || txtOutput.getText().length()==0) {
 			if (!FieldValidator.isNumeric(txtPloidy.getText(), new Integer(0))) {
 				listErrors.add(FieldValidator.buildMessage(lblPloidy.getText(), FieldValidator.ERROR_INTEGER));
@@ -214,16 +237,8 @@ public class MainDistanceMatrixCalculator {
 			txtPloidy.setBackground(oc);
 		}
 		
-		if (txtMatrixType.getText() == null || txtOutput.getText().length()==0) {
-			if (!FieldValidator.isNumeric(txtMatrixType.getText(), new Integer(0))) {
-				listErrors.add(FieldValidator.buildMessage(lblMatrixType.getText(), FieldValidator.ERROR_INTEGER));
-				txtMatrixType.setBackground(oc);
-			} else {
-				instance.setMatrixType(Integer.parseInt(txtMatrixType.getText()));
-			}
-			listErrors.add(FieldValidator.buildMessage(lblOutput.getText(), FieldValidator.ERROR_MANDATORY));
-			txtMatrixType.setBackground(oc);
-		}
+		instance.setMatrixType(cmbMatrixType.getSelectionIndex());
+
 		
 		if (txtOutput.getText() == null || txtOutput.getText().length()==0) {
 			listErrors.add(FieldValidator.buildMessage(lblOutput.getText(), FieldValidator.ERROR_MANDATORY));
