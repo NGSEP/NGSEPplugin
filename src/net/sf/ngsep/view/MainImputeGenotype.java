@@ -79,8 +79,18 @@ public class MainImputeGenotype {
 
 	private Label lblAverageCMPerKbp;
 	private Text txtAverageCMPerKbp;
+	
+	private Label lblWindowSize;
+	private Text txtWindowSize;
+	
+	private Label lblOverlap;
+	private Text txtOverlap;
 
 	private Button btnFixedTransit;
+	
+	private Button btnInbredParents;
+	
+	private Button btnInbredSamples;
 
 	private Table tblParentsIds;
 
@@ -116,8 +126,8 @@ public class MainImputeGenotype {
 		
 		shell = new Shell(display, SWT.SHELL_TRIM);
 		shell.setLocation(150, 200);
-		shell.setSize(750, 450);
-		shell.setText("Impute Genotype ( Inbreds )");
+		shell.setSize(750, 600);
+		shell.setText("Genotype imputation");
 
 		lblVcfFile = new Label(shell, SWT.NONE);
 		lblVcfFile.setBounds(10, 50, 130, 21);
@@ -160,9 +170,15 @@ public class MainImputeGenotype {
 			txtVcfFile.setText(vcfFile);
 			String outputFile = vcfFile.substring(0,vcfFile.lastIndexOf("."));
 			txtOutputFile.setText(outputFile);
-			VCFFileReader reader = new VCFFileReader(vcfFile);
-			sampleIds=reader.getSampleIds();
-			reader.close();
+			VCFFileReader reader = null;
+			try {
+				reader = new VCFFileReader(vcfFile);
+				sampleIds=reader.getSampleIds();
+			} catch (Exception e1) {
+				throw new IOException(e1);
+			} finally {
+				if(reader!=null) reader.close();
+			}
 		}
 
 /*		lblFUTURE = new Label(shell, SWT.NONE);
@@ -174,27 +190,51 @@ public class MainImputeGenotype {
 		txtFUTURE.addMouseListener(mouse); 					*/
 
 		lblClusters = new Label(shell, SWT.NONE);
-		lblClusters.setBounds(10, 220, 260, 21);
+		lblClusters.setBounds(10, 150, 260, 21);
 		lblClusters.setText("Number of clusters:");
 
 		txtClusters = new Text(shell, SWT.BORDER);
-		txtClusters.setBounds(280, 220, 100, 21);
+		txtClusters.setBounds(300, 150, 100, 21);
 		txtClusters.addMouseListener(mouse);
 
 		lblAverageCMPerKbp = new Label(shell, SWT.NONE);
-		lblAverageCMPerKbp.setBounds(10, 270, 260, 21);
+		lblAverageCMPerKbp.setBounds(10, 200, 260, 21);
 		lblAverageCMPerKbp.setText("Average centiMorgans per Kbp:");
 
 		txtAverageCMPerKbp = new Text(shell, SWT.BORDER);
-		txtAverageCMPerKbp.setBounds(280, 270, 100, 21);
+		txtAverageCMPerKbp.setBounds(300, 200, 100, 21);
 		txtAverageCMPerKbp.addMouseListener(mouse);
+		
+		lblWindowSize = new Label(shell, SWT.NONE);
+		lblWindowSize.setBounds(10, 250, 260, 21);
+		lblWindowSize.setText("Window size:");
+
+		txtWindowSize = new Text(shell, SWT.BORDER);
+		txtWindowSize.setBounds(300, 250, 100, 21);
+		txtWindowSize.addMouseListener(mouse);
+		
+		lblOverlap = new Label(shell, SWT.NONE);
+		lblOverlap.setBounds(10, 300, 260, 21);
+		lblOverlap.setText("Overlap:");
+
+		txtOverlap = new Text(shell, SWT.BORDER);
+		txtOverlap.setBounds(300, 300, 100, 21);
+		txtOverlap.addMouseListener(mouse);
 
 		btnFixedTransit = new Button(shell, SWT.CHECK);
-		btnFixedTransit.setBounds(10, 320, 260, 21);
+		btnFixedTransit.setBounds(10, 350, 260, 21);
 		btnFixedTransit.setText("Fixed Transitions");
+		
+		btnInbredParents = new Button(shell, SWT.CHECK);
+		btnInbredParents.setBounds(10, 400, 260, 21);
+		btnInbredParents.setText("Inbred parents");
+		
+		btnInbredSamples = new Button(shell, SWT.CHECK);
+		btnInbredSamples.setBounds(10, 450, 260, 21);
+		btnInbredSamples.setText("Inbred samples");
 
 		tblParentsIds =new Table(shell, SWT.MULTI | SWT.BORDER| SWT.V_SCROLL| SWT.CHECK);
-		tblParentsIds.setBounds(450, 150, 200, 200);
+		tblParentsIds.setBounds(420, 150, 300, 350);
 		tblParentsIds.setHeaderVisible(true);
 		TableColumn columSelect = new TableColumn(tblParentsIds, SWT.CENTER);
 		columSelect.setText("Parents Id");
@@ -205,7 +245,7 @@ public class MainImputeGenotype {
 		tblParentsIds.getColumn(0).setWidth(100);
 
 		btnStart = new Button(shell, SWT.NONE);
-		btnStart.setBounds(230, 380, 110, 25);
+		btnStart.setBounds(230, 520, 110, 25);
 		btnStart.setText("Impute");
 		btnStart.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -215,7 +255,7 @@ public class MainImputeGenotype {
 		});
 
 		btnCancel = new Button(shell, SWT.NONE);
-		btnCancel.setBounds(370, 380, 110, 25);
+		btnCancel.setBounds(370, 520, 110, 25);
 		btnCancel.setText("Cancel");
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -270,12 +310,30 @@ public class MainImputeGenotype {
 				popGenotypeImpute.setAvgCMPerKbp(Double.parseDouble(txtAverageCMPerKbp.getText()));
 			}
 		}
+		if (txtWindowSize.getText()!=null && txtWindowSize.getText().length()!=0) {
+			if (!FieldValidator.isNumeric(txtWindowSize.getText(), new Integer(0))) {
+				listErrors.add(FieldValidator.buildMessage(lblWindowSize.getText(), FieldValidator.ERROR_INTEGER));
+				txtWindowSize.setBackground(oc);
+			} else {
+				popGenotypeImpute.setWindowSize(Integer.parseInt(txtWindowSize.getText()));
+			}
+		}
+		if (txtOverlap.getText()!=null && txtOverlap.getText().length()!=0) {
+			if (!FieldValidator.isNumeric(txtOverlap.getText(), new Integer(0))) {
+				listErrors.add(FieldValidator.buildMessage(lblOverlap.getText(), FieldValidator.ERROR_INTEGER));
+				txtOverlap.setBackground(oc);
+			} else {
+				popGenotypeImpute.setOverlap(Integer.parseInt(txtOverlap.getText()));
+			}
+		}
 		if (listErrors.size() > 0) {
 			FieldValidator.paintErrors(listErrors, shell, "Impute genotype");
 			return;
 		}
 
 		popGenotypeImpute.setSkipTransitionsTraining(btnFixedTransit.getSelection());
+		popGenotypeImpute.setInbredParents(btnInbredParents.getSelection());
+		popGenotypeImpute.setInbredSamples(btnInbredSamples.getSelection());
 		
 		List<String>parentsId=new ArrayList<String>();
 		for (int i = 0; i < tblParentsIds.getItems().length; i++) {

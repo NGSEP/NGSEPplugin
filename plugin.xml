@@ -452,7 +452,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="ImputeGenotype" label="Impute Genotype" style="push">
+         <command commandId="ImputeGenotype" label="Genotype imputation" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -668,7 +668,7 @@
       <command id="VCFDiversityCalculator" name="VCF Diversity Calculator" defaultHandler="net.sf.ngsep.control.PlugVCFDiversityCalculator"/>
       <command id="AlleleSharingStatistics" name="Allele Sharing Statistics" defaultHandler="net.sf.ngsep.control.PlugAlleleSharingStatistics"/>
       <command id="VCFComparator" name="VCF Comparator" defaultHandler="net.sf.ngsep.control.PlugVCFComparator"/>
-      <command id="ImputeGenotype" name="Impute Genotype" defaultHandler="net.sf.ngsep.control.PlugImputeGenotype"/>
+      <command id="ImputeGenotype" name="Genotype imputation" defaultHandler="net.sf.ngsep.control.PlugImputeGenotype"/>
       <command id="IntrogressionAnalysis" name="Introgression Analysis" defaultHandler="net.sf.ngsep.control.PlugVCFIntrogressionAnalysis"/>
       <command id="Deconvolution" name="Sample Deconvolution" defaultHandler="net.sf.ngsep.control.PlugDeconvolution"/>
       <command id="ReadDepthComparator" name="Read Depth Comparator" defaultHandler="net.sf.ngsep.control.PlugCNVcompare"/>
