@@ -59,6 +59,8 @@ public class TabMapAliArgs extends Composite {
 	private Text txtR;
 	private Label lblD;
 	private Label lblR;
+	
+	private Button btnRF;
 
 	private static final String INPUT_TYPE_FASTA = "FASTA";
 	private static final String INPUT_TYPE_FASTQ = "FASTQ";
@@ -110,7 +112,6 @@ public class TabMapAliArgs extends Composite {
 		btnPhred = new Button(this, SWT.CHECK);
 		btnPhred.setBounds(17, 61, 124, 21);
 		btnPhred.setText("Phred 64");
-		btnPhred.getSelection();
 
 		lblTrim5 = new Label(this, SWT.NONE);
 		lblTrim5.setText("Trim:	5':");
@@ -140,6 +141,11 @@ public class TabMapAliArgs extends Composite {
 		txtR = new Text(this, SWT.BORDER);
 		txtR.setBounds(300, 180, 42, 21);
 
+		btnRF = new Button(this, SWT.CHECK);
+		btnRF.setBounds(17, 220, 300, 21);
+		btnRF.setText("Use reverse forward alignment");
+		
+		
 		lblL = new Label(this, SWT.NONE);
 		lblL.setText("Length of seed 'word':");
 		lblL.setBounds(380, 21, 300, 21);
@@ -256,6 +262,10 @@ public class TabMapAliArgs extends Composite {
 			userParams.put("phredCMD", "--phred64");
 		}
 
+		if (btnRF.getSelection() == true) {
+			//				commandArray.add("--phred64");
+			userParams.put("reverseForwardCMD", "--rf");
+		}
 
 		if (txtTrim5.getText() != null && txtTrim5.getText().length()>0) {
 			if (!FieldValidator.isNumeric(txtTrim5.getText(), new Integer(0))) {

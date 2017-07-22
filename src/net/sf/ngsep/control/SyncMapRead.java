@@ -259,6 +259,10 @@ public class SyncMapRead extends Job {
 			this.commandArray.add((String)commandMap.get("phredCMD"));
 		}
 		
+		if(commandMap.get("reverseForwardCMD")!=null){
+			this.commandArray.add((String)commandMap.get("reverseForwardCMD"));
+		}
+		
 		if(commandMap.get("trim5CMD")!=null){
 			this.commandArray.add((String)commandMap.get("trim5CMD"));
 			this.commandArray.add((String)commandMap.get("trim5Arg"));
