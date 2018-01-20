@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.FileHandler;
 
 import net.sf.ngsep.control.SyncVCFFilter;
 import net.sf.ngsep.utilities.FieldValidator;
@@ -32,7 +31,6 @@ import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
 import ngsep.genome.ReferenceGenome;
-import ngsep.genome.io.SimpleGenomicRegionFileHandler;
 import ngsep.transcriptome.Transcriptome;
 import ngsep.vcf.VCFFilter;
 
@@ -545,18 +543,24 @@ public class MainVCFFilter {
 	public void proceed() {
 
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
-		VCFFilter populationVCF = new VCFFilter();
+		VCFFilter instance = new VCFFilter();
+		SyncVCFFilter job = new SyncVCFFilter("VCF Filter");
+		job.setInstance(instance);
+		
 		//Validate fields and record errors in the list
-
 		ArrayList<String> listErrors = new ArrayList<String>();
 		if (txtFile.getText() == null || txtFile.getText().length()==0) {
 			listErrors.add(FieldValidator.buildMessage(lblFile.getText(), FieldValidator.ERROR_MANDATORY));
 			txtFile.setBackground(oc);
+		} else {
+			job.setInputFile(txtFile.getText());
 		}
 
 		if (txtOutputFile.getText() == null|| txtOutputFile.getText().length()==0) {
 			listErrors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_MANDATORY));
 			txtOutputFile.setBackground(oc);
+		} else {
+			job.setOutputFile(txtOutputFile.getText());
 		}
 
 		if (txtMinQuality.getText() != null && txtMinQuality.getText().length()>0) {
@@ -564,7 +568,7 @@ public class MainVCFFilter {
 				listErrors.add(FieldValidator.buildMessage(lblMinQuality.getText(), FieldValidator.ERROR_INTEGER));
 				txtMinQuality.setBackground(oc);
 			} else {
-				populationVCF.setMinGenotypeQuality(Integer.parseInt(txtMinQuality.getText()));
+				instance.setMinGenotypeQuality(Integer.parseInt(txtMinQuality.getText()));
 			}
 		}
 
@@ -573,7 +577,7 @@ public class MainVCFFilter {
 				listErrors.add(FieldValidator.buildMessage(lblMinCoverage.getText(), FieldValidator.ERROR_INTEGER));
 				txtMinCoverage.setBackground(oc);
 			} else {
-				populationVCF.setMinCoverage(Integer.parseInt(txtMinCoverage.getText()));
+				instance.setMinCoverage(Integer.parseInt(txtMinCoverage.getText()));
 			}
 		}
 
@@ -582,7 +586,7 @@ public class MainVCFFilter {
 				listErrors.add(FieldValidator.buildMessage(lblMinDistance.getText(), FieldValidator.ERROR_INTEGER));
 				txtMinDistance.setBackground(oc);
 			} else {
-				populationVCF.setMinDistance(Integer.parseInt(txtMinDistance.getText()));
+				instance.setMinDistance(Integer.parseInt(txtMinDistance.getText()));
 			}
 		}
 
@@ -591,7 +595,7 @@ public class MainVCFFilter {
 				listErrors.add(FieldValidator.buildMessage(lblMinIndividualGenotyped.getText(), FieldValidator.ERROR_INTEGER));
 				txtMinIndividualGenotyped.setBackground(oc);
 			} else {
-				populationVCF.setMinIndividualsGenotyped(Integer.parseInt(txtMinIndividualGenotyped.getText()));
+				instance.setMinIndividualsGenotyped(Integer.parseInt(txtMinIndividualGenotyped.getText()));
 			}
 		}
 
@@ -600,7 +604,7 @@ public class MainVCFFilter {
 				listErrors.add(FieldValidator.buildMessage(lblMinMaf.getText(), FieldValidator.ERROR_NUMERIC));
 				txtMinMAF.setBackground(oc);
 			} else {
-				populationVCF.setMinMAF(Double.parseDouble(txtMinMAF.getText()));
+				instance.setMinMAF(Double.parseDouble(txtMinMAF.getText()));
 			}
 		}
 
@@ -609,7 +613,7 @@ public class MainVCFFilter {
 				listErrors.add(FieldValidator.buildMessage(lblMaxMaf.getText(), FieldValidator.ERROR_NUMERIC));
 				txtMaxMAF.setBackground(oc);
 			} else {
-				populationVCF.setMaxMAF(Double.parseDouble(txtMaxMAF.getText()));
+				instance.setMaxMAF(Double.parseDouble(txtMaxMAF.getText()));
 			}
 		}
 		
@@ -618,7 +622,7 @@ public class MainVCFFilter {
 				listErrors.add(FieldValidator.buildMessage(lblMinOH.getText(), FieldValidator.ERROR_NUMERIC));
 				txtMinOH.setBackground(oc);
 			} else {
-				populationVCF.setMinOH(Double.parseDouble(txtMinOH.getText()));
+				instance.setMinOH(Double.parseDouble(txtMinOH.getText()));
 			}
 		}
 
@@ -627,14 +631,14 @@ public class MainVCFFilter {
 				listErrors.add(FieldValidator.buildMessage(lblMaxOH.getText(), FieldValidator.ERROR_NUMERIC));
 				txtMaxOH.setBackground(oc);
 			} else {
-				populationVCF.setMaxOH(Double.parseDouble(txtMaxOH.getText()));
+				instance.setMaxOH(Double.parseDouble(txtMaxOH.getText()));
 			}
 		}
 
 		if (txtReferenceFile.getText() != null && txtReferenceFile.getText().length()>0) {
 			try {
 				ReferenceGenome genome = ReferenceGenomesFactory.getInstance().getGenome(txtReferenceFile.getText(), shell);
-				populationVCF.setGenome(genome);
+				instance.setGenome(genome);
 			} catch (IOException e) {
 				e.printStackTrace();
 				listErrors.add(FieldValidator.buildMessage(lblReference.getText(), "error loading file: "+e.getMessage()));
@@ -645,7 +649,7 @@ public class MainVCFFilter {
 					listErrors.add(FieldValidator.buildMessage(lblMinGccontent.getText(), FieldValidator.ERROR_NUMERIC));
 					txtMinGCContet.setBackground(oc);
 				} else {
-					populationVCF.setMinGCContent(Double.parseDouble(txtMinGCContet.getText()));
+					instance.setMinGCContent(Double.parseDouble(txtMinGCContet.getText()));
 				}
 			}
 			if(txtMaxGCContent.getText() != null && !txtMaxGCContent.getText().equals("")) {
@@ -653,7 +657,7 @@ public class MainVCFFilter {
 					listErrors.add(FieldValidator.buildMessage(lblMaxGccontent.getText(), FieldValidator.ERROR_NUMERIC));
 					txtMaxGCContent.setBackground(oc);
 				} else {
-					populationVCF.setMaxGCContent(Double.parseDouble(txtMaxGCContent.getText()));
+					instance.setMaxGCContent(Double.parseDouble(txtMaxGCContent.getText()));
 				}
 			}
 		}
@@ -663,7 +667,7 @@ public class MainVCFFilter {
 				listErrors.add(FieldValidator.buildMessage(lblMaximunNumberOf.getText(), FieldValidator.ERROR_NUMERIC));
 				txtMaxSamplesCnvs.setBackground(oc);
 			} else {
-				populationVCF.setMaxCNVs(Integer.parseInt(txtMaxSamplesCnvs.getText()));
+				instance.setMaxCNVs(Integer.parseInt(txtMaxSamplesCnvs.getText()));
 			}
 		}
 
@@ -675,21 +679,15 @@ public class MainVCFFilter {
 			}
 		}
 		
-		if(annotations.size()>0)populationVCF.setAnnotations(annotations);
+		if(annotations.size()>0) instance.setAnnotations(annotations);
 
 		if (txtGeneName.getText() != null && txtGeneName.getText().length()>0) {
-			if (FieldValidator.isNumeric(txtGeneName.getText(), new Integer(0)) || FieldValidator.isNumeric(txtGeneName.getText(),new Double(0))) {
-				listErrors.add(FieldValidator.buildMessage(lblGeneName.getText(), FieldValidator.ERROR_NUMERIC));
-				txtGeneName.setBackground(oc);
-			} else {
-				populationVCF.setGeneId(txtGeneName.getText());
-			}
+			instance.setGeneId(txtGeneName.getText());
 		}
 		
-		SimpleGenomicRegionFileHandler regionFileHandler = new SimpleGenomicRegionFileHandler();
 		if (txtFilterRegions.getText() != null && txtFilterRegions.getText().length()>0) {
 			try {
-				populationVCF.setRegionsToFilter(regionFileHandler.loadRegions(txtFilterRegions.getText()));
+				instance.setRegionsToFilter(txtFilterRegions.getText());
 			} catch (IOException e) {
 				e.printStackTrace();
 				listErrors.add(FieldValidator.buildMessage(lblFilterRegionsFrom.getText(), "error loading file: "+e.getMessage()));
@@ -700,7 +698,7 @@ public class MainVCFFilter {
 
 		if (txtSelectRegionsFile.getText() != null && txtSelectRegionsFile.getText().length()>0) {
 			try {
-				populationVCF.setRegionsToSelect(regionFileHandler.loadRegions(txtSelectRegionsFile.getText()));
+				instance.setRegionsToSelect(txtSelectRegionsFile.getText());
 			} catch (IOException e) {
 				e.printStackTrace();
 				listErrors.add(FieldValidator.buildMessage(lblSelectRegionsFile.getText(), "error loading file: "+e.getMessage()));
@@ -711,7 +709,7 @@ public class MainVCFFilter {
 		
 		if (txtFilterSamples.getText() != null && txtFilterSamples.getText().length()>0) {
 			try {
-				populationVCF.setSampleIds(VCFFilter.loadSampleIds(txtFilterSamples.getText()));		
+				instance.setSampleIds(txtFilterSamples.getText());		
 			} catch (IOException e) {
 				e.printStackTrace();
 				listErrors.add(FieldValidator.buildMessage("File of samples", "error loading file: "+e.getMessage()));
@@ -725,49 +723,30 @@ public class MainVCFFilter {
 		}
 
 		//Change Combo box
-		if (btnKeepOnlyBi.getSelection()) {
-			populationVCF.setKeepOnlySNVs(true);
-		}
+		instance.setKeepOnlySNVs(btnKeepOnlyBi.getSelection());
 
-		if (btnFilterInvariantSites.getSelection()) {
-			populationVCF.setFilterInvariant(true);
-		}
+		instance.setFilterInvariant(btnFilterInvariantSites.getSelection());
 
 
-		if (btnFilterInvariantReference.getSelection()) {
-			populationVCF.setFilterInvariantReference(true);
-		}
+		instance.setFilterInvariantReference(btnFilterInvariantReference.getSelection());
 
-		if (btnFilterInvariantAlternative.getSelection()) {
-			populationVCF.setFilterInvariantAlternative(true);
-		}
-
+		instance.setFilterInvariantAlternative(btnFilterInvariantAlternative.getSelection());
 		
-		
-		int select = cmbFilterSelect.getSelectionIndex();
-		if (select==0) {
-			populationVCF.setFilterSamples(true);
-		}
+		instance.setFilterSamples(cmbFilterSelect.getSelectionIndex()==0);
 		
 		String outputFile = txtOutputFile.getText();
-		SyncVCFFilter syncPopulationVCF = new SyncVCFFilter("VCF Filter");
-		syncPopulationVCF.setInputFile(txtFile.getText());
-		syncPopulationVCF.setOutputFile(outputFile);
-		syncPopulationVCF.setPopulationVCF(populationVCF);
+		
 		String logFilename = LoggingHelper.getLoggerFilename(outputFile,"FV");
-		syncPopulationVCF.setLogName(logFilename);
-		syncPopulationVCF.setNameProgressBar(new File(outputFile).getName());
+		job.setLogName(logFilename);
+		job.setNameProgressBar(new File(outputFile).getName());
 		try {
-			FileHandler logFile = new FileHandler(logFilename, false);
-			syncPopulationVCF.setLogFile(logFile);
-			syncPopulationVCF.schedule();
+			job.schedule();
 			MessageDialog.openInformation(shell, "Population VCF Filter",LoggingHelper.MESSAGE_PROGRESS_BAR);
 			shell.dispose();
 		} catch (Exception e) {
 			MessageDialog.openError(shell, "Population VCF Filter",e.getMessage());
 			e.printStackTrace();
 			return;
-
 		}
 	}
 

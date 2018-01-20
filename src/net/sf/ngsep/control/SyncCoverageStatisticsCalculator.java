@@ -19,16 +19,19 @@
  *******************************************************************************/
 package net.sf.ngsep.control;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import net.sf.ngsep.utilities.DefaultProgressNotifier;
 import net.sf.ngsep.utilities.PlotUtils;
-import ngsep.alignments.BasePairQualityStatisticsCalculator;
+import ngsep.discovery.CoverageStatisticsCalculator;
 import net.sf.ngsep.utilities.LoggingHelper;
+
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -39,18 +42,17 @@ import com.xeiam.xchart.Chart;
 
 /**
  * 
- * @author Juan Camilo Quintero
  * @author Daniel Cruz
+ * @author Juan Camilo Quintero
  * @author Juan Fernando de la Hoz
  * @author Jorge Duitama
  *
  */
-public class SyncBasePairQualityStatistics extends Job{
-
-	private BasePairQualityStatisticsCalculator instance;
+public class SyncCoverageStatisticsCalculator extends Job {
+	
+	private CoverageStatisticsCalculator instance;
 	
 	private String alignmentsFile;
-	private String statsOutputFile;
 	private String plotFile;
 	private boolean plotUniqueAlignments;
 	
@@ -60,118 +62,105 @@ public class SyncBasePairQualityStatistics extends Job{
 	//Name for the progress bar
 	private String nameProgressBar;
 	
-	public SyncBasePairQualityStatistics(String name) {
+
+	/**
+	 * Creates a CoverageStatisticsCalculator job with the given name
+	 * @param name Name of the job
+	 */
+	public SyncCoverageStatisticsCalculator(String name) {
 		super(name);
 	}
-
+	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		FileHandler logFile = null;
 		Logger log = null;
-		PrintStream out=null;
 		try {
 			//Create log
 			logFile = new FileHandler(logName, false);
 			log = LoggingHelper.createLogger(logName, logFile);
 			instance.setLog(log);
 			
-			monitor.beginTask(getNameProgressBar(), 5000);
-			log.info("Started Quality Statistics Calculator");
+			monitor.beginTask(getNameProgressBar(), 100);
+			log.info("Started Coverage Statistics Calculator");
 			
 			instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
-			
-			
-			log.info("Processing reads from file: "+alignmentsFile);
-			
+			log.info("Processing reads from file: " + alignmentsFile);
+			log.info("Output statistics:" + instance.getOutFilename());
 			instance.processFile(alignmentsFile);
-			
-			
-			log.info("Printing counts to " + statsOutputFile);
-			out = new PrintStream(statsOutputFile);
-			instance.printStatistics(out);
-			out.flush();
-			out.close();
 			log.info("Plotting image to file:" + plotFile+".png");
-			
 			if (plotUniqueAlignments) {
-				log.info("Unique alignments selected");	
+				log.info("Unique alignments selected");
 			} else {
 				log.info("Multiple alignments selected");
 			}
-			plotQualityStatistics(statsOutputFile, plotFile, plotUniqueAlignments);
+			
+			plotStatistics(instance.getOutFilename(), plotFile, plotUniqueAlignments);
 			log.info("Finalized Statistics!!!!");
 			monitor.done();
 		} catch (Exception e) {
-			log.info("Error executing Quality statistics: ");
+			log.info("Error executing Coverage statistics: ");
 			String message = LoggingHelper.serializeException(e);
 			log.severe(message);
 		} finally {
 			LoggingHelper.closeLogger(log);
-			if (out != null) {
-				out.flush();
-				out.close();
-			}
 		}
 		return Status.OK_STATUS;
 	}
+	
+	public static void plotStatistics(String statsFile, String plotFile, boolean uniqueAlignments) throws IOException {
+		int col = (uniqueAlignments) ? 2 : 1 ;
+		String legendText = uniqueAlignments ? "Unique Alignments":"Multiple Alignments" ;
 
-	public static void plotQualityStatistics(String statsFile, String plotFile, boolean plotUniqueAlignments) throws IOException {
-		double [] percentages = BasePairQualityStatisticsCalculator.calculatePercentages(statsFile, plotUniqueAlignments);
-		// get data to plot
-		ArrayList<Double> dataY = new ArrayList<Double>();
-		ArrayList<Integer> dataX = new ArrayList<Integer>();
-		for(int i=0;i<percentages.length;i++) {
-			dataX.add(i+1);
-			dataY.add(percentages[i]);
+		ArrayList<Double> coverage = new ArrayList<Double>();
+		ArrayList<Integer> xdata = new ArrayList<Integer>();
+		File file = new File(statsFile);
+		if (file.exists()) {
+			try (FileReader fread = new FileReader(file);
+				BufferedReader bfr = new BufferedReader(fread)) {
+				String line;
+				while ((line = bfr.readLine()) != null) {
+					String [] arrayLine = line.split("\t");
+					if (arrayLine.length==3) {
+						coverage.add(Double.parseDouble(arrayLine[col]));
+					}
+				}
+			}
 		}
-		
-		
-		Chart chart = PlotUtils.createBarChart("Quality statistics", "Read Position (5' to 3')", "Percentage of non reference calls");
-		String legendText = plotUniqueAlignments ? "Unique Alignments":"Multiple Alignments";
-		PlotUtils.addSample(legendText, chart, dataX, dataY);
-		PlotUtils.manageLegend(chart, 4);
+		int lastPeak = PlotUtils.getLastPeak(coverage);
+		coverage.subList(lastPeak*2, coverage.size()).clear();
+		for (int i = 0; i < coverage.size(); i++)  xdata.add(i);
+		Chart chart = PlotUtils.createBarChart("Coverage Statistics", "Coverage", "Number of reference calls");
+		PlotUtils.addSample(legendText, chart, xdata, coverage);
+		PlotUtils.manageLegend(chart, 1);
 		PlotUtils.saveChartPNG(chart, plotFile);
 	}
-
-	public BasePairQualityStatisticsCalculator getInstance() {
+	
+	public CoverageStatisticsCalculator getInstance() {
 		return instance;
 	}
-
-	public void setInstance(BasePairQualityStatisticsCalculator instance) {
+	public void setInstance(CoverageStatisticsCalculator instance) {
 		this.instance = instance;
 	}
-
+	
 	public String getAlignmentsFile() {
 		return alignmentsFile;
 	}
-
 	public void setAlignmentsFile(String alignmentsFile) {
 		this.alignmentsFile = alignmentsFile;
 	}
-
-	public String getStatsOutputFile() {
-		return statsOutputFile;
-	}
-
-	public void setStatsOutputFile(String statsOutputFile) {
-		this.statsOutputFile = statsOutputFile;
-	}
-
+	
 	public String getPlotFile() {
 		return plotFile;
 	}
-
 	public void setPlotFile(String plotFile) {
 		this.plotFile = plotFile;
 	}
-
 	public boolean isPlotUniqueAlignments() {
 		return plotUniqueAlignments;
 	}
-
 	public void setPlotUniqueAlignments(boolean plotUniqueAlignments) {
 		this.plotUniqueAlignments = plotUniqueAlignments;
 	}
-
 	public String getLogName() {
 		return logName;
 	}
@@ -179,7 +168,7 @@ public class SyncBasePairQualityStatistics extends Job{
 	public void setLogName(String logName) {
 		this.logName = logName;
 	}
-
+	
 	public String getNameProgressBar() {
 		return nameProgressBar;
 	}

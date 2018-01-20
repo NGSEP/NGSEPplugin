@@ -30,6 +30,7 @@ import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
 import ngsep.alignments.BasePairQualityStatisticsCalculator;
+import ngsep.alignments.ReadAlignment;
 import ngsep.genome.ReferenceGenome;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -46,26 +47,45 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * 
- * @author Daniel Cruz, Juan Camilo Quintero, Juan Fernando de la Hoz
+ * @author Daniel Cruz
+ * @author Juan Camilo Quintero
+ * @author Juan Fernando de la Hoz
+ * @author Jorge Duitama
  *
  */
-public class MainBasePairQualityStatistics {
+public class MainBasePairQualityStatistics implements SingleFileInputWindow {
 
-	private String aliFile;
-	
 	protected Shell shell;
 	private Display display;
-	private Label lblFile;
+	
+	private String selectedFile;
+	
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+
+	public void setSelectedFile(String selectedFile) {
+		this.selectedFile = selectedFile;
+	}
+	
+	private Label lblInputFile;
+	private Text txtInputFile;
+	private Button btnInputFile;
+	
 	private Label lblReferenceFile;
-	private Label lblOutputFile;
+	private Text txtReferenceFile;
+	private Button btnReferenceFile;
+	
+	private Label lblOutputPrefix;
+	private Text txtOutputPrefix;
+	private Button btnOutputPrefix;
+	
+	private Label lblMinMQ;
+	private Text txtMinMQ;
+	
 	private Label lblGraphicalOutput;
-	private Text txtFile;
-	private Text txtReferenceTex;
-	private Text txtOutputText;
-	private Button btnFile;
-	private Button btnReferenceButton;
-	private Button btnOutputButton;
 	private Button btnUniqueAlignments;
+	
 	private Button btnProcess;
 	private Button btnCancel;
 
@@ -94,101 +114,107 @@ public class MainBasePairQualityStatistics {
 	 */
 	protected void createContents() {
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setSize(855, 342);
+		shell.setSize(800, 350);
 		shell.setText("Calculate Quality Statistics");
 		shell.setLocation(150, 200);
 
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
 		Font tfont = new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD);
 
-		lblFile = new Label(shell, SWT.NONE);
-		lblFile.setBounds(10, 11, 167, 21);
-		lblFile.setText("(*)File:");
+		lblInputFile = new Label(shell, SWT.NONE);
+		lblInputFile.setBounds(10, 20, 140, 22);
+		lblInputFile.setText("(*)File:");
 
-		txtFile = new Text(shell, SWT.BORDER);
-		txtFile.setBounds(205, 12, 545, 21);
-		txtFile.addMouseListener(mouse);
+		txtInputFile = new Text(shell, SWT.BORDER);
+		txtInputFile.setBounds(160, 20, 580, 22);
+		txtInputFile.addMouseListener(mouse);
+		txtInputFile.setText(selectedFile);
 
-		btnFile = new Button(shell, SWT.NONE);
-		btnFile.setBounds(761, 11, 21, 25);
-		btnFile.setText("...");
-		btnFile.addSelectionListener(new SelectionAdapter() {
+		btnInputFile = new Button(shell, SWT.NONE);
+		btnInputFile.setBounds(760, 20, 25, 22);
+		btnInputFile.setText("...");
+		btnInputFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, aliFile,txtFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtInputFile);
 			}
 		});
 		
 		lblReferenceFile = new Label(shell, SWT.NONE);
-		lblReferenceFile.setBounds(10, 51, 167, 21);
+		lblReferenceFile.setBounds(10, 60, 140, 22);
 		lblReferenceFile.setText("(*)Reference File:");
 
-		txtReferenceTex = new Text(shell, SWT.BORDER);
-		txtReferenceTex.setBounds(205, 52, 545, 21);
-		txtReferenceTex.addMouseListener(mouse);
+		txtReferenceFile = new Text(shell, SWT.BORDER);
+		txtReferenceFile.setBounds(160, 60, 580, 22);
+		txtReferenceFile.addMouseListener(mouse);
 		// Here you take the route of the project in the system and suggest the
 		// direction for the text box reference file
 		try {
-			String directoryProject = EclipseProjectHelper.findProjectDirectory(aliFile);
+			String directoryProject = EclipseProjectHelper.findProjectDirectory(selectedFile);
 			String historyFile = HistoryManager.createPathRecordGeneral(directoryProject);
 			String historyReference = HistoryManager.getPathRecordReference(historyFile);
 			if (historyReference!=null) {
-				txtReferenceTex.setText(historyReference);
+				txtReferenceFile.setText(historyReference);
 			}
 		} catch (Exception e) {
 			e.getMessage();
 			MessageDialog.openError(shell," Quality Statistics Error","An error occurred while locating the file path of the reference, possibly the system can not recover that route."+ e.getMessage());
 		}
 		
-		btnReferenceButton = new Button(shell, SWT.NONE);
-		btnReferenceButton.setBounds(761, 51, 21, 25);
-		btnReferenceButton.setText("...");
-		btnReferenceButton.addSelectionListener(new SelectionAdapter() {
+		btnReferenceFile = new Button(shell, SWT.NONE);
+		btnReferenceFile.setBounds(760, 60, 25, 22);
+		btnReferenceFile.setText("...");
+		btnReferenceFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, aliFile,txtReferenceTex);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtReferenceFile);
 			}
 		});
 		
-		lblOutputFile = new Label(shell, SWT.NONE);
-		lblOutputFile.setBounds(10, 97, 167, 21);
-		lblOutputFile.setText("(*)Output File Prefix:");
+		lblOutputPrefix = new Label(shell, SWT.NONE);
+		lblOutputPrefix.setBounds(10, 100, 140, 22);
+		lblOutputPrefix.setText("(*)Output files prefix:");
 
-		txtOutputText = new Text(shell, SWT.BORDER);
-		txtOutputText.setBounds(205, 98, 545, 21);
-		txtOutputText.addMouseListener(mouse);
-		if (aliFile != null && aliFile.length()>0) {
-			txtFile.setText(aliFile);
-			String srtOutPutFileOne = aliFile.substring(0,aliFile.lastIndexOf("."));
-			txtOutputText.setText(srtOutPutFileOne + "ReadPos");
-		}
+		txtOutputPrefix = new Text(shell, SWT.BORDER);
+		txtOutputPrefix.setBounds(160, 100, 580, 22);
+		txtOutputPrefix.addMouseListener(mouse);
+		txtOutputPrefix.setText(SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile) + "ReadPos");
 		
-		btnOutputButton = new Button(shell, SWT.NONE);
-		btnOutputButton.setBounds(761, 97, 21, 25);
-		btnOutputButton.setText("...");
-		btnOutputButton.addSelectionListener(new SelectionAdapter() {
+		btnOutputPrefix = new Button(shell, SWT.NONE);
+		btnOutputPrefix.setBounds(760, 100, 25, 22);
+		btnOutputPrefix.setText("...");
+		btnOutputPrefix.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, aliFile,txtOutputText);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, selectedFile, txtOutputPrefix);
 			}
 		});
 
+		lblMinMQ = new Label(shell, SWT.NONE);
+		lblMinMQ.setBounds(10, 140, 330, 22);
+		lblMinMQ.setText("Minimum mapping quality unique alignments:");
+		
+		txtMinMQ = new Text(shell, SWT.BORDER);
+		txtMinMQ.setBounds(350, 140, 200, 22);
+		txtMinMQ.addMouseListener(mouse);
+		txtMinMQ.setText(""+ReadAlignment.DEF_MIN_MQ_UNIQUE_ALIGNMENT);
+		
 		lblGraphicalOutput = new Label(shell, SWT.NONE);
-		lblGraphicalOutput.setBounds(10, 150, 167, 21);
+		lblGraphicalOutput.setBounds(10, 200, 200, 22);
 		lblGraphicalOutput.setText("Graphical output");
 		lblGraphicalOutput.setFont(tfont);
 
 		Button btnMultipleAlignments = new Button(shell, SWT.RADIO);
-		btnMultipleAlignments.setBounds(10, 180, 167, 21);
-		btnMultipleAlignments.setText("Multiple alignments");
+		btnMultipleAlignments.setBounds(10, 240, 200, 22);
+		btnMultipleAlignments.setText("All alignments");
 		
 		btnUniqueAlignments = new Button(shell, SWT.RADIO);
-		btnUniqueAlignments.setBounds(180, 180, 167, 21);
+		btnUniqueAlignments.setBounds(220, 240, 200, 22);
 		btnUniqueAlignments.setText("Unique alignments");
 		btnUniqueAlignments.setSelection(true);
 
 		btnProcess = new Button(shell, SWT.NONE);
-		btnProcess.setBounds(205, 245, 110, 25);
+		btnProcess.setBounds(220, 300, 130, 22);
 		btnProcess.setText("Statistics");
 		btnProcess.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -198,7 +224,7 @@ public class MainBasePairQualityStatistics {
 		});
 
 		btnCancel = new Button(shell, SWT.NONE);
-		btnCancel.setBounds(336, 245, 110, 25);
+		btnCancel.setBounds(410, 300, 130, 22);
 		btnCancel.setText("Cancel");
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -215,58 +241,72 @@ public class MainBasePairQualityStatistics {
 		
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		ArrayList<String> errors = new ArrayList<String>();
-		BasePairQualityStatisticsCalculator calculator = new BasePairQualityStatisticsCalculator();
+		BasePairQualityStatisticsCalculator instance = new BasePairQualityStatisticsCalculator();
+		SyncBasePairQualityStatistics job = new SyncBasePairQualityStatistics("Basepair Quality Statistics");
+		job.setInstance(instance);
 		
-		if (txtFile.getText() == null || txtFile.getText().length()==0) {
-			errors.add(FieldValidator.buildMessage(lblFile.getText(), FieldValidator.ERROR_MANDATORY));
-			txtFile.setBackground(oc);
+		if (txtInputFile.getText() == null || txtInputFile.getText().length()==0) {
+			errors.add(FieldValidator.buildMessage(lblInputFile.getText(), FieldValidator.ERROR_MANDATORY));
+			txtInputFile.setBackground(oc);
+		} else {
+			job.setAlignmentsFile(txtInputFile.getText());
 		}
-		if (txtReferenceTex.getText() == null || txtReferenceTex.getText().length()==0) {
+		if (txtReferenceFile.getText() == null || txtReferenceFile.getText().length()==0) {
 			errors.add(FieldValidator.buildMessage(lblReferenceFile.getText(), FieldValidator.ERROR_MANDATORY));
-			txtReferenceTex.setBackground(oc);
+			txtReferenceFile.setBackground(oc);
 		} else {
 			try {
-				ReferenceGenome genome = ReferenceGenomesFactory.getInstance().getGenome(txtReferenceTex.getText(), shell);
-				calculator.setGenome(genome);
+				ReferenceGenome genome = ReferenceGenomesFactory.getInstance().getGenome(txtReferenceFile.getText(), shell);
+				instance.setGenome(genome);
 			} catch (IOException e) {
 				e.printStackTrace();
 				errors.add(FieldValidator.buildMessage(lblReferenceFile.getText(), "error loading file: "+e.getMessage()));
-				txtReferenceTex.setBackground(oc);
+				txtReferenceFile.setBackground(oc);
 			}
 		}
-		if (txtOutputText.getText() == null || txtOutputText.getText().length()==0) {
-			errors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_MANDATORY));
-			txtOutputText.setBackground(oc);
+		if (txtOutputPrefix.getText() == null || txtOutputPrefix.getText().length()==0) {
+			errors.add(FieldValidator.buildMessage(lblOutputPrefix.getText(), FieldValidator.ERROR_MANDATORY));
+			txtOutputPrefix.setBackground(oc);
+		} else {
+			job.setStatsOutputFile(txtOutputPrefix.getText()+".stats");
+			job.setPlotFile(txtOutputPrefix.getText());
+		}
+		
+		if (txtMinMQ.getText() != null && txtMinMQ.getText().length()>0) {
+			if (!FieldValidator.isNumeric(txtMinMQ.getText(),new Integer(0))) {
+				errors.add(FieldValidator.buildMessage(lblMinMQ.getText(), FieldValidator.ERROR_INTEGER));
+				txtMinMQ.setBackground(oc);
+			} else {
+				instance.setMinMQ(Integer.parseInt(txtMinMQ.getText()));
+			}
 		}
 		if (errors.size() > 0) {
 			FieldValidator.paintErrors(errors, shell, "Statistics");
 			return;
 		}
-		String logFilename = LoggingHelper.getLoggerFilename(txtOutputText.getText(),"PS");
-		SyncBasePairQualityStatistics syncStatistics = new SyncBasePairQualityStatistics("BasePairQualityStats");
-		syncStatistics.setAliFile(txtFile.getText());
-		syncStatistics.setPositStatsCalculator(calculator);
-		syncStatistics.setOutputFile(txtOutputText.getText());
-		syncStatistics.setNameProgressBar(new File(txtOutputText.getText()).getName());
-		syncStatistics.setLogName(logFilename);
-		syncStatistics.setUniqueAlignments(btnUniqueAlignments.getSelection());	
+		job.setPlotUniqueAlignments(btnUniqueAlignments.getSelection());	
+		
+		String logFilename = txtOutputPrefix.getText()+".log";
+		job.setLogName(logFilename);
+		job.setNameProgressBar(new File(txtOutputPrefix.getText()).getName());
+		
 			
 		// this piece is stored in the project path in the system and the
 		// address entered by the user to the reference file,
-		// then stored in a file such routes that will have the long history
+		// then stored in a file such paths that will have the long history
 		// of the last reference entered.
 		String directoryProject = null;
 		try {
-			directoryProject = EclipseProjectHelper.findProjectDirectory(aliFile);
+			directoryProject = EclipseProjectHelper.findProjectDirectory(txtInputFile.getText());
 			String routeMap = HistoryManager.createPathRecordGeneral(directoryProject);
-			HistoryManager.createPathRecordFiles(routeMap, txtReferenceTex.getText().toString());
+			HistoryManager.createPathRecordFiles(routeMap, txtReferenceFile.getText().toString());
 		} catch (Exception e) {
 			MessageDialog.openError(shell, " Quality Statistics Error","error while trying to place the reference path history most recently used"+ e.getMessage());
 			return;
 		}
 		
 		try {
-			syncStatistics.schedule();
+			job.schedule();
 		} catch (Exception e) {
 			MessageDialog.openError(shell, "Quality Statistics Calculator Error",e.getMessage());
 			e.printStackTrace();
@@ -274,13 +314,5 @@ public class MainBasePairQualityStatistics {
 		}
 		MessageDialog.openInformation(shell,"Calculate Quality Statistics is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
 		shell.dispose();
-	}
-
-	public String getAliFile() {
-		return aliFile;
-	}
-
-	public void setAliFile(String aliFile) {
-		this.aliFile = aliFile;
 	}
 }

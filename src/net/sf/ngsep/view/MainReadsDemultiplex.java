@@ -21,13 +21,13 @@ package net.sf.ngsep.view;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.logging.FileHandler;
 
-import net.sf.ngsep.control.SyncDeconvolution;
+import net.sf.ngsep.control.SyncReadsDemultiplex;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
+import ngsep.sequences.ReadsDemultiplex;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -41,15 +41,24 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Main window of the GBS Cornell Deconvolution class
+ * Main window of the sample demultiplexing class
  * @author Juan Fernando De la Hoz
+ * @author Jorge Duitama
  */
-public class MainDeconvolution {
+public class MainReadsDemultiplex {
 
 	private Shell shell;
 	private Display display;
 	
-	private String indexFile;
+	//File initially selected by the user
+	private String selectedFile;
+	
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+	public void setSelectedFile(String selectedFile) {
+		this.selectedFile = selectedFile;
+	}
 
 	private Label lblIndex;
 	private Text txtIndex;
@@ -60,12 +69,12 @@ public class MainDeconvolution {
 	private Label lblLaneFilesDescriptor;
 	private Text txtLaneFilesDescriptor;
 	private Button btnLaneFilesDescriptor;
-	private Label lblFile;
-	private Text txtFile;
-	private Button btnFile;
-	private Label lblFile2;
-	private Text txtFile2;
-	private Button btnFile2;
+	private Label lblFastqFile1;
+	private Text txtFastqFile1;
+	private Button btnFastqFile1;
+	private Label lblFastqFile2;
+	private Text txtFastqFile2;
+	private Button btnFastqFile2;
 	private Label lblFlowCell;
 	private Text txtFlowCell;
 	private Label lblLane;
@@ -73,8 +82,9 @@ public class MainDeconvolution {
 	private Label lblTrimSeq;
 	private Text txtTrimSeq;
 	private Button btnUncompressOutput;
+	private Button btnDualBarcoding;
 	
-	private Button btnDeconvolute;
+	private Button btnDemultiplex;
 	private Button btnCancel;
 	
 	/**
@@ -111,7 +121,7 @@ public class MainDeconvolution {
 		txtIndex = new Text(shell, SWT.BORDER);
 		txtIndex.setBounds(160, 20, 580, 22);
 		txtIndex.addMouseListener(mouse);
-		txtIndex.setText(indexFile);
+		txtIndex.setText(selectedFile);
 		
 		btnIndex = new Button(shell, SWT.NONE);
 		btnIndex.setBounds(765, 20, 25, 22);
@@ -119,7 +129,7 @@ public class MainDeconvolution {
 		btnIndex.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected( SelectionEvent e ){
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, indexFile, txtIndex);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtIndex);
 			}
 		});
 		
@@ -131,21 +141,22 @@ public class MainDeconvolution {
 		txtOutDir.setBounds(160, 60, 580, 22);
 		txtOutDir.addMouseListener(mouse);
 		
+		if (selectedFile != null){
+			File f = new File(selectedFile);
+			if(f.getParentFile()!=null) txtOutDir.setText(f.getParentFile().getAbsolutePath());
+		}
+		
 		btnOutDir = new Button(shell, SWT.NONE);
 		btnOutDir.setBounds(765, 60, 25, 22);
 		btnOutDir.setText("...");
 		btnOutDir.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected( SelectionEvent e ) {
-				SpecialFieldsHelper.updateDirectoryTextBox(shell, SWT.SAVE, indexFile, txtOutDir);
+				SpecialFieldsHelper.updateDirectoryTextBox(shell, SWT.SAVE, selectedFile, txtOutDir);
 			}
 		});
 		
-		if (indexFile != null){
-				File f = new File(indexFile);
-				if(f.getParentFile()!=null) 
-					txtOutDir.setText(f.getParentFile().getAbsolutePath());
-		}
+		
 		
 		lblLaneFilesDescriptor = new Label(shell, SWT.NONE);
 		lblLaneFilesDescriptor.setBounds(10, 100, 140, 22);
@@ -161,43 +172,43 @@ public class MainDeconvolution {
 		btnLaneFilesDescriptor.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected( SelectionEvent e ){
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, indexFile, txtLaneFilesDescriptor);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtLaneFilesDescriptor);
 			}
 		});
 		
-		lblFile = new Label(shell, SWT.NONE);
-		lblFile.setBounds(50, 150, 180, 22);
-		lblFile.setText("FASTQ File:");
+		lblFastqFile1 = new Label(shell, SWT.NONE);
+		lblFastqFile1.setBounds(50, 150, 180, 22);
+		lblFastqFile1.setText("FASTQ File:");
 		
-		txtFile = new Text(shell, SWT.BORDER);
-		txtFile.setBounds(230, 150, 440, 22);
-		txtFile.addMouseListener(mouse);
+		txtFastqFile1 = new Text(shell, SWT.BORDER);
+		txtFastqFile1.setBounds(230, 150, 440, 22);
+		txtFastqFile1.addMouseListener(mouse);
 		
-		btnFile = new Button(shell, SWT.NONE);
-		btnFile.setBounds(700, 150, 25, 22);
-		btnFile.setText("...");
-		btnFile.addSelectionListener(new SelectionAdapter() {
+		btnFastqFile1 = new Button(shell, SWT.NONE);
+		btnFastqFile1.setBounds(700, 150, 25, 22);
+		btnFastqFile1.setText("...");
+		btnFastqFile1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected( SelectionEvent e ) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, indexFile, txtFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtFastqFile1);
 			}
 		});
 		
-		lblFile2 = new Label(shell, SWT.NONE);
-		lblFile2.setBounds(50, 190, 180, 22);
-		lblFile2.setText("FASTQ File (pair-end):");
+		lblFastqFile2 = new Label(shell, SWT.NONE);
+		lblFastqFile2.setBounds(50, 190, 180, 22);
+		lblFastqFile2.setText("FASTQ File (pair-end):");
 		
-		txtFile2 = new Text(shell, SWT.BORDER);
-		txtFile2.setBounds(230, 190, 440, 22);
-		txtFile2.addMouseListener(mouse);
+		txtFastqFile2 = new Text(shell, SWT.BORDER);
+		txtFastqFile2.setBounds(230, 190, 440, 22);
+		txtFastqFile2.addMouseListener(mouse);
 		
-		btnFile2 = new Button(shell, SWT.NONE);
-		btnFile2.setBounds(700, 190, 25, 22);
-		btnFile2.setText("...");
-		btnFile2.addSelectionListener(new SelectionAdapter() {
+		btnFastqFile2 = new Button(shell, SWT.NONE);
+		btnFastqFile2.setBounds(700, 190, 25, 22);
+		btnFastqFile2.setText("...");
+		btnFastqFile2.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected( SelectionEvent e ) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, indexFile, txtFile2);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtFastqFile2);
 			}
 		});
 		
@@ -231,10 +242,14 @@ public class MainDeconvolution {
 		if(SpecialFieldsHelper.isWindows())	btnUncompressOutput.setSelection(true);
 		else btnUncompressOutput.setSelection(false);
 		
-		btnDeconvolute = new Button(shell, SWT.NONE);
-		btnDeconvolute.setBounds(240, 350, 130, 22);
-		btnDeconvolute.setText("Deconvolute");
-		btnDeconvolute.addSelectionListener(new SelectionAdapter(){
+		btnDualBarcoding = new Button(shell, SWT.CHECK);
+		btnDualBarcoding.setBounds(50, 340, 300, 22);
+		btnDualBarcoding.setText("Dual barcoding");
+		
+		btnDemultiplex = new Button(shell, SWT.NONE);
+		btnDemultiplex.setBounds(240, 400, 130, 22);
+		btnDemultiplex.setText("Demultiplex");
+		btnDemultiplex.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected( SelectionEvent e ){
 				proceed();
@@ -242,7 +257,7 @@ public class MainDeconvolution {
 		});
 		
 		btnCancel = new Button(shell, SWT.NONE);
-		btnCancel.setBounds(410, 350, 130, 22);
+		btnCancel.setBounds(410, 400, 130, 22);
 		btnCancel.setText("Cancel");
 		btnCancel.addSelectionListener(new SelectionAdapter(){
 			@Override
@@ -257,81 +272,71 @@ public class MainDeconvolution {
 	 */
 	public void proceed(){
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
-		SyncDeconvolution deconvolutionJob = new SyncDeconvolution();
 		
-		// Check for errors and if absent, assign variables in Deconvolution Job 
+		ReadsDemultiplex instance = new ReadsDemultiplex();
+		SyncReadsDemultiplex job = new SyncReadsDemultiplex("Reads demultiplex");
+		job.setInstance(instance);
+		
+		// Check for errors and if absent, assign variables in instance
 		ArrayList<String> listErrors = new ArrayList<String>();
+		
 		if (txtIndex.getText() == null || txtIndex.getText().length()==0) {
 			listErrors.add(FieldValidator.buildMessage(lblIndex.getText(), FieldValidator.ERROR_MANDATORY));
 			txtIndex.setBackground(oc);
 		} else {
-			deconvolutionJob.setIndexFile(txtIndex.getText());
+			job.setIndexFile(txtIndex.getText());
 		}
 		if (txtOutDir.getText() == null || txtOutDir.getText().length()==0) {
 			listErrors.add(FieldValidator.buildMessage(lblOutDir.getText(), FieldValidator.ERROR_MANDATORY));
 			txtOutDir.setBackground(oc);
 		} else {
-			deconvolutionJob.setOutputDir(txtOutDir.getText());
+			instance.setOutDirectory(txtOutDir.getText());
 		}
 		if (txtLaneFilesDescriptor.getText() == null || txtLaneFilesDescriptor.getText().length()==0) {
 			if (txtFlowCell.getText() == null || txtFlowCell.getText().length()==0 || 
 					txtLane.getText() == null || txtLane.getText().length()==0 ||
-					txtFile.getText() == null || txtFile.getText().length()==0){
-				listErrors.add(FieldValidator.buildMessage(lblFile.getText(), FieldValidator.ERROR_MANDATORY));
+					txtFastqFile1.getText() == null || txtFastqFile1.getText().length()==0) {
+				listErrors.add(FieldValidator.buildMessage(lblFastqFile1.getText(), FieldValidator.ERROR_MANDATORY));
 				listErrors.add(FieldValidator.buildMessage(lblFlowCell.getText(), FieldValidator.ERROR_MANDATORY));
 				listErrors.add(FieldValidator.buildMessage(lblLane.getText(), FieldValidator.ERROR_MANDATORY));
-				txtFile.setBackground(oc);
+				txtFastqFile1.setBackground(oc);
 				txtFlowCell.setBackground(oc);
 				txtLane.setBackground(oc);
 			} else {
-				if (!FieldValidator.isNumeric(txtLane.getText(),new Integer(0))) {
-					listErrors.add(FieldValidator.buildMessage(lblLane.getText(), FieldValidator.ERROR_INTEGER));
-					txtLane.setBackground(oc);
-				} else {
-					deconvolutionJob.setFastqFile(txtFile.getText());
-					deconvolutionJob.setLane(txtLane.getText());
-					deconvolutionJob.setFlowCell(txtFlowCell.getText());
-					if (txtFile2.getText() != null && txtFile2.getText().length()!=0) deconvolutionJob.setFastqFile2(txtFile2.getText());
-				}
+				job.setFastqFile1(txtFastqFile1.getText());
+				instance.setFlowcell(txtFlowCell.getText());
+				instance.setLane(txtLane.getText());
+				
+				if (txtFastqFile2.getText() != null && txtFastqFile2.getText().length()!=0) job.setFastqFile2(txtFastqFile2.getText());
 			}
 		} else {
-			deconvolutionJob.setLaneDescriptorFile(txtLaneFilesDescriptor.getText());
+			instance.setLaneFilesDescriptor(txtLaneFilesDescriptor.getText());
 		}
 		if (txtTrimSeq.getText() != null && txtTrimSeq.getText().length() != 0){
-			deconvolutionJob.setTrimSequence(txtTrimSeq.getText());
+			instance.setTrimSequence(txtTrimSeq.getText());
 		}
 		if (listErrors.size() > 0) {
 			FieldValidator.paintErrors(listErrors, shell, "Sample Deconvolution");
 			return;
 		}
-		deconvolutionJob.setUncompressOutput(btnUncompressOutput.getSelection());
+		instance.setUncompressedOutput(btnUncompressOutput.getSelection());
+		instance.setDualBarcode(btnDualBarcoding.getSelection());
 		
 		//Manage the logger and the progress bar
+		
+		String logAndBar = txtIndex.getText();
+		String logFilename = LoggingHelper.getLoggerFilename(logAndBar,"SD"+Long.toString(System.currentTimeMillis()));
+		job.setLogName(logFilename);
+		job.setNameProgressBar(new File(logAndBar).getName());
 		try {
-			String logAndBar = null;
-			logAndBar = txtIndex.getText();
-			String logFilename = LoggingHelper.getLoggerFilename(logAndBar,Long.toString(System.currentTimeMillis()));
-			logFilename = LoggingHelper.getLoggerFilename(logFilename,"SD");
-			FileHandler logFile = new FileHandler(logFilename, false);
-			deconvolutionJob.setLogName(logFilename);
-			deconvolutionJob.setLogFile(logFile);
-			deconvolutionJob.setNameProgressBar(new File(logAndBar).getName());
-			deconvolutionJob.runJob();	
-			MessageDialog.openInformation(shell, "Sample Deconvolution is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
+			job.schedule();	
+			MessageDialog.openInformation(shell, "Sample demultiplexing is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
 			shell.dispose();
 		} catch (Exception e) {
-			MessageDialog.openError(shell, "Sample Deconvolution",e.getMessage());
+			MessageDialog.openError(shell, "Sample demultiplexing",e.getMessage());
 			e.printStackTrace();
 			return;
 		}
-	}
-
-	public String getIndexFile() {
-		return indexFile;
-	}
-
-	public void setFastqFile(String fastqFile) {
-		this.indexFile = fastqFile;
 	}
 	
 }

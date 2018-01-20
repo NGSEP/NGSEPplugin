@@ -21,6 +21,7 @@ package net.sf.ngsep.utilities;
 
 import java.io.File;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -42,34 +43,52 @@ public class SpecialFieldsHelper {
 	}
 	public static void updateFileTextBox (Shell shell, int method, String suggestedFile, Text dest) {
 		FileDialog fileDialog = new FileDialog(shell, method);
-		File suggestedDirectory = findSuggestedDirectory(suggestedFile, dest);
-		
-		if(suggestedDirectory!=null && suggestedDirectory.exists()) fileDialog.setFilterPath(suggestedDirectory.getAbsolutePath());
+		suggest(fileDialog, method, suggestedFile, dest);
 		String out = fileDialog.open();
 		if(out!=null) dest.setText(out);
-	}
-	private static File findSuggestedDirectory(String suggestedFile, Text dest) {
-		File suggestedDirectory = null;
-		//Try first with the current selected file
-		if(dest.getText()!=null && dest.getText().length()>0) {
-			File file = new File(dest.getText());
-			if (file.exists() && file.isDirectory()) suggestedDirectory = file;
-			else suggestedDirectory = file.getParentFile();
-		}
-		if(suggestedDirectory == null ) {
-			File file = new File(suggestedFile);
-			if (file.exists() && file.isDirectory()) suggestedDirectory = file;
-			else suggestedDirectory = file.getParentFile();
-		}
-		return suggestedDirectory;
 	}
 	
 	public static void updateDirectoryTextBox (Shell shell, int method, String suggestedFile, Text dest) {
 		DirectoryDialog dirDialog = new DirectoryDialog(shell, method);
-		File suggestedDirectory = findSuggestedDirectory(suggestedFile, dest);
-		if(suggestedDirectory!=null && suggestedDirectory.exists()) dirDialog.setFilterPath(suggestedDirectory.getAbsolutePath());
+		suggest(dirDialog, method, suggestedFile, dest);
 		String out = dirDialog.open();
 		if(out!=null) dest.setText(out);
+	}
+	
+	private static void suggest(Object dialog, int method, String suggestedFile, Text dest) {
+		File suggestedDirectory = null;
+		String suggestedName = "";
+		//Try first with the current selected file
+		if(dest.getText()!=null && dest.getText().length()>0) {
+			File file = new File(dest.getText());
+			if (file.exists() && file.isDirectory()) {
+				suggestedDirectory = file;
+			} else {
+				suggestedDirectory = file.getParentFile();
+				if(method == SWT.SAVE) suggestedName = file.getName();
+			}
+		}
+		if(suggestedDirectory == null ) {
+			File file = new File(suggestedFile);
+			if (file.exists() && file.isDirectory()) {
+				suggestedDirectory = file;
+			} else {
+				suggestedDirectory = file.getParentFile();
+				suggestedName = file.getName();
+			}
+		}
+		if(dialog instanceof FileDialog) {
+			FileDialog fileDialog = (FileDialog)dialog;
+			if(suggestedDirectory!=null && suggestedDirectory.exists()) {
+				fileDialog.setFilterPath(suggestedDirectory.getAbsolutePath());
+			}
+			fileDialog.setFileName(suggestedName);
+		} else if (dialog instanceof DirectoryDialog) {
+			DirectoryDialog dirDialog = (DirectoryDialog)dialog;
+			if(suggestedDirectory!=null && suggestedDirectory.exists()) {
+				dirDialog.setFilterPath(suggestedDirectory.getAbsolutePath());
+			}
+		}
 	}
 	
 	public static String getPathFile(String routeFile){

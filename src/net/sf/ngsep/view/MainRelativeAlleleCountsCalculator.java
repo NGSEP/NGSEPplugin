@@ -262,6 +262,8 @@ public class MainRelativeAlleleCountsCalculator {
 	public void proceed(){
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		BAMRelativeAlleleCountsCalculator instance = new BAMRelativeAlleleCountsCalculator();
+		SyncRelativeAlleleCountsCalculator job = new SyncRelativeAlleleCountsCalculator("Relative allele counts");
+		job.setInstance(instance);
 		
 		//Validate fields and record errors in the list
 		ArrayList<String> listErrors = new ArrayList<String>();
@@ -269,10 +271,14 @@ public class MainRelativeAlleleCountsCalculator {
 		if (txtFile.getText() == null || txtFile.getText().length()==0) {
 			listErrors.add(FieldValidator.buildMessage(lblFile.getText(), FieldValidator.ERROR_MANDATORY));
 			txtFile.setBackground(oc);
+		} else {
+			job.setInputFile(txtFile.getText());
 		}
 		if (txtOutput.getText() == null || txtOutput.getText().length()==0) {
 			listErrors.add(FieldValidator.buildMessage(lblOutput.getText(), FieldValidator.ERROR_MANDATORY));
 			txtOutput.setBackground(oc);
+		} else {
+			job.setOutputFile(txtOutput.getText());
 		}
 		if (txtMinRD.getText() != null && txtMinRD.getText().length()>0) {
 			if (!FieldValidator.isNumeric(txtMinRD.getText(), new Integer(0))) {
@@ -315,13 +321,8 @@ public class MainRelativeAlleleCountsCalculator {
 		if (btnSecondaryAlns.getSelection()) {
 			instance.setSecondaryAlns(true);
 		}
-		//Create the job and give the instance of the model with the parameters set
-		SyncRelativeAlleleCountsCalculator job = new SyncRelativeAlleleCountsCalculator("Relative allele counts");
-		String outputFile = txtOutput.getText();
-		job.setInputFile(txtFile.getText());
-		job.setInstance(instance);
-		job.setOutputFile(outputFile);
 		
+		String outputFile = txtOutput.getText();
 		String logFilename = LoggingHelper.getLoggerFilename(outputFile,"BRAC");
 		job.setLogName(logFilename);
 		job.setNameProgressBar(new File(outputFile).getName());

@@ -140,7 +140,7 @@
                </visibleWhen>
          </command>
          
-         <command commandId="BasePairQualityStatistics" label="Calculate Quality Statistics" style="push">
+         <command commandId="net.sf.ngsep.view.MainBasePairQualityStatistics" label="Calculate Quality Statistics" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -161,7 +161,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="PlotQualityStatistics" label="Plot Quality Statistics" style="push">
+         <command commandId="net.sf.ngsep.view.MainPlotQualityStatistics" label="Plot Quality Statistics" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -180,7 +180,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="CoverageStatistics" label="Calculate Coverage Statistics" style="push">
+         <command commandId="net.sf.ngsep.view.MainCoverageStatisticsCalculator" label="Coverage Statistics Calculator" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -201,7 +201,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="PlotCoverageStatistics" label="Plot Coverage Statistics" style="push">
+         <command commandId="net.sf.ngsep.view.MainPlotCoverageStatistics" label="Plot Coverage Statistics" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -220,7 +220,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="RelativeAlleleCountsCalculator" label="Calculate Relative Allele Counts" style="push">
+         <command commandId="net.sf.ngsep.view.MainRelativeAlleleCountsCalculator" label="Calculate Relative Allele Counts" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -492,7 +492,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="Deconvolution" label="Sample Deconvolution" style="push">
+         <command commandId="net.sf.ngsep.view.MainReadsDemultiplex" label="Reads Demultiplex" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -643,8 +643,7 @@
          </menu>
       </menuContribution>
    </extension>
-   <extension
-         point="org.eclipse.ui.commands">
+   <extension point="org.eclipse.ui.commands">
       <command id="CreateIndex" name="Create Index Bowtie2" defaultHandler="net.sf.ngsep.control.PlugIndexBowtie"/>
       <command id="MapReads" name="Map reads" defaultHandler="net.sf.ngsep.control.PlugMapRead"/>
       <command id="SortAligments" name="Sort Aligments" defaultHandler="net.sf.ngsep.control.PlugSortAlignment"/>
@@ -652,11 +651,11 @@
       <command id="WizardPairedEnd" name="Wizard Paired End" defaultHandler="net.sf.ngsep.control.PlugWizardPairedEndReads"/>
       <command id="MultiMappingSingleEnd" name="Multi Mapping Single End" defaultHandler="net.sf.ngsep.control.PlugMultiMappingSingleEndReads"/>
       <command id="MultiMappingPairedEnd" name="Multi Mapping Paired End" defaultHandler="net.sf.ngsep.control.PlugMultiMappingPairedEndReads"/>
-      <command id="BasePairQualityStatistics" name="Calculate Basepair Quality Statistics" defaultHandler="net.sf.ngsep.control.PlugBasePairQualityStatistics"/>
-      <command id="PlotQualityStatistics" name="Plot Quality Statistics" defaultHandler="net.sf.ngsep.control.PlugPlotQualityStatistics"/>
-      <command id="CoverageStatistics" name="Calculate Coverage Statistics" defaultHandler="net.sf.ngsep.control.PlugCoverageStatistics"/>
-      <command id="PlotCoverageStatistics" name="Plot Coverage Statistics" defaultHandler="net.sf.ngsep.control.PlugPlotCoverageStatistics"/>
-      <command id="RelativeAlleleCountsCalculator" name="Calculate Relative Allele Counts" defaultHandler="net.sf.ngsep.control.PlugRelativeAlleleCountsCalculator"/>
+      <command id="net.sf.ngsep.view.MainBasePairQualityStatistics" name="Calculate Basepair Quality Statistics" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
+      <command id="net.sf.ngsep.view.MainPlotQualityStatistics" name="Plot Quality Statistics" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
+      <command id="net.sf.ngsep.view.MainCoverageStatisticsCalculator" name="Coverage Statistics Calculator" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
+      <command id="net.sf.ngsep.view.MainPlotCoverageStatistics" name="Plot Coverage Statistics" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
+      <command id="net.sf.ngsep.view.MainRelativeAlleleCountsCalculator" name="Calculate Relative Allele Counts" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
       <command id="VariantsDetector" name="Variants Detector" defaultHandler="net.sf.ngsep.control.PlugVariantsDetector"/>
       <command id="MultiVariantsDetector" name="Multi Variants Detector" defaultHandler="net.sf.ngsep.control.PlugMultiVariantsDetector"/>
       <command id="MergeVCF" name="Merge VCF" defaultHandler="net.sf.ngsep.control.PlugMergeVCF"/>
@@ -670,7 +669,7 @@
       <command id="VCFComparator" name="VCF Comparator" defaultHandler="net.sf.ngsep.control.PlugVCFComparator"/>
       <command id="ImputeGenotype" name="Genotype imputation" defaultHandler="net.sf.ngsep.control.PlugImputeGenotype"/>
       <command id="IntrogressionAnalysis" name="Introgression Analysis" defaultHandler="net.sf.ngsep.control.PlugVCFIntrogressionAnalysis"/>
-      <command id="Deconvolution" name="Sample Deconvolution" defaultHandler="net.sf.ngsep.control.PlugDeconvolution"/>
+      <command id="net.sf.ngsep.view.MainReadsDemultiplex" name="Reads Demultiplex" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
       <command id="ReadDepthComparator" name="Read Depth Comparator" defaultHandler="net.sf.ngsep.control.PlugCNVcompare"/>
       <command id="KmersCounter" name="Kmers Counter" defaultHandler="net.sf.ngsep.control.PlugKmersCounter"/>
       <command id="DistanceMatrixCalculator" name="Distance Matrix Calculator" defaultHandler="net.sf.ngsep.control.PlugDistanceMatrixCalculator"/>

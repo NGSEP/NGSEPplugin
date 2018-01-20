@@ -19,49 +19,55 @@
  *******************************************************************************/
 package net.sf.ngsep.view;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import net.sf.ngsep.utilities.PlotUtils;
+import net.sf.ngsep.control.SyncBasePairQualityStatistics;
 import net.sf.ngsep.utilities.FieldValidator;
-import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
-import ngsep.alignments.BasePairQualityStatisticsCalculator;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.xeiam.xchart.Chart;
-
 /**
  * 
  * @author Juan Camilo Quintero
+ * @author Jorge Duitama
  *
  */
-public class MainPlotQualityStatistics {
+public class MainPlotQualityStatistics  implements SingleFileInputWindow {
 	protected Shell shell;
-	private Text txtFile;
-	private Text txtOutputText;
-	private Label lblFile;
-	private Button btnFile;
-	private Label lbloutputFile;
-	private Button btnOutputText;
-	private Label lblGraphicaloutput;
+	private Display display;
+	
+	
+	private String selectedFile;
+	
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+
+	public void setSelectedFile(String selectedFile) {
+		this.selectedFile = selectedFile;
+	}
+	
+	private Label lblInputFile;
+	private Text txtInputFile;
+	private Button btnInputFile;
+	private Label lblOutputFile;
+	private Text txtOutputFile;
+	private Button btnOutputFile;
+
 	private Button btnUniqueAlignments;
 	private Button btnPlotQualityStatistics;
 	private Button btnCancel;
-	private String aliFile;
-	private Display display;
 
 	/**
 	 * @wbp.parser.entryPoint
@@ -89,65 +95,56 @@ public class MainPlotQualityStatistics {
 		shell.setLocation(150, 200);
 		
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
-		Font tfont = new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD);
 
-		lblFile = new Label(shell, SWT.NONE);
-		lblFile.setBounds(10, 10, 167, 21);
-		lblFile.setText("(*)File:");
-
-		txtFile = new Text(shell, SWT.BORDER);
-		txtFile.setBounds(205, 10, 545, 21);
-		txtFile.addMouseListener(mouse);
+		lblInputFile = new Label(shell, SWT.NONE);
+		lblInputFile.setBounds(10, 20, 140, 22);
+		lblInputFile.setText("(*)File:");
 		
-		btnFile = new Button(shell, SWT.NONE);
-		btnFile.setBounds(761, 10, 21, 25);
-		btnFile.setText("...");
-		btnFile.addSelectionListener(new SelectionAdapter() {
+		txtInputFile = new Text(shell, SWT.BORDER);
+		txtInputFile.setBounds(160, 20, 580, 22);
+		txtInputFile.addMouseListener(mouse);
+		txtInputFile.setText(selectedFile);
+		
+		btnInputFile = new Button(shell, SWT.NONE);
+		btnInputFile.setBounds(760, 20, 25, 22);
+		btnInputFile.setText("...");
+		btnInputFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, aliFile,txtFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtInputFile);
 			}
 		});
 
-		lbloutputFile = new Label(shell, SWT.NONE);
-		lbloutputFile.setBounds(10, 51, 167, 21);
-		lbloutputFile.setText("(*)Output File:");
-
-		txtOutputText = new Text(shell, SWT.BORDER);
-		txtOutputText.setBounds(205, 51, 545, 21);
-		txtOutputText.addMouseListener(mouse);
-		if (aliFile != null && aliFile.length()>0) {
-			txtFile.setText(aliFile);
-			String srtOutPutFileOne = aliFile.substring(0,aliFile.lastIndexOf("."));
-			txtOutputText.setText(srtOutPutFileOne);
-		}
+		lblOutputFile = new Label(shell, SWT.NONE);
+		lblOutputFile.setBounds(10, 60, 140, 22);
+		lblOutputFile.setText("(*)Output File:");
 		
-		btnOutputText = new Button(shell, SWT.NONE);
-		btnOutputText.setBounds(761, 51, 21, 25);
-		btnOutputText.setText("...");
-		btnOutputText.addSelectionListener(new SelectionAdapter() {
+		txtOutputFile = new Text(shell, SWT.BORDER);
+		txtOutputFile.setBounds(160, 60, 580, 22);
+		txtOutputFile.addMouseListener(mouse);
+		txtOutputFile.setText(SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile));
+		
+		btnOutputFile = new Button(shell, SWT.NONE);
+		btnOutputFile.setBounds(760, 60, 25, 22);
+		btnOutputFile.setText("...");
+		btnOutputFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, aliFile,txtOutputText);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, selectedFile, txtOutputFile);
 			}
 		});
 
-		lblGraphicaloutput = new Label(shell, SWT.NONE);
-		lblGraphicaloutput.setBounds(10, 107, 167, 21);
-		lblGraphicaloutput.setText("Graphical Output");
-		lblGraphicaloutput.setFont(tfont);
-
-		Button btnMultiplealignments = new Button(shell, SWT.RADIO);
-		btnMultiplealignments.setBounds(10, 139, 167, 21);
-		btnMultiplealignments.setText("Multiple alignments");
+		Button btnAllAlignments = new Button(shell, SWT.RADIO);
+		btnAllAlignments.setBounds(10, 100, 200, 22);
+		btnAllAlignments.setText("All alignments");
 
 		btnUniqueAlignments = new Button(shell, SWT.RADIO);
-		btnUniqueAlignments.setBounds(180, 139, 167, 21);
+		btnUniqueAlignments.setBounds(220, 100, 200, 22);
 		btnUniqueAlignments.setText("Unique alignments");
 		btnUniqueAlignments.setSelection(true);
 		
 		btnPlotQualityStatistics = new Button(shell,SWT.NONE);
-		btnPlotQualityStatistics.setBounds(205, 200, 110, 25);
+		btnPlotQualityStatistics.setBounds(240, 150, 130, 22);
 		btnPlotQualityStatistics.setText("Plot");
 		btnPlotQualityStatistics.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -157,7 +154,7 @@ public class MainPlotQualityStatistics {
 		});
 
 		btnCancel = new Button(shell, SWT.NONE);
-		btnCancel.setBounds(336, 200, 110, 25);
+		btnCancel.setBounds(410, 150, 130, 22);
 		btnCancel.setText("Cancel");
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -176,58 +173,28 @@ public class MainPlotQualityStatistics {
 		// Check for empty fields
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		ArrayList<String> errors = new ArrayList<String>();
-		if (txtFile.getText() == null || txtFile.getText().equals("")) {
-			errors.add(FieldValidator.buildMessage(lblFile.getText(), FieldValidator.ERROR_MANDATORY));
-			txtFile.setBackground(oc);
+		if (txtInputFile.getText() == null || txtInputFile.getText().equals("")) {
+			errors.add(FieldValidator.buildMessage(lblInputFile.getText(), FieldValidator.ERROR_MANDATORY));
+			txtInputFile.setBackground(oc);
 		}
-		if (txtOutputText.getText() == null|| txtOutputText.getText().equals("")) {
-			errors.add(FieldValidator.buildMessage(lbloutputFile.getText(), FieldValidator.ERROR_MANDATORY));
-			txtOutputText.setBackground(oc);
+		if (txtOutputFile.getText() == null|| txtOutputFile.getText().equals("")) {
+			errors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_MANDATORY));
+			txtOutputFile.setBackground(oc);
 		}
 		if (errors.size() > 0) {
-			FieldValidator.paintErrors(errors, shell,"Plot Quality Statistics Missing");
+			FieldValidator.paintErrors(errors, shell,"Plot Quality Statistics");
 			return;
-		}
-				
-		// obtain the information for plotting
-		boolean uniqueAlignments = btnUniqueAlignments.getSelection();
-		String alignmentsText = uniqueAlignments ? "Unique Alignments":"Multiple Alignments";
-		ArrayList<Integer> dataX = new ArrayList<Integer>();
-		ArrayList<Double> dataY = new ArrayList<Double>();
-		double[] percentages;
-		try {
-			percentages = BasePairQualityStatisticsCalculator.calculatePercentages(txtFile.getText(), uniqueAlignments);
-		} catch (IOException e) {
-			MessageDialog.openError(shell,"Plot Quality Statistics Error", e.getMessage());
-			e.printStackTrace();
-			return;
-		}
-		for(int i=0;i<percentages.length;i++) {
-			dataX.add(i+1);
-			dataY.add(percentages[i]);
 		}
 		
 		// plot
 		try{
-			Chart chart = PlotUtils.createBarChart("Quality statistics", "Read Position (5'to 3')", "Percentage of non reference calls");
-			PlotUtils.addSample(alignmentsText, chart, dataX, dataY);
-			PlotUtils.manageLegend(chart, 4);
-			PlotUtils.saveChartPNG(chart, txtOutputText.getText());
-			MessageDialog.openInformation(shell,"Plot Quality Statistics is running",LoggingHelper.MESSAGE_PROGRESS_NOBAR);
-			shell.dispose();
+			SyncBasePairQualityStatistics.plotQualityStatistics(txtInputFile.getText(), txtOutputFile.getText(), btnUniqueAlignments.getSelection());
+			
 		} catch (Exception e){
 			MessageDialog.openError(shell,"Plot Quality Statistics Error", e.getMessage());
 			e.printStackTrace();
 			return;
 		}
+		shell.dispose();
 	}
-
-	public String getAliFile() {
-		return aliFile;
-	}
-
-	public void setAliFile(String aliFile) {
-		this.aliFile = aliFile;
-	}
-
 }

@@ -52,7 +52,7 @@ public class SyncRelativeAlleleCountsCalculator extends Job {
 	private String nameProgressBar;
 	
 	/**
-	 * Creates a VCFSummaryStatisticsCalculator job with the given name
+	 * Creates a RelativeAlleleCountsCalculator job with the given name
 	 * @param name Name of the job
 	 */
 	public SyncRelativeAlleleCountsCalculator(String name) {
