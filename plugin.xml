@@ -293,7 +293,7 @@
                </with>
             </visibleWhen>
          </command>
-         <command commandId="VariantsFunctionalAnnotator" label="Variants Functional Annotation" style="push">
+         <command commandId="net.sf.ngsep.view.MainVCFFunctionalAnnotator" label="Variants Functional Annotation" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -313,7 +313,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="VCFFilter" label="VCF Filter" style="push">
+         <command commandId="net.sf.ngsep.view.MainVCFFilter" label="VCF Filter" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -333,7 +333,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="VCFConverter" label="VCF Converter" style="push">
+         <command commandId="net.sf.ngsep.view.MainVCFConverter" label="VCF Converter" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -353,7 +353,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="VCFSummaryStatistics" label="VCF Summary Statistics" style="push">
+         <command commandId="net.sf.ngsep.view.MainVCFSummaryStatistics" label="VCF Summary Statistics" style="push">
                <visibleWhen
                   checkEnabled="false">
                <with
@@ -373,7 +373,7 @@
                </with>
             </visibleWhen>
          </command>  
-         <command commandId="PlotVCFSummaryStatistics" label="Plot VCF Summary Statistics" style="push">
+         <command commandId="net.sf.ngsep.view.MainPlotVCFSummaryStatistics" label="Plot VCF Summary Statistics" style="push">
                <visibleWhen
                   checkEnabled="false">
                <with
@@ -392,7 +392,7 @@
                </with>
             </visibleWhen>
          </command>
-         <command commandId="VCFDiversityCalculator" label="VCF Diversity Calculator" style="push">
+         <command commandId="net.sf.ngsep.view.MainVCFDiversityCalculator" label="VCF Diversity Calculator" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -412,7 +412,7 @@
                      </with>
                </visibleWhen>     
          </command>
-         <command commandId="AlleleSharingStatistics" label="Allele Sharing Statistics" style="push">
+         <command commandId="net.sf.ngsep.view.MainAlleleSharingStatistics" label="Allele Sharing Statistics" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -432,7 +432,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="VCFComparator" label="VCF Comparator" style="push">
+         <command commandId="net.sf.ngsep.view.MainVCFComparator" label="VCF Comparator" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -452,7 +452,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="ImputeGenotype" label="Genotype imputation" style="push">
+         <command commandId="net.sf.ngsep.view.MainImputeGenotype" label="Genotype imputation" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -472,7 +472,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="IntrogressionAnalysis" label="Introgression Analysis" style="push">
+         <command commandId="net.sf.ngsep.view.MainVCFIntrogressionAnalysis" label="Introgression Analysis" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -651,25 +651,25 @@
       <command id="WizardPairedEnd" name="Wizard Paired End" defaultHandler="net.sf.ngsep.control.PlugWizardPairedEndReads"/>
       <command id="MultiMappingSingleEnd" name="Multi Mapping Single End" defaultHandler="net.sf.ngsep.control.PlugMultiMappingSingleEndReads"/>
       <command id="MultiMappingPairedEnd" name="Multi Mapping Paired End" defaultHandler="net.sf.ngsep.control.PlugMultiMappingPairedEndReads"/>
-      <command id="net.sf.ngsep.view.MainBasePairQualityStatistics" name="Calculate Basepair Quality Statistics" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
-      <command id="net.sf.ngsep.view.MainPlotQualityStatistics" name="Plot Quality Statistics" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
-      <command id="net.sf.ngsep.view.MainCoverageStatisticsCalculator" name="Coverage Statistics Calculator" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
-      <command id="net.sf.ngsep.view.MainPlotCoverageStatistics" name="Plot Coverage Statistics" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
-      <command id="net.sf.ngsep.view.MainRelativeAlleleCountsCalculator" name="Calculate Relative Allele Counts" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
+      <command id="net.sf.ngsep.view.MainBasePairQualityStatistics" name="Calculate Basepair Quality Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainPlotQualityStatistics" name="Plot Quality Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainCoverageStatisticsCalculator" name="Coverage Statistics Calculator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainPlotCoverageStatistics" name="Plot Coverage Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainRelativeAlleleCountsCalculator" name="Calculate Relative Allele Counts" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="VariantsDetector" name="Variants Detector" defaultHandler="net.sf.ngsep.control.PlugVariantsDetector"/>
       <command id="MultiVariantsDetector" name="Multi Variants Detector" defaultHandler="net.sf.ngsep.control.PlugMultiVariantsDetector"/>
       <command id="MergeVCF" name="Merge VCF" defaultHandler="net.sf.ngsep.control.PlugMergeVCF"/>
-      <command id="VariantsFunctionalAnnotator" name="Variants Functional Annotator" defaultHandler="net.sf.ngsep.control.PlugVCFFunctionalAnnotator"/>
-      <command id="VCFFilter" name="VCF Filter" defaultHandler="net.sf.ngsep.control.PlugVCFFilter"/>
-      <command id="VCFConverter" name="VCF Converter" defaultHandler="net.sf.ngsep.control.PlugVCFConverter"/>
-      <command id="VCFSummaryStatistics" name="VCF Summary Statistics" defaultHandler="net.sf.ngsep.control.PlugVCFSummaryStatistics"/>
-      <command id="PlotVCFSummaryStatistics" name="Plot VCF Summary Statistics" defaultHandler="net.sf.ngsep.control.PlugPlotVCFSummaryStatistics"/>
-      <command id="VCFDiversityCalculator" name="VCF Diversity Calculator" defaultHandler="net.sf.ngsep.control.PlugVCFDiversityCalculator"/>
-      <command id="AlleleSharingStatistics" name="Allele Sharing Statistics" defaultHandler="net.sf.ngsep.control.PlugAlleleSharingStatistics"/>
-      <command id="VCFComparator" name="VCF Comparator" defaultHandler="net.sf.ngsep.control.PlugVCFComparator"/>
-      <command id="ImputeGenotype" name="Genotype imputation" defaultHandler="net.sf.ngsep.control.PlugImputeGenotype"/>
-      <command id="IntrogressionAnalysis" name="Introgression Analysis" defaultHandler="net.sf.ngsep.control.PlugVCFIntrogressionAnalysis"/>
-      <command id="net.sf.ngsep.view.MainReadsDemultiplex" name="Reads Demultiplex" defaultHandler="net.sf.ngsep.control.SingleFilePlug"/>
+      <command id="net.sf.ngsep.view.MainVCFFunctionalAnnotator" name="Variants Functional Annotator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainVCFFilter" name="VCF Filter" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainVCFConverter" name="VCF Converter" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainVCFSummaryStatistics" name="VCF Summary Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainPlotVCFSummaryStatistics" name="Plot VCF Summary Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainVCFDiversityCalculator" name="VCF Diversity Calculator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainAlleleSharingStatistics" name="Allele Sharing Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainVCFComparator" name="VCF Comparator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainImputeGenotype" name="Genotype imputation" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainVCFIntrogressionAnalysis" name="Introgression Analysis" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainReadsDemultiplex" name="Reads Demultiplex" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="ReadDepthComparator" name="Read Depth Comparator" defaultHandler="net.sf.ngsep.control.PlugCNVcompare"/>
       <command id="KmersCounter" name="Kmers Counter" defaultHandler="net.sf.ngsep.control.PlugKmersCounter"/>
       <command id="DistanceMatrixCalculator" name="Distance Matrix Calculator" defaultHandler="net.sf.ngsep.control.PlugDistanceMatrixCalculator"/>

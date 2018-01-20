@@ -48,9 +48,10 @@ import org.eclipse.swt.widgets.Text;
 /**
  * 
  * @author Claudia Perea
+ * @author Jorge Duitama
  *
  */
-public class MainVCFComparator {
+public class MainVCFComparator implements SingleFileInputWindow {
 	
 		//Parameters
 	
@@ -259,30 +260,28 @@ public class MainVCFComparator {
 		public void process() {
 			Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 			ArrayList<String> errorsShell = new ArrayList<String>();
-			VCFComparator vcfComparator=new VCFComparator();
-			String vcf1 = null;
-			String vcf2 = null;
-			String outputFile = null;
+			VCFComparator instance = new VCFComparator();
+			SyncVCFComparator job = new SyncVCFComparator("VCFComparator");
 			
 			if (txtInputVcf1.getText()==null|| txtInputVcf1.getText().length()==0) {
 				errorsShell.add(FieldValidator.buildMessage(lblInputVcf1.getText(), FieldValidator.ERROR_MANDATORY));
 				txtInputVcf1.setBackground(oc);
 			} else {
-				vcf1=txtInputVcf1.getText();
+				job.setInputFile1(txtInputVcf1.getText());
 			}
 			
 			if (txtInputVcf2.getText()==null|| txtInputVcf2.getText().length()==0) {
 				errorsShell.add(FieldValidator.buildMessage(lblInputVcf2.getText(), FieldValidator.ERROR_MANDATORY));
 				txtInputVcf2.setBackground(oc);
 			} else {
-				vcf2=txtInputVcf2.getText();
+				job.setInputFile2(txtInputVcf2.getText());
 			}
 			
 			if (txtOutputFile.getText()==null|| txtOutputFile.getText().length()==0) {
 				errorsShell.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_MANDATORY));
 				txtOutputFile.setBackground(oc);
 			} else {
-				outputFile = txtOutputFile.getText();
+				job.setOutputFile(txtOutputFile.getText());
 			}
 			
 			if (txtReferenceFile.getText()==null|| txtReferenceFile.getText().length()==0) {
@@ -291,7 +290,7 @@ public class MainVCFComparator {
 			} else {
 				try {
 					ReferenceGenome genome = ReferenceGenomesFactory.getInstance().getGenome(txtReferenceFile.getText(), shell);
-					vcfComparator.setSeqNames(genome.getSequencesMetadata());
+					instance.setGenome(genome);
 				} catch (IOException e) {
 					e.printStackTrace();
 					errorsShell.add(FieldValidator.buildMessage(lblReferenceFile.getText(), "error loading file: "+e.getMessage()));
@@ -305,7 +304,7 @@ public class MainVCFComparator {
 					txtGenotyped.setBackground(oc);
 				}else{
 					double genotypedPercentage=Double.parseDouble((txtGenotyped.getText()));
-					vcfComparator.setMinPCTGenotyped(genotypedPercentage);
+					instance.setMinPCTGenotyped(genotypedPercentage);
 				}
 			}
 			
@@ -315,7 +314,7 @@ public class MainVCFComparator {
 					txtDifferences.setBackground(oc);
 				}else{
 					double differencesPercentage=Double.parseDouble((txtDifferences.getText()));
-					vcfComparator.setMaxPCTDiffs(differencesPercentage);
+					instance.setMaxPCTDiffs(differencesPercentage);
 				}
 			}
 			
@@ -333,16 +332,11 @@ public class MainVCFComparator {
 				return;
 			}
 			
-			SyncVCFComparator syncComparator = new SyncVCFComparator("VCFComparator");
-			syncComparator.setInputFile1(vcf1);
-			syncComparator.setInputFile2(vcf2);
-			syncComparator.setOutputFile(outputFile);
-			syncComparator.setVcfComparator(vcfComparator);
-			String logFilename = LoggingHelper.getLoggerFilename(outputFile,"VCFC");
-			syncComparator.setLogName(logFilename);
-			syncComparator.setNameProgressBar(new File(outputFile).getName());
+			String logFilename = LoggingHelper.getLoggerFilename(txtOutputFile.getText(),"VCFC");
+			job.setLogName(logFilename);
+			job.setNameProgressBar(new File(txtOutputFile.getText()).getName());
 			try {
-				syncComparator.schedule();
+				job.schedule();
 				MessageDialog.openInformation(shell, "Compare VCF",LoggingHelper.MESSAGE_PROGRESS_NOBAR);
 				shell.dispose();	
 			} catch (Exception e) {

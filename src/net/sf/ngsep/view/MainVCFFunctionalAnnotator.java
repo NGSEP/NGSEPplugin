@@ -47,7 +47,7 @@ import org.eclipse.swt.widgets.Text;
  * @author Juan Camilo Quintero
  *
  */
-public class MainVCFFunctionalAnnotator {
+public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 	protected Shell shell;
 	private Display display;
 	

@@ -44,20 +44,25 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * 
- * @author Juan Camilo Quintero, Claudia Perea, Paulo Izquierdo
+ * @author Juan Camilo Quintero
+ * @author Claudia Perea
+ * @author Paulo Izquierdo
+ * @author Jorge Duitama
  *
  */
-public class MainVCFConverter {
+public class MainVCFConverter implements SingleFileInputWindow {
+	
+	//Parameters
 
-	protected Shell shlVcfConverter;
+	//General variables 
+	private Shell shell;
 	private Display display;
+	
+	//File selected initially by the user
 	private String selectedFile;
-	
-	
 	public String getSelectedFile() {
 		return selectedFile;
 	}
-
 	public void setSelectedFile(String selectedFile) {
 		this.selectedFile = selectedFile;
 	}
@@ -100,9 +105,9 @@ public class MainVCFConverter {
 	public void open() {
 		display = Display.getDefault();
 		createContents();
-		shlVcfConverter.open();
-		shlVcfConverter.layout();
-		while (!shlVcfConverter.isDisposed()) {
+		shell.open();
+		shell.layout();
+		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
 			}
@@ -117,156 +122,156 @@ public class MainVCFConverter {
 	protected void createContents() {
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
 		
-		shlVcfConverter = new Shell(display,SWT.SHELL_TRIM);
-		shlVcfConverter.setLocation(150, 200);
-		shlVcfConverter.setSize(785, 560);
-		shlVcfConverter.setText("VCF Converter");
+		shell = new Shell(display,SWT.SHELL_TRIM);
+		shell.setLocation(150, 200);
+		shell.setSize(785, 560);
+		shell.setText("VCF Converter");
 
-		lblFile = new Label(shlVcfConverter, SWT.NONE);
+		lblFile = new Label(shell, SWT.NONE);
 		lblFile.setBounds(10, 30, 160, 26);
 		lblFile.setText("(*)File:");
 
-		txtFile = new Text(shlVcfConverter, SWT.BORDER);
+		txtFile = new Text(shell, SWT.BORDER);
 		txtFile.setBounds(180, 30, 500, 26);
 		txtFile.addMouseListener(mouse);
 		txtFile.setText(selectedFile);
 
-		btnFile = new Button(shlVcfConverter, SWT.NONE);
+		btnFile = new Button(shell, SWT.NONE);
 		btnFile.setBounds(700, 30, 35, 26);
 		btnFile.setText("...");
 		btnFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shlVcfConverter, SWT.OPEN, selectedFile, txtFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtFile);
 			}
 		});
 
-		lblOutputFile = new Label(shlVcfConverter, SWT.NONE);
+		lblOutputFile = new Label(shell, SWT.NONE);
 		lblOutputFile.setBounds(10, 80, 160, 26);
 		lblOutputFile.setText("(*)Output File Prefix:");
 
-		txtOutputFile = new Text(shlVcfConverter, SWT.BORDER);
+		txtOutputFile = new Text(shell, SWT.BORDER);
 		txtOutputFile.setBounds(180, 80, 500, 26);
 		txtOutputFile.addMouseListener(mouse);
 		String suggestedOutPrefix = SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile);
 		txtOutputFile.setText(suggestedOutPrefix);
 
-		btnOutoputFile = new Button(shlVcfConverter, SWT.NONE);
+		btnOutoputFile = new Button(shell, SWT.NONE);
 		btnOutoputFile.setBounds(700, 80, 35, 26);
 		btnOutoputFile.setText("...");
 		btnOutoputFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shlVcfConverter, SWT.SAVE, selectedFile, txtOutputFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, selectedFile, txtOutputFile);
 			}
 		});
 
 		//------------------------------------------------------------------------------------------
 		
-		btnPrintStructure = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintStructure = new Button(shell, SWT.CHECK);
 		btnPrintStructure.setBounds(10, 150, 160, 20);
 		btnPrintStructure.setText("Print Structure");
 
-		btnPrintHapmap = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintHapmap = new Button(shell, SWT.CHECK);
 		btnPrintHapmap.setBounds(190, 150, 160, 20);
 		btnPrintHapmap.setText("Print HapMap");
 
-		btnPrintHaploView = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintHaploView = new Button(shell, SWT.CHECK);
 		btnPrintHaploView.setBounds(370, 150, 160, 20);
 		btnPrintHaploView.setText("Print Haplo View");
 
-		btnPrintEigensoft = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintEigensoft = new Button(shell, SWT.CHECK);
 		btnPrintEigensoft.setBounds(550, 150, 160, 20);
 		btnPrintEigensoft.setText("Print Eigensoft");
 
-		btnPrintFasta = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintFasta = new Button(shell, SWT.CHECK);
 		btnPrintFasta.setBounds(10, 200, 160, 20);
 		btnPrintFasta.setText("Print Fasta");
 
-		btnPrintSpagedi = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintSpagedi = new Button(shell, SWT.CHECK);
 		btnPrintSpagedi.setBounds(190, 200, 160, 20);
 		btnPrintSpagedi.setText("Print Spagedi");
 
-		btnPrintEmma = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintEmma = new Button(shell, SWT.CHECK);
 		btnPrintEmma.setBounds(370, 200, 160, 20);
 		btnPrintEmma.setText("Print Emma");
 
-		btnPrintFlapjack = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintFlapjack = new Button(shell, SWT.CHECK);
 		btnPrintFlapjack.setBounds(550, 200, 160, 20);
 		btnPrintFlapjack.setText("Print FlapJack");
 
-		btnPrintMatrix = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintMatrix = new Button(shell, SWT.CHECK);
 		btnPrintMatrix.setBounds(10, 250, 160, 20);
 		btnPrintMatrix.setText("Print Matrix");
 
-		btnPrintPlink = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintPlink = new Button(shell, SWT.CHECK);
 		btnPrintPlink.setBounds(190, 250, 160, 20);
 		btnPrintPlink.setText("Print Plink");
 
-		btnPrintPowermarker = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintPowermarker = new Button(shell, SWT.CHECK);
 		btnPrintPowermarker.setBounds(370, 250, 170, 20);
 		btnPrintPowermarker.setText("Print PowerMarker");
 		
-		btnPrintDarwin = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintDarwin = new Button(shell, SWT.CHECK);
 		btnPrintDarwin.setBounds(550, 250, 160, 20);
 		btnPrintDarwin.setText("Print Darwin");
 		
-		btnPrintrrBLUP = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintrrBLUP = new Button(shell, SWT.CHECK);
 		btnPrintrrBLUP.setBounds(10, 300, 160, 20);
 		btnPrintrrBLUP.setText("Print rrBLUP");
 		
-		btnPrintTreemix = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintTreemix = new Button(shell, SWT.CHECK);
 		btnPrintTreemix.setBounds(10, 350, 160, 20);
 		btnPrintTreemix.setText("Print Treemix");
 		btnPrintTreemix.addMouseListener(onMouseClickPrintTreeMix);
 		
-		lblPopulationFile = new Label(shlVcfConverter, SWT.NONE);
+		lblPopulationFile = new Label(shell, SWT.NONE);
 		lblPopulationFile.setBounds(190, 350, 130, 26);
 		lblPopulationFile.setText("Populations File :");
 		lblPopulationFile.setVisible(false);
 		
-		txtPopulationFile = new Text(shlVcfConverter, SWT.BORDER);
+		txtPopulationFile = new Text(shell, SWT.BORDER);
 		txtPopulationFile.setBounds(330, 350, 360, 26);
 		txtPopulationFile.setVisible(false);
 		txtPopulationFile.addMouseListener(mouse);
 
-		btnPopulationFile = new Button(shlVcfConverter, SWT.NONE);
+		btnPopulationFile = new Button(shell, SWT.NONE);
 		btnPopulationFile.setBounds(700, 350, 35, 26);
 		btnPopulationFile.setText("...");
 		btnPopulationFile.setVisible(false);
 		btnPopulationFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shlVcfConverter,  SWT.OPEN, selectedFile, txtPopulationFile);
+				SpecialFieldsHelper.updateFileTextBox(shell,  SWT.OPEN, selectedFile, txtPopulationFile);
 			}
 		});
 		
-		btnPrintJoinMap = new Button(shlVcfConverter, SWT.CHECK);
+		btnPrintJoinMap = new Button(shell, SWT.CHECK);
 		btnPrintJoinMap.setBounds(10, 400, 160, 20);
 		btnPrintJoinMap.setText("Print JoinMap");
 		btnPrintJoinMap.addMouseListener(onMouseClickPrintJoinMap);
 		
-		lblId1JoinMap=new Label(shlVcfConverter, SWT.NONE);
+		lblId1JoinMap=new Label(shell, SWT.NONE);
 		lblId1JoinMap.setBounds(190, 400, 160, 20);
 		lblId1JoinMap.setText("Id Sample1 JoinMap:");
 		lblId1JoinMap.setVisible(false);
 		
-		txtId1JoinMap = new Text(shlVcfConverter, SWT.BORDER);
+		txtId1JoinMap = new Text(shell, SWT.BORDER);
 		txtId1JoinMap.setBounds(370, 400, 80, 26);
 		txtId1JoinMap.setVisible(false);
 		
-		lblId2JoinMap=new Label(shlVcfConverter, SWT.NONE);
+		lblId2JoinMap=new Label(shell, SWT.NONE);
 		lblId2JoinMap.setBounds(470, 400, 160, 20);
 		lblId2JoinMap.setText("Id Sample2 JoinMap:");
 		lblId2JoinMap.setVisible(false);
 		
-		txtId2JoinMap = new Text(shlVcfConverter, SWT.BORDER);
+		txtId2JoinMap = new Text(shell, SWT.BORDER);
 		txtId2JoinMap.setBounds(650, 400, 80, 26);
 		txtId2JoinMap.setVisible(false);
 		
 		//------------------------------------------------------------------------------------------
 		
-		btnVCFConverter = new Button(shlVcfConverter, SWT.NONE);
+		btnVCFConverter = new Button(shell, SWT.NONE);
 		btnVCFConverter.setBounds(200, 470, 130, 30);
 		btnVCFConverter.setText("VCF Converter");
 		btnVCFConverter.addSelectionListener(new SelectionAdapter() {
@@ -276,13 +281,13 @@ public class MainVCFConverter {
 			}
 		});
 
-		btnCancel = new Button(shlVcfConverter, SWT.NONE);
+		btnCancel = new Button(shell, SWT.NONE);
 		btnCancel.setBounds(380, 470, 130, 30);
 		btnCancel.setText("Cancel");
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				shlVcfConverter.close();
+				shell.close();
 			}
 		});
 	}
@@ -418,7 +423,7 @@ public class MainVCFConverter {
 			}
 			
 			if (listErrors.size() > 0) {
-				FieldValidator.paintErrors(listErrors, shlVcfConverter, "VCF Converter");
+				FieldValidator.paintErrors(listErrors, shell, "VCF Converter");
 				return;
 			}
 				
@@ -429,8 +434,8 @@ public class MainVCFConverter {
 			vcfConverter.setLogFile(logFile);
 			vcfConverter.setNameProgressBar(new File(outPrefix).getName());
 			vcfConverter.runJob();
-			MessageDialog.openInformation(shlVcfConverter, "VCF Converter",LoggingHelper.MESSAGE_PROGRESS_BAR);
-			shlVcfConverter.dispose();
+			MessageDialog.openInformation(shell, "VCF Converter",LoggingHelper.MESSAGE_PROGRESS_BAR);
+			shell.dispose();
 
 		} catch (Exception e) {
 			e.printStackTrace();

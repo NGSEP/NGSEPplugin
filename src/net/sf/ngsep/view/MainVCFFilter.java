@@ -57,16 +57,23 @@ import org.eclipse.swt.widgets.Text;
 /**
  * 
  * @author Juan Camilo Quintero
+ * @author Jorge Duitama
  *
  */
-public class MainVCFFilter {
-
+public class MainVCFFilter implements SingleFileInputWindow {
+	
 	//General variables 
-	protected Shell shell;
+	private Shell shell;
 	private Display display;
-
+	
 	//File selected initially by the user
 	private String selectedFile;
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+	public void setSelectedFile(String selectedFile) {
+		this.selectedFile = selectedFile;
+	}
 
 	//Action buttons
 	private Button btnVariantsFilter;
@@ -749,15 +756,4 @@ public class MainVCFFilter {
 			return;
 		}
 	}
-
-
-	public String getSelectedFile() {
-		return selectedFile;
-	}
-
-
-	public void setSelectedFile(String selectedFile) {
-		this.selectedFile = selectedFile;
-	}
-
 }

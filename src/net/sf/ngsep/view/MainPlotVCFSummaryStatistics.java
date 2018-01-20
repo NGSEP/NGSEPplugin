@@ -43,7 +43,18 @@ import net.sf.ngsep.utilities.SpecialFieldsHelper;
 /**
  * @author Juan Fernando De la Hoz
  */
-public class MainPlotVCFSummaryStatistics {
+public class MainPlotVCFSummaryStatistics implements SingleFileInputWindow {
+	protected Shell shell;
+	private Display display;
+	
+	//File selected initially by the user
+	private String selectedFile;
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+	public void setSelectedFile(String selectedFile) {
+		this.selectedFile = selectedFile;
+	}
 	
 	private static int SNP_NUM = 1;
 	private static int INDEL_NUM = 2;
@@ -51,12 +62,6 @@ public class MainPlotVCFSummaryStatistics {
 	private static String SNP_TXT = "SNPs";
 	private static String INDEL_TXT = "Indels";
 	private static String OTHER_TXT = "OtherVariants";
-	
-	
-	private Shell shell;
-	private Display display;
-	private String inputFile;
-	private String outputFile;
 	
 	private Label lblStatsFile;
 	private Text txtStatsFile;
@@ -106,7 +111,7 @@ public class MainPlotVCFSummaryStatistics {
 		
 		txtStatsFile = new Text(shell, SWT.BORDER);
 		txtStatsFile.setBounds(220, 20, 510, 23);
-		txtStatsFile.setText(inputFile);
+		txtStatsFile.setText(selectedFile);
 		txtStatsFile.addMouseListener(mouse);
 		
 		btnStatsFile = new Button(shell, SWT.NONE);
@@ -115,7 +120,7 @@ public class MainPlotVCFSummaryStatistics {
 		btnStatsFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, inputFile, txtStatsFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtStatsFile);
 			}
 		});
 		
@@ -125,7 +130,7 @@ public class MainPlotVCFSummaryStatistics {
 		
 		txtPlotPrfx = new Text(shell, SWT.BORDER);
 		txtPlotPrfx.setBounds(220, 60, 510, 23);
-		txtPlotPrfx.setText(inputFile.substring(0, inputFile.lastIndexOf(".")));
+		txtPlotPrfx.setText(selectedFile.substring(0, selectedFile.lastIndexOf(".")));
 		txtPlotPrfx.addMouseListener(mouse);
 		
 		btnPlotPrfx = new Button(shell, SWT.NONE);
@@ -134,7 +139,7 @@ public class MainPlotVCFSummaryStatistics {
 		btnPlotPrfx.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, inputFile, txtStatsFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtStatsFile);
 			}
 		});
 		
@@ -207,6 +212,8 @@ public class MainPlotVCFSummaryStatistics {
 		// Check for empty fields
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		ArrayList<String> errors = new ArrayList<String>();
+		String inputFile = null;
+		String outputFile = null;
 		if (txtStatsFile.getText() == null || txtStatsFile.getText().equals("")) {
 			errors.add(FieldValidator.buildMessage(lblStatsFile.getText(), FieldValidator.ERROR_MANDATORY));
 			txtStatsFile.setBackground(oc);
@@ -260,10 +267,6 @@ public class MainPlotVCFSummaryStatistics {
 			e.printStackTrace();
 			return;
 		}
-	}
-	
-	public void setInputFile(String inputFile) {
-		this.inputFile = inputFile;
 	}
 	
 	private final MouseListener MouseClickOnGenotCalls = new MouseListener() {

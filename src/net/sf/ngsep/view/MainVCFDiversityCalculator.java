@@ -44,12 +44,25 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * 
- * @author Daniel Cruz, Juan Camilo Quintero
- *
+ * @author Daniel Cruz
+ * @author Juan Camilo Quintero
+ * @author Jorge Duitama
  */
-public class MainVCFDiversityCalculator {
-	protected Shell shell;
+public class MainVCFDiversityCalculator implements SingleFileInputWindow {
+	
+	//General variables 
+	private Shell shell;
 	private Display display;
+	
+	//File selected initially by the user
+	private String selectedFile;
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+	public void setSelectedFile(String selectedFile) {
+		this.selectedFile = selectedFile;
+	}
+	
 	private Text txtVcfFile;
 	private Text txtOutputFile;
 	private Text txtPopfile;
@@ -62,18 +75,6 @@ public class MainVCFDiversityCalculator {
 	private Button btnCancel;
 	private Button btnPopfile;
 	private Label lblSubpop;
-
-	private String vcfFile;
-	private String samplesFile;
-
-
-	public String getVcfFile() {
-		return vcfFile;
-	}
-
-	public void setVcfFile(String vcfFile) {
-		this.vcfFile = vcfFile;
-	}
 
 	/**
 	 * Open the window.
@@ -113,14 +114,12 @@ public class MainVCFDiversityCalculator {
 		txtVcfFile = new Text(shell, SWT.BORDER);
 		txtVcfFile.setBounds(205, 22, 545, 21);
 		txtVcfFile.addMouseListener(mouse);
-		if (vcfFile!= null && vcfFile.length()>0) {
-			txtVcfFile.setText(vcfFile);
-		}
+		txtVcfFile.setText(selectedFile);
 
 		txtOutputFile = new Text(shell, SWT.BORDER);
 		txtOutputFile.setBounds(205, 63, 545, 21);
 		txtOutputFile.addMouseListener(mouse);
-		String suggestedOutPrefix = SpecialFieldsHelper.buildSuggestedOutputPrefix(vcfFile);
+		String suggestedOutPrefix = SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile);
 		txtOutputFile.setText(suggestedOutPrefix+"_Diversity.txt");
 
 		lblOutPutFile = new Label(shell, SWT.NONE);
@@ -131,15 +130,9 @@ public class MainVCFDiversityCalculator {
 		btnOutputFile.setText("...");
 		btnOutputFile.setBounds(761, 63, 21, 25);
 		btnOutputFile.addSelectionListener(new SelectionAdapter() {
-
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				/*
-				 * these lines discussed below are of a regular expression that
-				 * captures the path where the user and saves it to a string so
-				 * then suggest it as a name
-				 */
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, vcfFile,txtOutputFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, selectedFile, txtOutputFile);
 			}
 		});
 
@@ -150,32 +143,9 @@ public class MainVCFDiversityCalculator {
 		btnVcfFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, vcfFile,txtVcfFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtVcfFile);
 			}
 		}); 
-
-
-		btnStart = new Button(shell, SWT.NONE);
-		btnStart.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-
-				process();
-			}
-		});
-
-		btnStart.setText("Calculate");
-		btnStart.setBounds(205, 196, 110, 25);
-
-		btnCancel = new Button(shell, SWT.NONE);
-		btnCancel.setText("Cancel");
-		btnCancel.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				shell.close();
-			}
-		});
-		btnCancel.setBounds(336, 196, 110, 25);
 
 		lblSubpop = new Label(shell, SWT.NONE);
 		lblSubpop.setText("Define Subpopulations");
@@ -196,57 +166,77 @@ public class MainVCFDiversityCalculator {
 		btnPopfile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, vcfFile,txtPopfile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtPopfile);
 			}
-		}); 
+		});
+		
+		btnStart = new Button(shell, SWT.NONE);
+		btnStart.setText("Calculate");
+		btnStart.setBounds(205, 196, 110, 25);
+		btnStart.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+
+				proceed();
+			}
+		});
+
+		btnCancel = new Button(shell, SWT.NONE);
+		btnCancel.setText("Cancel");
+		btnCancel.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				shell.close();
+			}
+		});
+		btnCancel.setBounds(336, 196, 110, 25);
 	}
 
 
-	public void process() {
+	public void proceed() {	
+		ArrayList<String> errors = new ArrayList<String>();
+		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		
-			ArrayList<String> errors = new ArrayList<String>();
-			Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
-			
-			VCFDiversityCalculator divCalc = new VCFDiversityCalculator();
+		VCFDiversityCalculator instance = new VCFDiversityCalculator();
+		SyncVCFDiversityCalculator job = new SyncVCFDiversityCalculator("VCF Diversity Calculator");
+		job.setInstance(instance);
 
-			if (txtOutputFile.getText() == null || txtOutputFile.getText().length()==0) {
-				errors.add(FieldValidator.buildMessage(lblOutPutFile.getText(),FieldValidator.ERROR_MANDATORY));
-				txtOutputFile.setBackground(oc);
-			}
-			if (txtVcfFile.getText() == null || txtVcfFile.getText().length()==0) {
-				errors.add(FieldValidator.buildMessage(lblVcfFile.getText(),FieldValidator.ERROR_MANDATORY));
-				txtVcfFile.setBackground(oc);
-			}
+		if (txtVcfFile.getText() == null || txtVcfFile.getText().length()==0) {
+			errors.add(FieldValidator.buildMessage(lblVcfFile.getText(),FieldValidator.ERROR_MANDATORY));
+			txtVcfFile.setBackground(oc);
+		} else {
+			job.setVcfFile(txtVcfFile.getText());
+		}
+		
+		if (txtOutputFile.getText() == null || txtOutputFile.getText().length()==0) {
+			errors.add(FieldValidator.buildMessage(lblOutPutFile.getText(),FieldValidator.ERROR_MANDATORY));
+			txtOutputFile.setBackground(oc);
+		} else {
+			job.setOutputFile(txtOutputFile.getText());
+		}
 
-			if (errors.size() > 0) {
-				FieldValidator.paintErrors(errors, shell,"VCF Diversity Calculator");
-				return;
-			}
+		if (errors.size() > 0) {
+			FieldValidator.paintErrors(errors, shell,"VCF Diversity Calculator");
+			return;
+		}
 
-			String outputFile = txtOutputFile.getText();
-			vcfFile = txtVcfFile.getText();
-			if (txtPopfile.getText() != null && txtPopfile.getText().length()>0) {
-				samplesFile = txtPopfile.getText();
-			}
+		if (txtPopfile.getText() != null && txtPopfile.getText().length()>0) {
+			job.setSamplesFile(txtPopfile.getText());
+		}
+		
+		String outputFile = txtOutputFile.getText();
+		String logFilename = LoggingHelper.getLoggerFilename(outputFile,"DC");
+		job.setLogName(logFilename);
+		job.setNameProgressBar(new File(outputFile).getName());
 
-			SyncVCFDiversityCalculator syncVCFDiversityCalculator = new SyncVCFDiversityCalculator("VCF Diversity Calculator");
-			syncVCFDiversityCalculator.setInstance(divCalc);
-			if(samplesFile!=null) syncVCFDiversityCalculator.setSamplesFile(samplesFile);
-			syncVCFDiversityCalculator.setVcfFile(vcfFile);
-			syncVCFDiversityCalculator.setOutputFile(outputFile);
-
-			String logFilename = LoggingHelper.getLoggerFilename(outputFile,"DC");
-			syncVCFDiversityCalculator.setLogName(logFilename);
-			syncVCFDiversityCalculator.setNameProgressBar(new File(outputFile).getName());
-
-			try {
-				syncVCFDiversityCalculator.schedule();
-				MessageDialog.openInformation(shell, "VCF Diversity Calculator",LoggingHelper.MESSAGE_PROGRESS_BAR);
-				shell.dispose();
-			} catch (Exception e) {
-				MessageDialog.openError(shell, "VCF Diversity Calculator",e.getMessage());
-				e.printStackTrace();
-				return;
-			}
+		try {
+			job.schedule();
+			MessageDialog.openInformation(shell, "VCF Diversity Calculator",LoggingHelper.MESSAGE_PROGRESS_BAR);
+			shell.dispose();
+		} catch (Exception e) {
+			MessageDialog.openError(shell, "VCF Diversity Calculator",e.getMessage());
+			e.printStackTrace();
+			return;
+		}
 	}
 }

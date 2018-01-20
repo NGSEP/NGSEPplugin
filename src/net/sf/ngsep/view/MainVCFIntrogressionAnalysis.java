@@ -45,8 +45,7 @@ import org.eclipse.swt.widgets.Text;
  * @author Jorge Duitama
  *
  */
-public class MainVCFIntrogressionAnalysis {
-	//General attributes
+public class MainVCFIntrogressionAnalysis implements SingleFileInputWindow {
 	protected Shell shell;
 	private Display display;
 	

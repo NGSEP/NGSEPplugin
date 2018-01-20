@@ -52,16 +52,23 @@ import org.eclipse.swt.widgets.Text;
 /**
  * 
  * @author Juan Fernando de la Hoz
+ * @author Jorge Duitama
  *
  */
-public class MainImputeGenotype {
-
-	//General attributes
-	protected Shell shell;
+public class MainImputeGenotype implements SingleFileInputWindow {
+	
+	//General variables 
+	private Shell shell;
 	private Display display;
-
-	//Input file 
-	private String vcfFile;
+	
+	//File selected initially by the user
+	private String selectedFile;
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+	public void setSelectedFile(String selectedFile) {
+		this.selectedFile = selectedFile;
+	}
 
 	private Label lblVcfFile;
 	private Text txtVcfFile;
@@ -103,7 +110,7 @@ public class MainImputeGenotype {
 	 * 
 	 * @wbp.parser.entryPoint
 	 */
-	public void open() throws IOException {
+	public void open() {
 		display = Display.getDefault();
 		boolean created = createContents();
 		if(created) {
@@ -121,7 +128,7 @@ public class MainImputeGenotype {
 	 * Create contents of the shell.
 	 * @throws IOException 
 	 */
-	protected boolean createContents() throws IOException {
+	protected boolean createContents() {
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
 		
 		shell = new Shell(display, SWT.SHELL_TRIM);
@@ -136,6 +143,7 @@ public class MainImputeGenotype {
 		txtVcfFile = new Text(shell, SWT.BORDER);
 		txtVcfFile.setBounds(150, 50, 530, 21);
 		txtVcfFile.addMouseListener(mouse);
+		txtVcfFile.setText(selectedFile);
 
 		btnVcfFile = new Button(shell, SWT.NONE);
 		btnVcfFile.setBounds(700, 50, 25, 21);
@@ -143,7 +151,7 @@ public class MainImputeGenotype {
 		btnVcfFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, vcfFile, txtVcfFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtVcfFile);
 			}
 		});
 
@@ -154,6 +162,8 @@ public class MainImputeGenotype {
 		txtOutputFile = new Text(shell, SWT.BORDER);
 		txtOutputFile.setBounds(150, 100, 530, 21);
 		txtOutputFile.addMouseListener(mouse);
+		String outputFile = selectedFile.substring(0,selectedFile.lastIndexOf("."));
+		txtOutputFile.setText(outputFile);
 
 		btnOutputFile = new Button(shell, SWT.NONE);
 		btnOutputFile.setBounds(700, 100, 25, 21);
@@ -161,33 +171,9 @@ public class MainImputeGenotype {
 		btnOutputFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, vcfFile,txtOutputFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, selectedFile, txtOutputFile);
 			}
 		});
-
-		List<String> sampleIds=null;
-		if (vcfFile != null && vcfFile.length()>0) {
-			txtVcfFile.setText(vcfFile);
-			String outputFile = vcfFile.substring(0,vcfFile.lastIndexOf("."));
-			txtOutputFile.setText(outputFile);
-			VCFFileReader reader = null;
-			try {
-				reader = new VCFFileReader(vcfFile);
-				sampleIds=reader.getSampleIds();
-			} catch (Exception e1) {
-				throw new IOException(e1);
-			} finally {
-				if(reader!=null) reader.close();
-			}
-		}
-
-/*		lblFUTURE = new Label(shell, SWT.NONE);
-		lblFUTURE.setBounds(10, 170, 260, 21);
-		lblFUTURE.setText("(*)FUTURE OPTIONS:");
-
-		txtFUTURE = new Text(shell, SWT.BORDER);
-		txtFUTURE.setBounds(280, 170, 100, 21);
-		txtFUTURE.addMouseListener(mouse); 					*/
 
 		lblClusters = new Label(shell, SWT.NONE);
 		lblClusters.setBounds(10, 150, 260, 21);
@@ -233,6 +219,14 @@ public class MainImputeGenotype {
 		btnInbredSamples.setBounds(10, 450, 260, 21);
 		btnInbredSamples.setText("Inbred samples");
 
+		List<String> sampleIds=null;
+		try (VCFFileReader reader = new VCFFileReader(selectedFile)){ 
+			sampleIds=reader.getSampleIds();
+		} catch (IOException e1) {
+			MessageDialog.openError(shell, "Error loading sample ids from VCF file",e1.getMessage());
+			e1.printStackTrace();
+			return false;
+		}
 		tblParentsIds =new Table(shell, SWT.MULTI | SWT.BORDER| SWT.V_SCROLL| SWT.CHECK);
 		tblParentsIds.setBounds(420, 150, 300, 350);
 		tblParentsIds.setHeaderVisible(true);
@@ -283,17 +277,6 @@ public class MainImputeGenotype {
 			listErrors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_MANDATORY));
 			txtOutputFile.setBackground(oc);
 		}
-/*		if (txtFUTURE.getText() == null || txtFUTURE.getText().length()==0) {
-			listErrors.add(FieldValidator.buildMessage(lblFUTURE.getText(), FieldValidator.ERROR_MANDATORY));
-			txtFUTURE.setBackground(oc);
-		} else {
-			if (!FieldValidator.isNumeric(txtFUTURE.getText(), new Double(0))) {
-				listErrors.add(FieldValidator.buildMessage(lblFUTURE.getText(), FieldValidator.ERROR_NUMERIC));
-				txtFUTURE.setBackground(oc);
-			} else {
-				popGenotypeImpute.setPctFUTURE(Double.parseDouble(txtFUTURE.getText()));
-			}
-		}			*/
 		if (txtClusters.getText() != null && txtClusters.getText().length()!=0) {
 			if (!FieldValidator.isNumeric(txtClusters.getText(), new Integer(0))) {
 				listErrors.add(FieldValidator.buildMessage(lblClusters.getText(), FieldValidator.ERROR_NUMERIC));
@@ -361,13 +344,5 @@ public class MainImputeGenotype {
 			return;
 		}
 
-	}
-
-	public String getVcfFile() {
-		return vcfFile;
-	}
-
-	public void setVcfFile(String vcfFile) {
-		this.vcfFile = vcfFile;
 	}
 }

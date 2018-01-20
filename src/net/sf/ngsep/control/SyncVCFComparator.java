@@ -40,7 +40,7 @@ import org.eclipse.core.runtime.jobs.Job;
 public class SyncVCFComparator extends Job {
 	
 	//Instance of the model class with the optional parameters already set
-	private VCFComparator vcfComparator;
+	private VCFComparator instance;
 	
 	//Parameters to set just before the execution of the process
 	private String inputFile1=null;
@@ -74,12 +74,12 @@ public class SyncVCFComparator extends Job {
 			log.info("Started VCF Comparison");
 					
 			//Create progress notifier and set it to listen to the model class 
-			vcfComparator.setProgressNotifier(new DefaultProgressNotifier(monitor));
+			instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			if (inputFile1 != null && inputFile2!=null && outputFile != null) {
 				log.info("processing vcf file...");
 				out = new PrintStream(outputFile);
-				vcfComparator.calculateDifferences(inputFile1, inputFile2);
-				vcfComparator.printReport(out);
+				instance.calculateDifferences(inputFile1, inputFile2);
+				instance.printReport(out);
 			}
 			log.info("Process finished");
 		} catch (Exception e) {
@@ -93,6 +93,15 @@ public class SyncVCFComparator extends Job {
 			}
 		}
 		return Status.OK_STATUS;
+	}
+
+	
+	public VCFComparator getInstance() {
+		return instance;
+	}
+
+	public void setInstance(VCFComparator instance) {
+		this.instance = instance;
 	}
 
 	public String getNameProgressBar() {
@@ -135,15 +144,4 @@ public class SyncVCFComparator extends Job {
 	public void setOutputFile(String outputFile) {
 		this.outputFile = outputFile;
 	}
-
-	public VCFComparator getVcfComparator() {
-		return vcfComparator;
-	}
-
-	public void setVcfComparator(VCFComparator vcfComparator) {
-		this.vcfComparator = vcfComparator;
-	}
-	
-	
-
 }

@@ -45,8 +45,7 @@ import org.eclipse.swt.widgets.Text;
  * @author Juan Fernando De la Hoz, Jorge Duitama
  *
  */
-public class MainVCFSummaryStatistics {
-	//General attributes
+public class MainVCFSummaryStatistics implements SingleFileInputWindow {
 	protected Shell shell;
 	private Display display;
 	

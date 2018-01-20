@@ -47,13 +47,20 @@ import ngsep.vcf.AlleleSharingStatsCalculator;
  * @author Jorge Duitama
  *
  */
-public class MainAlleleSharingStatistics {
-	//General attributes
-	protected Shell shell;
+public class MainAlleleSharingStatistics implements SingleFileInputWindow {
+	
+	//General variables 
+	private Shell shell;
 	private Display display;
 	
 	//File selected initially by the user
 	private String selectedFile;
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+	public void setSelectedFile(String selectedFile) {
+		this.selectedFile = selectedFile;
+	}
 	
 	//Action buttons
 	private Button btnSubmit;
@@ -86,13 +93,6 @@ public class MainAlleleSharingStatistics {
 	private Text txtStepSize;
 	
 	private Button btnIncludeIntrons;
-	
-	public String getSelectedFile() {
-		return selectedFile;
-	}
-	public void setSelectedFile(String selectedFile) {
-		this.selectedFile = selectedFile;
-	}
 	
 	/**
 	 * Open the window
