@@ -45,14 +45,13 @@ import org.eclipse.swt.widgets.Text;
  * @author Juan Fernando De la Hoz
  * @author Jorge Duitama
  */
-public class MainReadsDemultiplex {
-
-	private Shell shell;
+public class MainReadsDemultiplex implements SingleFileInputWindow {
+	
+	protected Shell shell;
 	private Display display;
 	
-	//File initially selected by the user
+	//File selected initially by the user
 	private String selectedFile;
-	
 	public String getSelectedFile() {
 		return selectedFile;
 	}
