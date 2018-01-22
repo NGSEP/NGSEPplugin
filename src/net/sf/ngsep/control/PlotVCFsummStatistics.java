@@ -50,7 +50,7 @@ public class PlotVCFsummStatistics {
 		BufferedReader bufferRead = new BufferedReader(fileRead);
 		String line ;	
 		String lineArray[]; 
-		ArrayList <String> maf = new ArrayList<String>();
+		
 		ArrayList <Double> total = new ArrayList<Double>();
 		ArrayList <Double> coding = new ArrayList<Double>();
 		ArrayList <Double> synonymous = new ArrayList<Double>();
@@ -69,7 +69,7 @@ public class PlotVCFsummStatistics {
 				findTable = false;
 			} if (findTable){
 				lineArray = line.split("\t");
-				maf.add(lineArray[0]);
+				
 				double nextTotal = Double.parseDouble(lineArray[1]);
 				total.add(nextTotal);
 				totalSum += nextTotal;
@@ -84,7 +84,7 @@ public class PlotVCFsummStatistics {
 				nonsenseSum += nextNon;
 				coding.add( synonymous.get(j) + missense.get(j) + nonsense.get(j) );
 				j++;
-			} if (line.equals("MAF DISTRIBUTIONS")){	
+			} if (line.startsWith("MAF DISTRIBUTIONS")){	
 				findTable = true;
 				bufferRead.readLine();
 			}
@@ -92,12 +92,19 @@ public class PlotVCFsummStatistics {
 		bufferRead.close(); fileRead.close();
 		
 		// Calculate percentages
+		ArrayList <String> maf = new ArrayList<String>();
 		ArrayList <Double> totalPrcnt = new ArrayList<Double>();
 		ArrayList <Double> codingPrcnt = new ArrayList<Double>();
 		ArrayList <Double> synonymousPrcnt = new ArrayList<Double>();
 		ArrayList <Double> missensePrcnt = new ArrayList<Double>();
 		ArrayList <Double> nonsensePrcnt = new ArrayList<Double>();
-		for (int i = 0 ; i < maf.size() ; i++){
+		
+		
+		for (int i = 0 ; i < total.size() ; i++){
+			int nextMAF50 = 50*i/(total.size()-1);
+			if(nextMAF50%5==0) maf.add(""+(0.01*nextMAF50));
+			else maf.add(" ");
+			//maf.add(lineArray[0]);
 			if (totalSum != 0){
 				totalPrcnt.add((total.get(i) * 100) / totalSum);
 				if (synonymousSum != 0 && missenseSum != 0 && nonsenseSum != 0){
@@ -119,7 +126,7 @@ public class PlotVCFsummStatistics {
 				PlotUtils.addSample("missense", chart, maf, missensePrcnt);
 				PlotUtils.addSample("nonsense", chart, maf, nonsensePrcnt);
 			}
-			PlotUtils.manageLegend(chart, 5);
+			PlotUtils.manageLegend(chart, 1);
 			PlotUtils.saveChartPNG(chart, outputPrfx + "_MAFdistribution");
 		}
 	}
@@ -149,8 +156,8 @@ public class PlotVCFsummStatistics {
 //				samples.add(lineArray[0]);			
 				samples.add(i+1);														// samples as numbers, not strings
 				synonymous.add(Integer.parseInt(lineArray[6]));
-				misSense.add(Integer.parseInt(lineArray[7]) + synonymous.get(i));
-				nonSense.add(Integer.parseInt(lineArray[8]) + misSense.get(i));
+				misSense.add(Integer.parseInt(lineArray[8]) + synonymous.get(i));
+				nonSense.add(Integer.parseInt(lineArray[10]) + misSense.get(i));
 				i ++ ;
 			} if (line.equals("SNP COUNTS PER SAMPLE")){	
 				findTable = true;
@@ -193,7 +200,7 @@ public class PlotVCFsummStatistics {
 				homo_coding.add(Integer.parseInt(lineArray[3]));										//not yet clear (3/5)
 				hetero_frmshift.add(Integer.parseInt(lineArray[4]) + homo_coding.get(i));				//not yet clear (4/6) (if coding - frameshift, should not +)
 				i ++ ;
-			} if (line.equals("INDEL COUNTS PER SAMPLE")){
+			} if (line.equals("BIALLELIC INDEL COUNTS PER SAMPLE")){
 				findTable = true;
 				bufferRead.readLine();
 			}
@@ -233,7 +240,7 @@ public class PlotVCFsummStatistics {
 				homozygous.add(Integer.parseInt(lineArray[3]));
 				heterozygous.add(Integer.parseInt(lineArray[4]) + homozygous.get(i));
 				i ++ ;
-			} if (line.equals("OTHER VARIANTS COUNTS PER SAMPLE")){	
+			} if (line.equals("BIALLELIC STR COUNTS PER SAMPLE")){	
 				findTable = true;
 				bufferRead.readLine();
 			}
