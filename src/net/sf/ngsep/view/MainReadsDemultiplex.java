@@ -109,9 +109,9 @@ public class MainReadsDemultiplex implements SingleFileInputWindow {
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
 
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setSize(800, 440);
+		shell.setSize(800, 460);
 		shell.setLocation(150, 200);
-		shell.setText("Sample Deconvolution");
+		shell.setText("Reads demultiplex");
 		
 		lblIndex = new Label(shell, SWT.NONE);
 		lblIndex.setBounds(10, 20, 140, 22);
@@ -315,7 +315,7 @@ public class MainReadsDemultiplex implements SingleFileInputWindow {
 			instance.setTrimSequence(txtTrimSeq.getText());
 		}
 		if (listErrors.size() > 0) {
-			FieldValidator.paintErrors(listErrors, shell, "Sample Deconvolution");
+			FieldValidator.paintErrors(listErrors, shell, "Reads demultiplex");
 			return;
 		}
 		instance.setUncompressedOutput(btnUncompressOutput.getSelection());

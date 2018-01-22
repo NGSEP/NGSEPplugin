@@ -32,7 +32,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 /**
- * Execution organizer for the GBS Cornell Deconvolution class
+ * Execution job for the Demultiplex function
  * @author Juan Fernando De la Hoz
  */
 public class SyncReadsDemultiplex extends Job {
@@ -67,7 +67,7 @@ public class SyncReadsDemultiplex extends Job {
 			
 			//Start progress bar
 			monitor.beginTask(nameProgressBar, 30000);
-			log.info("Started Sample Deconvolution");
+			log.info("Started reads demultiplexing");
 			instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			
 			if (indexFile!=null) {	
