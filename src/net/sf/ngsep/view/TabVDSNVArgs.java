@@ -84,7 +84,6 @@ public class TabVDSNVArgs extends Composite {
 	private Button btnkeepLowerCaseRefChk;
 	private Button btnIncludeSecondaryAlignments;
 	private Button btnGenotypeAllCovered;
-	private Button btnIgnoreXSFieldChk;
 	private Button btnEmbeddedSNVs;
 	
 	private Label lblHapAvgCov;
@@ -216,9 +215,9 @@ public class TabVDSNVArgs extends Composite {
 		btnGenotypeAllCovered.setText("Genotype All Covered Sites");
 		btnGenotypeAllCovered.setBounds(500, 180, 325, 23);
 
-		btnIgnoreXSFieldChk = new Button(this, SWT.CHECK);	
-		btnIgnoreXSFieldChk.setText("Ignore XS field");
-		btnIgnoreXSFieldChk.setBounds(500, 220, 350, 20);
+		btnEmbeddedSNVs = new Button(this, SWT.CHECK);
+		btnEmbeddedSNVs.setText("Call SNVs within STRs");
+		btnEmbeddedSNVs.setBounds(500, 220, 350, 20);
 		
 		lblHapAvgCov = new Label(this, SWT.NONE);
 		lblHapAvgCov.setEnabled(false);
@@ -231,9 +230,7 @@ public class TabVDSNVArgs extends Composite {
 		txtHapAvgCov.setVisible(false);
 		txtHapAvgCov.setBounds(680, 240, 57, 21);
 		
-		btnEmbeddedSNVs = new Button(this, SWT.CHECK);
-		btnEmbeddedSNVs.setText("Call SNVs within STRs");
-		btnEmbeddedSNVs.setBounds(500, 260, 350, 20);
+		
 		
 		txtHapAvgCov.addMouseListener(mouse);
 		
@@ -387,10 +384,6 @@ public class TabVDSNVArgs extends Composite {
 		
 		if (btnGenotypeAllCovered.getSelection()) {
 			commonUserParameters.put("GenotypeAll", true);
-		}
-		
-		if (btnIgnoreXSFieldChk.getSelection()) {
-			commonUserParameters.put("IgnoreXSField", true);
 		}
 		
 		if (btnEmbeddedSNVs.getSelection()) {

@@ -31,6 +31,7 @@ import net.sf.ngsep.utilities.EclipseProjectHelper;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
+import ngsep.alignments.ReadAlignment;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -93,6 +94,9 @@ public class TabVDMainArgs extends Composite {
 
 	private Label lblSampleId;
 	private Text txtSampleId;
+	
+	private Label lblMinMQ;
+	private Text txtMinMQ;
 
 	private File initialAlignmentsFile;
 
@@ -174,10 +178,26 @@ public class TabVDMainArgs extends Composite {
 					SpecialFieldsHelper.updateFileTextBox(parent.getShell(), SWT.OPEN, outputDirectory, txtKnownSVs);
 				}
 			});
+			lblKnownSTRs = new Label(this, SWT.NONE);
+			lblKnownSTRs.setText("known short tandem repeats File:");
+			lblKnownSTRs.setBounds(10, 150, 190, 20);
+			
+			txtKnownSTRs = new Text(this, SWT.BORDER);
+			txtKnownSTRs.setBounds(210, 150, 575, 21);
+			
+			btnKnownSTRs = new Button(this, SWT.NONE);
+			btnKnownSTRs.setText("...");
+			btnKnownSTRs.setBounds(800, 150, 21, 25);
+			btnKnownSTRs.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					SpecialFieldsHelper.updateFileTextBox(parent.getShell(), SWT.OPEN, outputDirectory, txtKnownSTRs);
+				}
+			});
 
 			btnSkipRepeatsChk = new Button(this, SWT.CHECK);
 			btnSkipRepeatsChk.setText("Skip detection of repetitive regions");
-			btnSkipRepeatsChk.setBounds(10, 223, 300, 20);
+			btnSkipRepeatsChk.setBounds(10, 220, 300, 20);
 
 			btnSkipRDChk = new Button(this, SWT.CHECK);	
 			btnSkipRDChk.setText("Skip read depth analysis");
@@ -224,45 +244,39 @@ public class TabVDMainArgs extends Composite {
 			btnSkipSNVSDetection = new Button(this, SWT.CHECK);
 			btnSkipSNVSDetection.setText("Skip detection of SNVs and small indels");
 			btnSkipSNVSDetection.setBounds(10, 343, 300, 20);
+			
+			lblMinMQ = new Label(this, SWT.NONE);
+			lblMinMQ.setBounds(400, 220, 330, 20);
+			lblMinMQ.setText("Minimum mapping quality unique alignments:");
+			
+			txtMinMQ = new Text(this, SWT.BORDER);
+			txtMinMQ.setBounds(750, 140, 50, 20);
+			txtMinMQ.addMouseListener(mouse);
+			txtMinMQ.setText(""+ReadAlignment.DEF_MIN_MQ_UNIQUE_ALIGNMENT);
 
 			lblIgnoreBase=new Label(this, SWT.NONE);
-			lblIgnoreBase.setText("Ignore Bases :");
-			lblIgnoreBase.setBounds(500, 262, 100, 20);
+			lblIgnoreBase.setText("Ignore Basepairs :");
+			lblIgnoreBase.setBounds(400, 260, 140, 20);
 
 			lblIgnoreBases5 = new Label(this, SWT.NONE);
 			lblIgnoreBases5.setText("5':");
-			lblIgnoreBases5.setBounds(620, 262, 40, 20);
+			lblIgnoreBases5.setBounds(550, 260, 30, 20);
 
 			txtIgnoreBases5 = new Text(this, SWT.BORDER);
 			txtIgnoreBases5.setText("0");
-			txtIgnoreBases5.setBounds(680,262,35,21);
+			txtIgnoreBases5.setBounds(590,260,40,21);
 			txtIgnoreBases5.addMouseListener(mouse);
 
 			lblIgnoreBases3 = new Label(this, SWT.NONE);
 			lblIgnoreBases3.setText("3':");
-			lblIgnoreBases3.setBounds(735, 262, 40, 20);
+			lblIgnoreBases3.setBounds(650, 260, 30, 20);
 
 			txtIgnoreBases3 = new Text(this, SWT.BORDER);
 			txtIgnoreBases3.setText("0");
-			txtIgnoreBases3.setBounds(795, 262, 35, 21);
+			txtIgnoreBases3.setBounds(690, 260, 40, 21);
 			txtIgnoreBases3.addMouseListener(mouse);
 			
-			lblKnownSTRs = new Label(this, SWT.NONE);
-			lblKnownSTRs.setText("known short tandem repeats File:");
-			lblKnownSTRs.setBounds(10, 150, 190, 20);
-			
-			txtKnownSTRs = new Text(this, SWT.BORDER);
-			txtKnownSTRs.setBounds(210, 150, 575, 21);
-			
-			btnKnownSTRs = new Button(this, SWT.NONE);
-			btnKnownSTRs.setText("...");
-			btnKnownSTRs.setBounds(800, 150, 21, 25);
-			btnKnownSTRs.addSelectionListener(new SelectionAdapter() {
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					SpecialFieldsHelper.updateFileTextBox(parent.getShell(), SWT.OPEN, outputDirectory, txtKnownSTRs);
-				}
-			});
+
 
 			if(source != MainVariantsDetector.SOURCE_WIZARD){
 				lblKnownVariantsFile = new Label(this, SWT.NONE);
@@ -291,9 +305,9 @@ public class TabVDMainArgs extends Composite {
 
 				lblNumberOfProcessors = new Label(this, SWT.NONE);
 				lblNumberOfProcessors.setText("Number Of Processors:");
-				lblNumberOfProcessors.setBounds(500, 302, 220, 21);	
+				lblNumberOfProcessors.setBounds(400, 340, 240, 21);	
 				txtNumberOfProcessors = new Text(this, SWT.BORDER);
-				txtNumberOfProcessors.setBounds(760, 302, 42, 21);
+				txtNumberOfProcessors.setBounds(650, 340, 100, 21);
 				//by default it suggests the user to use all possible processor minus 1, to be able to use his computer.
 				int processors = Runtime.getRuntime().availableProcessors()-1;
 				txtNumberOfProcessors.setText(String.valueOf(processors));		
@@ -307,8 +321,8 @@ public class TabVDMainArgs extends Composite {
 
 				txtFile = new Text(this, SWT.BORDER);
 				txtFile.setBounds(210, 10, 575, 21);
-
 				txtFile.addMouseListener(mouse);
+				txtFile.setText(initialAlignmentsFile.getAbsolutePath());
 
 				btnFile = new Button(this, SWT.NONE);
 				btnFile.setText("...");
@@ -332,6 +346,7 @@ public class TabVDMainArgs extends Composite {
 				txtDestFile.setBounds(210, 45, 575, 21);
 				txtDestFile.setToolTipText("Please enter your output file, you can use the button next to this field to browse it");
 				txtDestFile.addMouseListener(mouse);
+				txtDestFile.setText(extractPrefix(initialAlignmentsFile.getAbsolutePath()));
 
 				// in this cycle is validated that this initial selected file to suggest
 				// it as the output file without extension and without sorted if he were
@@ -355,23 +370,13 @@ public class TabVDMainArgs extends Composite {
 
 				lblSampleId = new Label(this, SWT.NONE);
 				lblSampleId.setText("(*)Sample Id:");
-				lblSampleId.setBounds(500, 222, 184, 20);
+				lblSampleId.setBounds(400, 300, 150, 20);
 
 				txtSampleId = new Text(this, SWT.BORDER);
-				txtSampleId.setBounds(690, 222, 123, 21);
+				txtSampleId.setBounds(560, 300, 240, 21);
 				txtSampleId.addMouseListener(mouse);
-				
-				txtFile.setText(initialAlignmentsFile.getAbsolutePath());
-				txtDestFile.setText(extractPrefix(initialAlignmentsFile.getAbsolutePath()));
-				
-				
-				
-				
-				
-				
-				List<String> readGroups;
 				try {
-					readGroups = MainMultiVariantsDetector.extractReadGroups(initialAlignmentsFile.getAbsolutePath());
+					List<String> readGroups = MainMultiVariantsDetector.extractReadGroups(initialAlignmentsFile.getAbsolutePath());
 					if(readGroups.size()>0) {
 						String sampleId=readGroups.get(0);	
 						if (MainMultiVariantsDetector.isSampleIdUnique(readGroups, sampleId)) txtSampleId.setText(sampleId);
@@ -518,6 +523,15 @@ public class TabVDMainArgs extends Composite {
 				txtIgnoreBases5.setBackground(oc);
 			}else{
 				commonUserParameters.put("BasesToIgnore5P", Byte.parseByte(txtIgnoreBases5.getText()));
+			}
+		}
+		
+		if (txtMinMQ.getText() != null && txtMinMQ.getText().length()>0) {
+			if (!FieldValidator.isNumeric(txtMinMQ.getText(),new Integer(0))) {
+				errorsOne.add(FieldValidator.buildMessage(lblMinMQ.getText(), FieldValidator.ERROR_INTEGER));
+				txtMinMQ.setBackground(oc);
+			} else {
+				commonUserParameters.put("minMQ", Integer.parseInt(txtMinMQ.getText()));
 			}
 		}
 
