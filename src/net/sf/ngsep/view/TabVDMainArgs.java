@@ -250,7 +250,7 @@ public class TabVDMainArgs extends Composite {
 			lblMinMQ.setText("Minimum mapping quality unique alignments:");
 			
 			txtMinMQ = new Text(this, SWT.BORDER);
-			txtMinMQ.setBounds(750, 140, 50, 20);
+			txtMinMQ.setBounds(750, 220, 50, 20);
 			txtMinMQ.addMouseListener(mouse);
 			txtMinMQ.setText(""+ReadAlignment.DEF_MIN_MQ_UNIQUE_ALIGNMENT);
 
@@ -531,7 +531,7 @@ public class TabVDMainArgs extends Composite {
 				errorsOne.add(FieldValidator.buildMessage(lblMinMQ.getText(), FieldValidator.ERROR_INTEGER));
 				txtMinMQ.setBackground(oc);
 			} else {
-				commonUserParameters.put("minMQ", Integer.parseInt(txtMinMQ.getText()));
+				commonUserParameters.put("MinMQ", Integer.parseInt(txtMinMQ.getText()));
 			}
 		}
 
