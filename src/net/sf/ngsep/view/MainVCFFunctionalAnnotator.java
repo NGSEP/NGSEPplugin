@@ -133,7 +133,7 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		btnFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell,SWT.OPEN, selectedFile,txtFile);
+				SpecialFieldsHelper.updateFileTextBox(shell,SWT.OPEN, selectedFile, txtFile);
 			}
 		});
 		
@@ -166,7 +166,7 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		btnTranscriptomeGFF3.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell,SWT.OPEN, txtTranscriptomeGFF3.getText(), txtTranscriptomeGFF3);
+				SpecialFieldsHelper.updateFileTextBox(shell,SWT.OPEN, selectedFile, txtTranscriptomeGFF3);
 			}
 		});
 		
@@ -198,7 +198,7 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		btnReferenceFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell,SWT.OPEN, selectedFile,txtReferenceFile);
+				SpecialFieldsHelper.updateFileTextBox(shell,SWT.OPEN, selectedFile, txtReferenceFile);
 			}
 		});
 		

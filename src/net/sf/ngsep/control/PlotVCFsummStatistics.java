@@ -23,13 +23,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import com.xeiam.xchart.Chart;
 
 import net.sf.ngsep.utilities.PlotUtils;
-import ngsep.main.io.ParseUtils;
 
 /**
  * @author Juan Fernando De la Hoz
@@ -97,13 +95,9 @@ public class PlotVCFsummStatistics {
 		ArrayList <Double> missensePrcnt = new ArrayList<Double>();
 		ArrayList <Double> nonsensePrcnt = new ArrayList<Double>();
 		
-		//DecimalFormat fmt = ParseUtils.ENGLISHFMT;
 		for (int i = 0 ; i < total.size() ; i++){
 			int nextMAF50 = 50*i/(total.size()-1);
-			//if(nextMAF50%5==0) maf.add(fmt.format(0.01*nextMAF50));
-			//else maf.add(" ");
 			maf.add(0.01*nextMAF50);
-			//maf.add(lineArray[0]);
 			totalPrcnt.add(Math.max(0.01, safeDoubleRatio(total.get(i) * 100,totalSum)));
 			codingPrcnt.add(Math.max(0.01, safeDoubleRatio(coding.get(i) * 100,synonymousSum + missenseSum + nonsenseSum)));
 			synonymousPrcnt.add(Math.max(0.01, safeDoubleRatio(synonymous.get(i) * 100, synonymousSum)));

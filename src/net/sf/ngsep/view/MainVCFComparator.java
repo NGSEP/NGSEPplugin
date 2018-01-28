@@ -262,6 +262,7 @@ public class MainVCFComparator implements SingleFileInputWindow {
 			ArrayList<String> errorsShell = new ArrayList<String>();
 			VCFComparator instance = new VCFComparator();
 			SyncVCFComparator job = new SyncVCFComparator("VCFComparator");
+			job.setInstance(instance);
 			
 			if (txtInputVcf1.getText()==null|| txtInputVcf1.getText().length()==0) {
 				errorsShell.add(FieldValidator.buildMessage(lblInputVcf1.getText(), FieldValidator.ERROR_MANDATORY));
