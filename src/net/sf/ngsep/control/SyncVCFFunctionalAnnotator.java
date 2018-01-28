@@ -36,19 +36,19 @@ import org.eclipse.core.runtime.jobs.Job;
 /**
  * 
  * @author Juan Camilo Quintero
- *
+ * @author Jorge Duitama
  */
 public class SyncVCFFunctionalAnnotator extends Job {
 
+	private String logName;
+	private String nameProgressBar;
+	
 	private String transcriptomeMap;
 	private ReferenceGenome genome;
 	private String variantsFile;
 	private String outputFile;
-	private String logName;
 	
-	private String nameProgressBar;
-	private int bpDownstream;
-	private int bpUpstream;
+	private VCFFunctionalAnnotator instance;
 	
 	public SyncVCFFunctionalAnnotator(String name) {
 		super(name);
@@ -62,22 +62,18 @@ public class SyncVCFFunctionalAnnotator extends Job {
 		try {
 			logFile = new FileHandler(logName, false);
 			log = LoggingHelper.createLogger(logName, logFile);
-			monitor.beginTask(getNameProgressBar(), 500);
+			instance.setLog(log);
 			
+			monitor.beginTask(getNameProgressBar(), 500);
 			log.info("Variants Functional Annotator");
 			
-			VCFFunctionalAnnotator vf = new VCFFunctionalAnnotator();
-			log.info("Base pairs downstream :" + bpDownstream);
-			vf.setOffsetDownstream(bpDownstream);
-			log.info("Base pairs Upstream :" + bpUpstream);
-			vf.setOffsetUpstream(bpUpstream);
-			vf.setLog(log);
-			vf.setProgressNotifier(new DefaultProgressNotifier(monitor));
-			vf.loadMap(transcriptomeMap,genome);
-			out = new PrintStream(outputFile);
-			vf.annotate(variantsFile, out);
+			instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			
+			instance.loadMap(transcriptomeMap,genome);
+			out = new PrintStream(outputFile);
+			instance.annotate(variantsFile, out);
 			log.info("Process finished");
+			monitor.done();
 		} catch (Exception e) {
 			String message = LoggingHelper.serializeException(e);
 			log.severe(message);
@@ -141,20 +137,11 @@ public class SyncVCFFunctionalAnnotator extends Job {
 		this.nameProgressBar = nameProgressBar;
 	}
 
-	public int getBpDownstream() {
-		return bpDownstream;
+	public VCFFunctionalAnnotator getInstance() {
+		return instance;
 	}
 
-	public void setBpDownstream(int bpDownstream) {
-		this.bpDownstream = bpDownstream;
+	public void setInstance(VCFFunctionalAnnotator instance) {
+		this.instance = instance;
 	}
-
-	public int getBpUpstream() {
-		return bpUpstream;
-	}
-
-	public void setBpUpstream(int bpUpstream) {
-		this.bpUpstream = bpUpstream;
-	}
-
 }

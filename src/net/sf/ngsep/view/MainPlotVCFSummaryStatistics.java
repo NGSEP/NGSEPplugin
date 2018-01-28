@@ -42,6 +42,7 @@ import net.sf.ngsep.utilities.SpecialFieldsHelper;
 
 /**
  * @author Juan Fernando De la Hoz
+ * @author Jorge Duitama
  */
 public class MainPlotVCFSummaryStatistics implements SingleFileInputWindow {
 	protected Shell shell;
@@ -58,10 +59,10 @@ public class MainPlotVCFSummaryStatistics implements SingleFileInputWindow {
 	
 	private static int SNP_NUM = 1;
 	private static int INDEL_NUM = 2;
-	private static int OTHER_NUM = 3;
+	private static int STR_NUM = 3;
 	private static String SNP_TXT = "SNPs";
 	private static String INDEL_TXT = "Indels";
-	private static String OTHER_TXT = "OtherVariants";
+	private static String STR_TXT = "STRs";
 	
 	private Label lblStatsFile;
 	private Text txtStatsFile;
@@ -79,7 +80,7 @@ public class MainPlotVCFSummaryStatistics implements SingleFileInputWindow {
 	
 	private Button btnGenotypedSNPs;
 	private Button btnGenotypedIndels;
-	private Button btnGenotypedOther;
+	private Button btnGenotypedSTRs;
 	
 	private Button btnPlot;
 	private Button btnCancel;
@@ -164,10 +165,10 @@ public class MainPlotVCFSummaryStatistics implements SingleFileInputWindow {
 		btnGenotypedIndels.setText("Biallelic Indels");
 		btnGenotypedIndels.setVisible(false);
 		
-		btnGenotypedOther = new Button(shell, SWT.CHECK);
-		btnGenotypedOther.setBounds(630, 140, 150, 23);
-		btnGenotypedOther.setText("Other");
-		btnGenotypedOther.setVisible(false);
+		btnGenotypedSTRs = new Button(shell, SWT.CHECK);
+		btnGenotypedSTRs.setBounds(630, 140, 150, 23);
+		btnGenotypedSTRs.setText("STRs");
+		btnGenotypedSTRs.setVisible(false);
 		
 		btnSNPsPerSampleStats = new Button(shell, SWT.CHECK);
 		btnSNPsPerSampleStats.setBounds(10, 200, 250, 23);
@@ -240,8 +241,8 @@ public class MainPlotVCFSummaryStatistics implements SingleFileInputWindow {
 					plotter.plotGenotypeCallStats(SNP_NUM, SNP_TXT);
 				} if (btnGenotypedIndels.getSelection()){
 					plotter.plotGenotypeCallStats(INDEL_NUM, INDEL_TXT);
-				} if (btnGenotypedOther.getSelection()){
-					plotter.plotGenotypeCallStats(OTHER_NUM, OTHER_TXT);
+				} if (btnGenotypedSTRs.getSelection()){
+					plotter.plotGenotypeCallStats(STR_NUM, STR_TXT);
 				}
 			}
 			
@@ -281,11 +282,11 @@ public class MainPlotVCFSummaryStatistics implements SingleFileInputWindow {
 			if (btnGenotypeCallStats.getSelection()) {
 				btnGenotypedSNPs.setVisible(true);
 				btnGenotypedIndels.setVisible(true);
-				btnGenotypedOther.setVisible(true);
+				btnGenotypedSTRs.setVisible(true);
 			} else {
 				btnGenotypedSNPs.setVisible(false);
 				btnGenotypedIndels.setVisible(false);
-				btnGenotypedOther.setVisible(false);
+				btnGenotypedSTRs.setVisible(false);
 			}
 		}
 	};

@@ -31,7 +31,7 @@ import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
 import ngsep.genome.ReferenceGenome;
-import ngsep.transcriptome.Transcriptome;
+import ngsep.transcriptome.VariantFunctionalAnnotationType;
 import ngsep.vcf.VCFFilter;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -490,7 +490,31 @@ public class MainVCFFilter implements SingleFileInputWindow {
 			lblFunctionalRole.setText("Functional Role:");
 			lblFunctionalRole.setBounds(10, 71, 115, 29);
 
-			String itemsRole[] = {Transcriptome.ANNOTATION_INTRON,Transcriptome.ANNOTATION_INTERGENIC,Transcriptome.ANNOTATION_5P_UTR,Transcriptome.ANNOTATION_3P_UTR,Transcriptome.ANNOTATION_UPSTREAM, Transcriptome.ANNOTATION_DOWNSTREAM,Transcriptome.ANNOTATION_NONCODINGRNA, Transcriptome.ANNOTATION_SYNONYMOUS, Transcriptome.ANNOTATION_MISSENSE,Transcriptome.ANNOTATION_NONSENSE,Transcriptome.ANNOTATION_FRAMESHIFT,Transcriptome.ANNOTATION_JUNCTION};
+			String itemsRole[] = new String [19];
+			itemsRole[0] = VariantFunctionalAnnotationType.ANNOTATION_SYNONYMOUS;
+			itemsRole[1] = VariantFunctionalAnnotationType.ANNOTATION_MISSENSE;
+			itemsRole[2] = VariantFunctionalAnnotationType.ANNOTATION_STOP_LOST;
+			itemsRole[3] = VariantFunctionalAnnotationType.ANNOTATION_NONSENSE;
+			itemsRole[4] = VariantFunctionalAnnotationType.ANNOTATION_START_LOST;
+			
+			itemsRole[5] = VariantFunctionalAnnotationType.ANNOTATION_INFRAME_DEL;
+			itemsRole[6] = VariantFunctionalAnnotationType.ANNOTATION_INFRAME_INS;
+			itemsRole[7] = VariantFunctionalAnnotationType.ANNOTATION_FRAMESHIFT;
+			
+			itemsRole[8] = VariantFunctionalAnnotationType.ANNOTATION_SPLICE_DONOR;
+			itemsRole[9] = VariantFunctionalAnnotationType.ANNOTATION_SPLICE_ACCEPTOR;
+			itemsRole[10] = VariantFunctionalAnnotationType.ANNOTATION_EXONIC_SPLICE_REGION;
+			itemsRole[11] = VariantFunctionalAnnotationType.ANNOTATION_SPLICE_REGION;
+			
+			itemsRole[12] = VariantFunctionalAnnotationType.ANNOTATION_5P_UTR;
+			itemsRole[13] = VariantFunctionalAnnotationType.ANNOTATION_3P_UTR;
+
+			itemsRole[14] = VariantFunctionalAnnotationType.ANNOTATION_NONCODINGRNA;
+			
+			itemsRole[15] = VariantFunctionalAnnotationType.ANNOTATION_UPSTREAM;
+			itemsRole[16] = VariantFunctionalAnnotationType.ANNOTATION_DOWNSTREAM;
+			itemsRole[17] = VariantFunctionalAnnotationType.ANNOTATION_INTRON;
+			itemsRole[18] = VariantFunctionalAnnotationType.ANNOTATION_INTERGENIC;
 			
 			tabFunctionalRoles = new Table(c, SWT.BORDER | SWT.SCROLL_PAGE  | SWT.CHECK);
 			tabFunctionalRoles.setHeaderVisible(true);

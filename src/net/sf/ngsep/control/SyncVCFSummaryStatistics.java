@@ -37,7 +37,7 @@ import ngsep.vcf.VCFSummaryStatisticsCalculator;
  * @author Juan Fernando De la Hoz, Jorge Duitama
  *
  */
-public class SyncVCFSummaryStatistics extends Job{
+public class SyncVCFSummaryStatistics extends Job {
 	
 	//Instance of the model class with the optional parameters already set
 	private VCFSummaryStatisticsCalculator instance;

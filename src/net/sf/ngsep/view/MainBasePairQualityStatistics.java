@@ -119,7 +119,6 @@ public class MainBasePairQualityStatistics implements SingleFileInputWindow {
 		shell.setLocation(150, 200);
 
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
-		Font tfont = new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD);
 
 		lblInputFile = new Label(shell, SWT.NONE);
 		lblInputFile.setBounds(10, 20, 140, 22);
@@ -202,7 +201,7 @@ public class MainBasePairQualityStatistics implements SingleFileInputWindow {
 		lblGraphicalOutput = new Label(shell, SWT.NONE);
 		lblGraphicalOutput.setBounds(10, 200, 200, 22);
 		lblGraphicalOutput.setText("Graphical output");
-		lblGraphicalOutput.setFont(tfont);
+		lblGraphicalOutput.setFont(new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD));
 
 		Button btnMultipleAlignments = new Button(shell, SWT.RADIO);
 		btnMultipleAlignments.setBounds(10, 240, 200, 22);

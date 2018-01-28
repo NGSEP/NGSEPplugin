@@ -111,7 +111,6 @@ public class MainCoverageStatisticsCalculator implements SingleFileInputWindow {
 		shell.setLocation(150, 200);
 
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
-		Font tfont = new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD);
 		
 		lblAlifile = new Label(shell, SWT.NONE);
 		lblAlifile.setBounds(10, 20, 140, 22);
@@ -163,7 +162,7 @@ public class MainCoverageStatisticsCalculator implements SingleFileInputWindow {
 		lblGraphical = new Label(shell, SWT.NONE);
 		lblGraphical.setBounds(10, 150, 200, 22);
 		lblGraphical.setText("Graphical output");
-		lblGraphical.setFont(tfont);
+		lblGraphical.setFont(new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD));
 
 		Button btnAllAlignments = new Button(shell, SWT.RADIO);
 		btnAllAlignments.setBounds(10, 190, 200, 22);

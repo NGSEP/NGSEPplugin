@@ -30,12 +30,15 @@ import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
 import ngsep.genome.ReferenceGenome;
+import ngsep.transcriptome.VariantAnnotationParameters;
+import ngsep.vcf.VCFFunctionalAnnotator;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -43,9 +46,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * 
  * @author Juan Camilo Quintero
- *
+ * @author Jorge Duitama
  */
 public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 	protected Shell shell;
@@ -81,10 +83,14 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 	private Text txtBpUpstream;
 	private Label lblBpDownstream;
 	private Text txtBpDownstream;
-	
-	//Default parameters
-	public static final int DEF_UPSTREAM=1000;
-	public static final int DEF_DOWNSTREAM=300;
+	private Label lblSpliceDonorOffset;
+	private Text txtSpliceDonorOffset;
+	private Label lblSpliceAcceptorOffset;
+	private Text txtSpliceAcceptorOffset;
+	private Label lblSpliceRegionIntronOffset;
+	private Text txtSpliceRegionIntronOffset;
+	private Label lblSpliceRegionExonOffset;
+	private Text txtSpliceRegionExonOffset;
 	
 	
 	/**
@@ -105,24 +111,24 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 
 	private void createContents() {
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setSize(875, 334);
+		shell.setSize(800, 400);
 		shell.setText("Variants Functional Annotator");
 		shell.setLocation(10, 10);
 
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
 		lblFile = new Label(shell, SWT.NONE);
-		lblFile.setBounds(10, 31, 215, 21);
+		lblFile.setBounds(10, 30, 180, 22);
 		lblFile.setText("(*VCF) Variants File:");
 		
 		txtFile = new Text(shell, SWT.BORDER);
-		txtFile.setBounds(242, 28, 545, 21);
+		txtFile.setBounds(200, 30, 550, 22);
 		if (selectedFile != null && selectedFile.length()>0) {
 			txtFile.setText(selectedFile);
 		}
 		txtFile.addMouseListener(mouse);
 		
 		btnFile = new Button(shell, SWT.NONE);
-		btnFile.setBounds(798, 27, 21, 25);
+		btnFile.setBounds(760, 30, 25, 22);
 		btnFile.setText("...");
 		btnFile.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -133,12 +139,12 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		
 
 		lblTranscriptomeGFF3 = new Label(shell, SWT.NONE);
-		lblTranscriptomeGFF3.setBounds(10, 73, 215, 21);
+		lblTranscriptomeGFF3.setBounds(10, 70, 180, 22);
 		lblTranscriptomeGFF3.setText("(*GFF) Gene Annotation File:");
 		
 		
 		txtTranscriptomeGFF3 = new Text(shell, SWT.BORDER);
-		txtTranscriptomeGFF3.setBounds(242, 69, 545, 21);
+		txtTranscriptomeGFF3.setBounds(200, 70, 550, 22);
 		txtTranscriptomeGFF3.addMouseListener(mouse);
 		
 		// Suggest the latest stored transcriptome
@@ -155,7 +161,7 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		}
 		
 		btnTranscriptomeGFF3 = new Button(shell, SWT.NONE);
-		btnTranscriptomeGFF3.setBounds(798, 67, 21, 25);
+		btnTranscriptomeGFF3.setBounds(760, 70, 25, 22);
 		btnTranscriptomeGFF3.setText("...");
 		btnTranscriptomeGFF3.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -166,12 +172,12 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		
 
 		lblReferenceFile = new Label(shell, SWT.NONE);
-		lblReferenceFile.setBounds(10, 115, 230, 21);
+		lblReferenceFile.setBounds(10, 110, 180, 22);
 		lblReferenceFile.setText("(*FASTA) Reference Genome:");
 		
 
 		txtReferenceFile = new Text(shell, SWT.BORDER);
-		txtReferenceFile.setBounds(242, 111, 545, 21);
+		txtReferenceFile.setBounds(200, 110, 550, 22);
 		txtReferenceFile.addMouseListener(mouse);
 		// Suggest the latest stored genome
 		try {
@@ -187,7 +193,7 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		}
 		
 		btnReferenceFile = new Button(shell, SWT.NONE);
-		btnReferenceFile.setBounds(798, 111, 21, 25);
+		btnReferenceFile.setBounds(760, 110, 25, 22);
 		btnReferenceFile.setText("...");
 		btnReferenceFile.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -196,20 +202,20 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 			}
 		});
 		
+		lblOutputFile = new Label(shell, SWT.NONE);
+		lblOutputFile.setBounds(10, 150, 180, 22);
+		lblOutputFile.setText("(*VCF) Output File:");
 		
-
 		txtOutputFile = new Text(shell, SWT.BORDER);
-		txtOutputFile.setBounds(242, 153, 545, 21);
+		txtOutputFile.setBounds(200, 150, 550, 22);
 		txtOutputFile.addMouseListener(mouse);
 		String suggestedOutPrefix = SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile);
 		txtOutputFile.setText(suggestedOutPrefix+"_Annotated.vcf");
 		
-		lblOutputFile = new Label(shell, SWT.NONE);
-		lblOutputFile.setBounds(10, 157, 215, 21);
-		lblOutputFile.setText("(*VCF) Output File:");
+		
 		
 		btnOutputFile = new Button(shell, SWT.NONE);
-		btnOutputFile.setBounds(798, 153, 21, 25);
+		btnOutputFile.setBounds(760, 150, 25, 22);
 		btnOutputFile.setText("...");
 		btnOutputFile.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -218,26 +224,67 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 			}
 		});
 		
+		Label lblSpliceOffsets = new Label(shell, SWT.NONE);
+		lblSpliceOffsets.setBounds(10, 190, 250, 22);
+		lblSpliceOffsets.setText("Splice offsets:");
+		lblSpliceOffsets.setFont(new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD));
+		
+		lblSpliceDonorOffset = new Label(shell, SWT.NONE);
+		lblSpliceDonorOffset.setText("Donor :");
+		lblSpliceDonorOffset.setBounds(10, 230, 120, 22);
+		
+		txtSpliceDonorOffset = new Text(shell, SWT.BORDER);
+		txtSpliceDonorOffset.setBounds(140, 230, 50, 22);
+		txtSpliceDonorOffset.setText(String.valueOf(VariantAnnotationParameters.DEF_SPLICE_DONOR));
+		txtSpliceDonorOffset.addMouseListener(mouse);
+		
+		lblSpliceAcceptorOffset = new Label(shell, SWT.NONE);
+		lblSpliceAcceptorOffset.setText("Acceptor :");
+		lblSpliceAcceptorOffset.setBounds(200, 230, 120, 22);
+		
+		txtSpliceAcceptorOffset = new Text(shell, SWT.BORDER);
+		txtSpliceAcceptorOffset.setBounds(330, 230, 50, 22);
+		txtSpliceAcceptorOffset.setText(String.valueOf(VariantAnnotationParameters.DEF_SPLICE_ACCEPTOR));
+		txtSpliceAcceptorOffset.addMouseListener(mouse);
+		
 		lblBpUpstream= new Label(shell, SWT.NONE);
 		lblBpUpstream.setText("Bp Upstream :");
-		lblBpUpstream.setBounds(10, 213, 110, 21);
+		lblBpUpstream.setBounds(400, 230, 120, 22);
 		
 		txtBpUpstream = new Text(shell, SWT.BORDER);
-		txtBpUpstream.setBounds(140, 213, 50, 23);
-		txtBpUpstream.setText(String.valueOf(DEF_UPSTREAM));
+		txtBpUpstream.setBounds(530, 230, 50, 22);
+		txtBpUpstream.setText(String.valueOf(VariantAnnotationParameters.DEF_UPSTREAM));
 		txtBpUpstream.addMouseListener(mouse);
 		
 		lblBpDownstream = new Label(shell, SWT.NONE);
 		lblBpDownstream.setText("Bp Downstream :");
-		lblBpDownstream.setBounds(210, 213, 124, 21);
+		lblBpDownstream.setBounds(600, 230, 120, 22);
 		
 		txtBpDownstream = new Text(shell, SWT.BORDER);
-		txtBpDownstream.setBounds(351, 213, 50, 23);
-		txtBpDownstream.setText(String.valueOf(DEF_DOWNSTREAM));
+		txtBpDownstream.setBounds(730, 230, 50, 22);
+		txtBpDownstream.setText(String.valueOf(VariantAnnotationParameters.DEF_DOWNSTREAM));
 		txtBpDownstream.addMouseListener(mouse);
 
+		lblSpliceRegionIntronOffset = new Label(shell, SWT.NONE);
+		lblSpliceRegionIntronOffset.setText("Region intron :");
+		lblSpliceRegionIntronOffset.setBounds(10, 270, 120, 22);
+		
+		txtSpliceRegionIntronOffset = new Text(shell, SWT.BORDER);
+		txtSpliceRegionIntronOffset.setBounds(140, 270, 50, 22);
+		txtSpliceRegionIntronOffset.setText(String.valueOf(VariantAnnotationParameters.DEF_SPLICE_REGION_INTRON));
+		txtSpliceRegionIntronOffset.addMouseListener(mouse);
+		
+		lblSpliceRegionExonOffset = new Label(shell, SWT.NONE);
+		lblSpliceRegionExonOffset.setText("Region exon :");
+		lblSpliceRegionExonOffset.setBounds(200, 270, 120, 22);
+		
+		txtSpliceRegionExonOffset = new Text(shell, SWT.BORDER);
+		txtSpliceRegionExonOffset.setBounds(330, 270, 50, 22);
+		txtSpliceRegionExonOffset.setText(String.valueOf(VariantAnnotationParameters.DEF_SPLICE_REGION_EXON));
+		txtSpliceRegionExonOffset.addMouseListener(mouse);
+		
 		btnSubmit = new Button(shell, SWT.NONE);
-		btnSubmit.setBounds(245, 254, 167, 25);
+		btnSubmit.setBounds(240, 330, 200, 25);
 		btnSubmit.setText("Functional Annotation");
 		btnSubmit.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -248,7 +295,7 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		
 
 		btnCancel = new Button(shell, SWT.NONE);
-		btnCancel.setBounds(433, 254, 167, 25);
+		btnCancel.setBounds(460, 330, 200, 25);
 		btnCancel.setText("Cancel");
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -262,20 +309,22 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		ArrayList<String> errors = new ArrayList<String>();
-		SyncVCFFunctionalAnnotator syncVariantsFunctional = new SyncVCFFunctionalAnnotator("Variants Functional Annotator");
+		SyncVCFFunctionalAnnotator job = new SyncVCFFunctionalAnnotator("Variants Functional Annotator");
+		VCFFunctionalAnnotator instance = new VCFFunctionalAnnotator ();
+		job.setInstance(instance);
 		
 		if (txtFile.getText() == null || txtFile.getText().length()==0) {
 			errors.add(FieldValidator.buildMessage(lblFile.getText(), FieldValidator.ERROR_MANDATORY));
 			txtFile.setBackground(oc);
 		} else {
-			syncVariantsFunctional.setVariantsFile(txtFile.getText());
+			job.setVariantsFile(txtFile.getText());
 		}
 
 		if (txtTranscriptomeGFF3.getText() == null || txtTranscriptomeGFF3.getText().length()==0) {
 			errors.add(FieldValidator.buildMessage(lblTranscriptomeGFF3.getText(), FieldValidator.ERROR_MANDATORY));
 			txtTranscriptomeGFF3.setBackground(oc);
 		} else {
-			syncVariantsFunctional.setTranscriptomeMap(txtTranscriptomeGFF3.getText());
+			job.setTranscriptomeMap(txtTranscriptomeGFF3.getText());
 		}
 
 		if (txtReferenceFile.getText() == null || txtReferenceFile.getText().length()==0) {
@@ -284,7 +333,7 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		} else {
 			try {
 				ReferenceGenome genome = ReferenceGenomesFactory.getInstance().getGenome(txtReferenceFile.getText(), shell);
-				syncVariantsFunctional.setGenome(genome);
+				job.setGenome(genome);
 			} catch (IOException e) {
 				e.printStackTrace();
 				errors.add(FieldValidator.buildMessage(lblReferenceFile.getText(), "error loading file: "+e.getMessage()));
@@ -296,16 +345,7 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 			errors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_MANDATORY));
 			txtOutputFile.setBackground(oc);
 		} else {
-			syncVariantsFunctional.setOutputFile(txtOutputFile.getText());
-		}
-		
-		if (txtBpDownstream.getText() != null && txtBpDownstream.getText().length()!=0) {
-			if (!FieldValidator.isNumeric(txtBpDownstream.getText(),new Integer(0))) {
-				errors.add(FieldValidator.buildMessage(lblBpDownstream.getText(), FieldValidator.ERROR_INTEGER));
-				txtBpDownstream.setBackground(oc);
-			} else {
-				syncVariantsFunctional.setBpDownstream(Integer.parseInt(txtBpDownstream.getText()));					
-			}
+			job.setOutputFile(txtOutputFile.getText());
 		}
 		
 		if (txtBpUpstream.getText() != null && txtBpUpstream.getText().length()!=0) {
@@ -313,7 +353,52 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 				errors.add(FieldValidator.buildMessage(lblBpUpstream.getText(), FieldValidator.ERROR_INTEGER));
 				txtBpUpstream.setBackground(oc);
 			} else {
-				syncVariantsFunctional.setBpUpstream(Integer.parseInt(txtBpUpstream.getText()));				
+				instance.setOffsetUpstream(Integer.parseInt(txtBpUpstream.getText()));				
+			}
+		}
+		
+		if (txtBpDownstream.getText() != null && txtBpDownstream.getText().length()!=0) {
+			if (!FieldValidator.isNumeric(txtBpDownstream.getText(),new Integer(0))) {
+				errors.add(FieldValidator.buildMessage(lblBpDownstream.getText(), FieldValidator.ERROR_INTEGER));
+				txtBpDownstream.setBackground(oc);
+			} else {
+				instance.setOffsetDownstream(Integer.parseInt(txtBpDownstream.getText()));					
+			}
+		}
+		
+		if (txtSpliceDonorOffset.getText() != null && txtSpliceDonorOffset.getText().length()!=0) {
+			if (!FieldValidator.isNumeric(txtSpliceDonorOffset.getText(),new Integer(0))) {
+				errors.add(FieldValidator.buildMessage(lblSpliceDonorOffset.getText(), FieldValidator.ERROR_INTEGER));
+				txtSpliceDonorOffset.setBackground(oc);
+			} else {
+				instance.setSpliceDonorOffset(Integer.parseInt(txtSpliceDonorOffset.getText()));					
+			}
+		}
+		
+		if (txtSpliceAcceptorOffset.getText() != null && txtSpliceAcceptorOffset.getText().length()!=0) {
+			if (!FieldValidator.isNumeric(txtSpliceAcceptorOffset.getText(),new Integer(0))) {
+				errors.add(FieldValidator.buildMessage(lblSpliceAcceptorOffset.getText(), FieldValidator.ERROR_INTEGER));
+				txtSpliceAcceptorOffset.setBackground(oc);
+			} else {
+				instance.setSpliceAcceptorOffset(Integer.parseInt(txtSpliceAcceptorOffset.getText()));					
+			}
+		}
+		
+		if (txtSpliceRegionIntronOffset.getText() != null && txtSpliceRegionIntronOffset.getText().length()!=0) {
+			if (!FieldValidator.isNumeric(txtSpliceRegionIntronOffset.getText(),new Integer(0))) {
+				errors.add(FieldValidator.buildMessage(lblSpliceRegionIntronOffset.getText(), FieldValidator.ERROR_INTEGER));
+				txtSpliceRegionIntronOffset.setBackground(oc);
+			} else {
+				instance.setSpliceRegionIntronOffset(Integer.parseInt(txtSpliceRegionIntronOffset.getText()));					
+			}
+		}
+		
+		if (txtSpliceRegionExonOffset.getText() != null && txtSpliceRegionExonOffset.getText().length()!=0) {
+			if (!FieldValidator.isNumeric(txtSpliceRegionExonOffset.getText(),new Integer(0))) {
+				errors.add(FieldValidator.buildMessage(lblSpliceRegionExonOffset.getText(), FieldValidator.ERROR_INTEGER));
+				txtSpliceRegionExonOffset.setBackground(oc);
+			} else {
+				instance.setSpliceRegionExonOffset(Integer.parseInt(txtSpliceRegionExonOffset.getText()));					
 			}
 		}
 			
@@ -335,10 +420,10 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		
 		String outputFile = txtOutputFile.getText();
 		String logFilename = LoggingHelper.getLoggerFilename(outputFile,"VFA");
-		syncVariantsFunctional.setLogName(logFilename);
-		syncVariantsFunctional.setNameProgressBar(new File(outputFile).getName());
+		job.setLogName(logFilename);
+		job.setNameProgressBar(new File(outputFile).getName());
 		try {
-			syncVariantsFunctional.schedule();
+			job.schedule();
 		} catch (Exception e) {
 			MessageDialog.openError(shell," Variants Functional Annotator Error", e.getMessage());
 			e.printStackTrace();
