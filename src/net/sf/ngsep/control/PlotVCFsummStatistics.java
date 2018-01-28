@@ -90,19 +90,19 @@ public class PlotVCFsummStatistics {
 		}
 		
 		// Calculate percentages
-		ArrayList <String> maf = new ArrayList<String>();
+		ArrayList <Double> maf = new ArrayList<Double>();
 		ArrayList <Double> totalPrcnt = new ArrayList<Double>();
 		ArrayList <Double> codingPrcnt = new ArrayList<Double>();
 		ArrayList <Double> synonymousPrcnt = new ArrayList<Double>();
 		ArrayList <Double> missensePrcnt = new ArrayList<Double>();
 		ArrayList <Double> nonsensePrcnt = new ArrayList<Double>();
 		
-		DecimalFormat fmt = ParseUtils.ENGLISHFMT;
+		//DecimalFormat fmt = ParseUtils.ENGLISHFMT;
 		for (int i = 0 ; i < total.size() ; i++){
 			int nextMAF50 = 50*i/(total.size()-1);
 			//if(nextMAF50%5==0) maf.add(fmt.format(0.01*nextMAF50));
 			//else maf.add(" ");
-			maf.add(fmt.format(0.01*nextMAF50));
+			maf.add(0.01*nextMAF50);
 			//maf.add(lineArray[0]);
 			totalPrcnt.add(Math.max(0.01, safeDoubleRatio(total.get(i) * 100,totalSum)));
 			codingPrcnt.add(Math.max(0.01, safeDoubleRatio(coding.get(i) * 100,synonymousSum + missenseSum + nonsenseSum)));
