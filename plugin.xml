@@ -55,7 +55,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="net.sf.ngsep.view.MainSortAligment" label="Sort Alignments" style="push">
+         <command commandId="net.sf.ngsep.view.MainSortAlignment" label="Sort Alignments" style="push">
                <visibleWhen
                   checkEnabled="false">
                <with
@@ -646,7 +646,7 @@
    <extension point="org.eclipse.ui.commands">
       <command id="CreateIndex" name="Create Index Bowtie2" defaultHandler="net.sf.ngsep.control.PlugIndexBowtie"/>
       <command id="MapReads" name="Map reads" defaultHandler="net.sf.ngsep.control.PlugMapRead"/>
-      <command id="net.sf.ngsep.view.MainSortAligment" name="Sort Aligments" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainSortAlignment" name="Sort Aligments" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="WizardSingleEnd" name="Wizard Single End" defaultHandler="net.sf.ngsep.control.PlugWizardSingleEndReads"/>
       <command id="WizardPairedEnd" name="Wizard Paired End" defaultHandler="net.sf.ngsep.control.PlugWizardPairedEndReads"/>
       <command id="MultiMappingSingleEnd" name="Multi Mapping Single End" defaultHandler="net.sf.ngsep.control.PlugMultiMappingSingleEndReads"/>
