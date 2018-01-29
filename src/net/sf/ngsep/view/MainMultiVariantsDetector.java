@@ -188,7 +188,7 @@ public class MainMultiVariantsDetector {
 			String filename = listFiles.get(i).getName();
 			String fnLowerCase = filename.toLowerCase();
 			String fileabsolutePath = listFiles.get(i).getAbsolutePath();
-			if (!fnLowerCase.endsWith(".bam") && !fnLowerCase.endsWith(".sam")) {
+			if (!fnLowerCase.endsWith(".bam")) {
 				continue;
 			}
 			String sampleId=null;
