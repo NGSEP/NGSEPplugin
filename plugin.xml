@@ -55,7 +55,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="SortAligments" label="Sort Alignments" style="push">
+         <command commandId="net.sf.ngsep.view.MainSortAligment" label="Sort Alignments" style="push">
                <visibleWhen
                   checkEnabled="false">
                <with

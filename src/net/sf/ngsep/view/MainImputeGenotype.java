@@ -326,7 +326,7 @@ public class MainImputeGenotype implements SingleFileInputWindow {
 		instance.setParentIds(parentsId);
 		
 		job.setNameProgressBar(new File(txtOutputPrefix.getText()).getName());
-		String logFilename = txtOutputPrefix.getText()+"IG.log";
+		String logFilename = txtOutputPrefix.getText()+"_IG.log";
 		job.setLogName(logFilename);
 		try {
 			job.schedule();	
