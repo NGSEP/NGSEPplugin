@@ -34,48 +34,57 @@ import org.eclipse.core.runtime.jobs.Job;
 
 /**
  * 
- * @author Juan Camilo Quintero
+ * @author Juan Fernando de la Hoz
+ * @author Jorge Duitama
  *
  */
 public class SyncImputeGenotype extends Job {
 
 	//Instance of the model class with the optional parameters already set
-	private GenotypeImputer populationGenotypeImpute;
+	private GenotypeImputer instance;
 
 	//Parameters to set just before the execution of the process
 	private String vcfFile=null;
-	private String outputFile=null;
+	private String outputPrefix=null;
 
 	//Attributes to set the logger
 	private String logName;
-	private FileHandler logFile;
 
 	//Name for the progress bar
 	private String nameProgressBar;
 
+	public SyncImputeGenotype(String name) {
+		super(name);
+		// TODO Auto-generated constructor stub
+	}
+	
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		//Create log
-		Logger log = LoggingHelper.createLogger(logName, logFile);
+		FileHandler logFile = null;
+		Logger log = null;
 		PrintStream fileAssignments = null;
 		PrintStream fileGenotypes = null;
 		try {
+			logFile = new FileHandler(logName, false);
+			log = LoggingHelper.createLogger(logName, logFile);
+			instance.setLog(log);
+			
 			//Start progress bar
 			monitor.beginTask(getNameProgressBar(), 500);
-			populationGenotypeImpute.setLog(log);
 			log.info("Started Population Impute Genotype");
 
 			//Create progress notifier and set it to listen to the model class 
-			populationGenotypeImpute.setProgressNotifier(new DefaultProgressNotifier(monitor));
-			if (vcfFile != null && outputFile != null) {	
-				fileAssignments = new PrintStream(outputFile+"_assignments.txt");
-				fileGenotypes = new PrintStream(outputFile+"_imputed.vcf");
-				populationGenotypeImpute.setOutAssignments(fileAssignments);
-				populationGenotypeImpute.setOutGenotypes(fileGenotypes);
-				log.info("processing vcf file...");
-				populationGenotypeImpute.impute(vcfFile);
-			}
+			instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
+			
+			fileAssignments = new PrintStream(outputPrefix+"_assignments.txt");
+			fileGenotypes = new PrintStream(outputPrefix+"_imputed.vcf");
+			instance.setOutAssignments(fileAssignments);
+			instance.setOutGenotypes(fileGenotypes);
+			log.info("processing vcf file...");
+			instance.impute(vcfFile);
 			log.info("Process finished");
+			monitor.done();
 		} catch (Exception e) {
 			String message = LoggingHelper.serializeException(e);
 			log.severe(message);
@@ -92,6 +101,14 @@ public class SyncImputeGenotype extends Job {
 		}
 		return Status.OK_STATUS;
 	}
+	
+	public GenotypeImputer getInstance() {
+		return instance;
+	}
+
+	public void setInstance(GenotypeImputer instance) {
+		this.instance = instance;
+	}
 
 	public String getVcfFile() {
 		return vcfFile;
@@ -101,12 +118,13 @@ public class SyncImputeGenotype extends Job {
 		this.vcfFile = vcfFile;
 	}
 
-	public String getOutputFile() {
-		return outputFile;
+
+	public String getOutputPrefix() {
+		return outputPrefix;
 	}
 
-	public void setOutputFile(String outputFile) {
-		this.outputFile = outputFile;
+	public void setOutputPrefix(String outputPrefix) {
+		this.outputPrefix = outputPrefix;
 	}
 
 	public String getLogName() {
@@ -117,33 +135,12 @@ public class SyncImputeGenotype extends Job {
 		this.logName = logName;
 	}
 
-	public FileHandler getLogFile() {
-		return logFile;
-	}
-
-	public void setLogFile(FileHandler logFile) {
-		this.logFile = logFile;
-	}
-
 	public String getNameProgressBar() {
 		return nameProgressBar;
 	}
 
 	public void setNameProgressBar(String nameProgressBar) {
 		this.nameProgressBar = nameProgressBar;
-	}
-
-	public GenotypeImputer getPopulationGenotypeImpute() {
-		return populationGenotypeImpute;
-	}
-
-	public void setPopulationGenotypeImpute(GenotypeImputer populationGenotypeImpute) {
-		this.populationGenotypeImpute = populationGenotypeImpute;
-	}
-	
-	public SyncImputeGenotype(String name) {
-		super(name);
-		// TODO Auto-generated constructor stub
 	}
 
 }

@@ -45,10 +45,10 @@ import ngsep.discovery.BAMRelativeAlleleCountsCalculator;
  * @author Jorge Duitama
  *
  */
-public class MainRelativeAlleleCountsCalculator {
+public class MainRelativeAlleleCountsCalculator implements SingleFileInputWindow  {
 	
 	//General attributes
-	protected Shell shell;
+	private Shell shell;
 	private Display display;
 	
 	//File selected initially by the user
@@ -132,9 +132,7 @@ public class MainRelativeAlleleCountsCalculator {
 		txtFile = new Text (shell, SWT.BORDER);
 		txtFile.setBounds(200, 40, 600, 25);
 		txtFile.addMouseListener(mouse);
-		if (selectedFile != null && !selectedFile.equals("")) {
-			txtFile.setText(selectedFile);
-		}
+		txtFile.setText(selectedFile);
 				
 		btnFile = new Button (shell, SWT.NONE);
 		btnFile.setBounds(830, 40, 25, 25);

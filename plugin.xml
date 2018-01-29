@@ -180,7 +180,7 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="net.sf.ngsep.view.MainCoverageStatisticsCalculator" label="Coverage Statistics Calculator" style="push">
+         <command commandId="net.sf.ngsep.view.MainCoverageStatisticsCalculator" label="Calculate Coverage Statistics" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -646,14 +646,14 @@
    <extension point="org.eclipse.ui.commands">
       <command id="CreateIndex" name="Create Index Bowtie2" defaultHandler="net.sf.ngsep.control.PlugIndexBowtie"/>
       <command id="MapReads" name="Map reads" defaultHandler="net.sf.ngsep.control.PlugMapRead"/>
-      <command id="SortAligments" name="Sort Aligments" defaultHandler="net.sf.ngsep.control.PlugSortAlignment"/>
+      <command id="net.sf.ngsep.view.MainSortAligment" name="Sort Aligments" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="WizardSingleEnd" name="Wizard Single End" defaultHandler="net.sf.ngsep.control.PlugWizardSingleEndReads"/>
       <command id="WizardPairedEnd" name="Wizard Paired End" defaultHandler="net.sf.ngsep.control.PlugWizardPairedEndReads"/>
       <command id="MultiMappingSingleEnd" name="Multi Mapping Single End" defaultHandler="net.sf.ngsep.control.PlugMultiMappingSingleEndReads"/>
       <command id="MultiMappingPairedEnd" name="Multi Mapping Paired End" defaultHandler="net.sf.ngsep.control.PlugMultiMappingPairedEndReads"/>
       <command id="net.sf.ngsep.view.MainBasePairQualityStatistics" name="Calculate Basepair Quality Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainPlotQualityStatistics" name="Plot Quality Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
-      <command id="net.sf.ngsep.view.MainCoverageStatisticsCalculator" name="Coverage Statistics Calculator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainCoverageStatisticsCalculator" name="Calculate Coverage Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainPlotCoverageStatistics" name="Plot Coverage Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainRelativeAlleleCountsCalculator" name="Calculate Relative Allele Counts" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="VariantsDetector" name="Variants Detector" defaultHandler="net.sf.ngsep.control.PlugVariantsDetector"/>

@@ -84,8 +84,8 @@ public class MainNeighborJoining {
 		display = Display.getDefault();
 		shell = new Shell(display, SWT.SHELL_TRIM);
 		shell.setText("NeighborJoining");
-		shell.setLocation(150, 200);
-		shell.setSize(900, 600);
+		shell.setLocation(10, 10);
+		shell.setSize(800, 200);
 		createContents();
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -103,18 +103,18 @@ public class MainNeighborJoining {
 
 		//Input & Output
 		lblFile = new Label (shell, SWT.NONE);
-		lblFile.setBounds(20, 40, 170, 30);
+		lblFile.setBounds(10, 40, 180, 22);
 		lblFile.setText("(*)Input Matrix File:");
 		
 		txtFile = new Text (shell, SWT.BORDER);
-		txtFile.setBounds(200, 40, 600, 25);
+		txtFile.setBounds(200, 40, 550, 22);
 		txtFile.addMouseListener(mouse);
 		if (selectedFile != null && !selectedFile.equals("")) {
 			txtFile.setText(selectedFile);
 		}
 				
 		btnFile = new Button (shell, SWT.NONE);
-		btnFile.setBounds(830, 40, 25, 25);
+		btnFile.setBounds(760, 40, 25, 22);
 		btnFile.setText("...");
 		btnFile.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -124,17 +124,17 @@ public class MainNeighborJoining {
 		});
 		
 		lblOutput = new Label (shell, SWT.NONE);
-		lblOutput.setBounds(20, 140, 170, 30);
+		lblOutput.setBounds(10, 80, 180, 22);
 		lblOutput.setText("(*)Output file:");
 		
 		txtOutput = new Text (shell, SWT.BORDER);
-		txtOutput.setBounds(200, 140, 600, 22);
+		txtOutput.setBounds(200, 80, 550, 22);
 		txtOutput.addMouseListener(mouse);
 		//Suggest name for the output file
 		txtOutput.setText(SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile)+"_nj.newick");
 		
 		btnOutput = new Button (shell, SWT.NONE);
-		btnOutput.setBounds(830, 140, 25, 25);
+		btnOutput.setBounds(760, 80, 25, 22);
 		btnOutput.setText("...");
 		btnOutput.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -146,7 +146,7 @@ public class MainNeighborJoining {
 		
 		//buttons on the bottom
 		btnSubmit = new Button(shell, SWT.NONE);
-		btnSubmit.setBounds(250, 400, 170, 25);
+		btnSubmit.setBounds(180, 140, 200, 25);
 		btnSubmit.setText("Neighbor-Joining clustering");
 		btnSubmit.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -156,7 +156,7 @@ public class MainNeighborJoining {
 		});	
 		
 		btnCancel = new Button(shell, SWT.NONE);
-		btnCancel.setBounds(500, 400, 130, 25);
+		btnCancel.setBounds(450, 140, 200, 25);
 		btnCancel.setText("Cancel");
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override

@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
 
 import net.sf.ngsep.control.SyncImputeGenotype;
 import net.sf.ngsep.utilities.FieldValidator;
@@ -74,13 +73,10 @@ public class MainImputeGenotype implements SingleFileInputWindow {
 	private Text txtVcfFile;
 	private Button btnVcfFile;
 
-	private Label lblOutputFile;
-	private Text txtOutputFile;
-	private Button btnOutputFile;
+	private Label lblOutputPrefix;
+	private Text txtOutputPrefix;
+	private Button btnOutputPrefix;
 
-/*	private Label lblFUTURE;
-	private Text txtFUTURE;
-*/
 	private Label lblClusters;
 	private Text txtClusters;
 
@@ -132,21 +128,21 @@ public class MainImputeGenotype implements SingleFileInputWindow {
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
 		
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setLocation(150, 200);
-		shell.setSize(750, 600);
+		shell.setLocation(10, 10);
+		shell.setSize(800, 600);
 		shell.setText("Genotype imputation");
 
 		lblVcfFile = new Label(shell, SWT.NONE);
-		lblVcfFile.setBounds(10, 50, 130, 21);
+		lblVcfFile.setBounds(10, 40, 150, 22);
 		lblVcfFile.setText("(*)VCF File:");
 
 		txtVcfFile = new Text(shell, SWT.BORDER);
-		txtVcfFile.setBounds(150, 50, 530, 21);
+		txtVcfFile.setBounds(180, 40, 550, 22);
 		txtVcfFile.addMouseListener(mouse);
 		txtVcfFile.setText(selectedFile);
 
 		btnVcfFile = new Button(shell, SWT.NONE);
-		btnVcfFile.setBounds(700, 50, 25, 21);
+		btnVcfFile.setBounds(750, 40, 25, 22);
 		btnVcfFile.setText("...");
 		btnVcfFile.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -155,68 +151,68 @@ public class MainImputeGenotype implements SingleFileInputWindow {
 			}
 		});
 
-		lblOutputFile = new Label(shell, SWT.NONE);
-		lblOutputFile.setBounds(10, 100, 130, 21);
-		lblOutputFile.setText("(*)Output File:");
+		lblOutputPrefix = new Label(shell, SWT.NONE);
+		lblOutputPrefix.setBounds(10, 80, 150, 22);
+		lblOutputPrefix.setText("(*)Output Prefix:");
 
-		txtOutputFile = new Text(shell, SWT.BORDER);
-		txtOutputFile.setBounds(150, 100, 530, 21);
-		txtOutputFile.addMouseListener(mouse);
+		txtOutputPrefix = new Text(shell, SWT.BORDER);
+		txtOutputPrefix.setBounds(180, 80, 550, 22);
+		txtOutputPrefix.addMouseListener(mouse);
 		String outputFile = selectedFile.substring(0,selectedFile.lastIndexOf("."));
-		txtOutputFile.setText(outputFile);
+		txtOutputPrefix.setText(outputFile);
 
-		btnOutputFile = new Button(shell, SWT.NONE);
-		btnOutputFile.setBounds(700, 100, 25, 21);
-		btnOutputFile.setText("...");
-		btnOutputFile.addSelectionListener(new SelectionAdapter() {
+		btnOutputPrefix = new Button(shell, SWT.NONE);
+		btnOutputPrefix.setBounds(750, 80, 25, 22);
+		btnOutputPrefix.setText("...");
+		btnOutputPrefix.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, selectedFile, txtOutputFile);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, selectedFile, txtOutputPrefix);
 			}
 		});
 
 		lblClusters = new Label(shell, SWT.NONE);
-		lblClusters.setBounds(10, 150, 260, 21);
+		lblClusters.setBounds(10, 150, 260, 22);
 		lblClusters.setText("Number of clusters:");
 
 		txtClusters = new Text(shell, SWT.BORDER);
-		txtClusters.setBounds(300, 150, 100, 21);
+		txtClusters.setBounds(300, 150, 100, 22);
 		txtClusters.addMouseListener(mouse);
 
 		lblAverageCMPerKbp = new Label(shell, SWT.NONE);
-		lblAverageCMPerKbp.setBounds(10, 200, 260, 21);
+		lblAverageCMPerKbp.setBounds(10, 200, 260, 22);
 		lblAverageCMPerKbp.setText("Average centiMorgans per Kbp:");
 
 		txtAverageCMPerKbp = new Text(shell, SWT.BORDER);
-		txtAverageCMPerKbp.setBounds(300, 200, 100, 21);
+		txtAverageCMPerKbp.setBounds(300, 200, 100, 22);
 		txtAverageCMPerKbp.addMouseListener(mouse);
 		
 		lblWindowSize = new Label(shell, SWT.NONE);
-		lblWindowSize.setBounds(10, 250, 260, 21);
+		lblWindowSize.setBounds(10, 250, 260, 22);
 		lblWindowSize.setText("Window size:");
 
 		txtWindowSize = new Text(shell, SWT.BORDER);
-		txtWindowSize.setBounds(300, 250, 100, 21);
+		txtWindowSize.setBounds(300, 250, 100, 22);
 		txtWindowSize.addMouseListener(mouse);
 		
 		lblOverlap = new Label(shell, SWT.NONE);
-		lblOverlap.setBounds(10, 300, 260, 21);
+		lblOverlap.setBounds(10, 300, 260, 22);
 		lblOverlap.setText("Overlap:");
 
 		txtOverlap = new Text(shell, SWT.BORDER);
-		txtOverlap.setBounds(300, 300, 100, 21);
+		txtOverlap.setBounds(300, 300, 100, 22);
 		txtOverlap.addMouseListener(mouse);
 
 		btnFixedTransit = new Button(shell, SWT.CHECK);
-		btnFixedTransit.setBounds(10, 350, 260, 21);
+		btnFixedTransit.setBounds(10, 350, 260, 22);
 		btnFixedTransit.setText("Fixed Transitions");
 		
 		btnInbredParents = new Button(shell, SWT.CHECK);
-		btnInbredParents.setBounds(10, 400, 260, 21);
+		btnInbredParents.setBounds(10, 400, 260, 22);
 		btnInbredParents.setText("Inbred parents");
 		
 		btnInbredSamples = new Button(shell, SWT.CHECK);
-		btnInbredSamples.setBounds(10, 450, 260, 21);
+		btnInbredSamples.setBounds(10, 450, 260, 22);
 		btnInbredSamples.setText("Inbred samples");
 
 		List<String> sampleIds=null;
@@ -262,8 +258,9 @@ public class MainImputeGenotype implements SingleFileInputWindow {
 	}
 
 	public void proceed(){
-		GenotypeImputer popGenotypeImpute=new GenotypeImputer();
-		SyncImputeGenotype imputeGenotype=new SyncImputeGenotype("Impute Genotype");
+		GenotypeImputer instance=new GenotypeImputer();
+		SyncImputeGenotype job=new SyncImputeGenotype("Impute Genotype");
+		job.setInstance(instance);
 
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		ArrayList<String> listErrors = new ArrayList<String>();
@@ -271,18 +268,20 @@ public class MainImputeGenotype implements SingleFileInputWindow {
 			listErrors.add(FieldValidator.buildMessage(lblVcfFile.getText(), FieldValidator.ERROR_MANDATORY));
 			txtVcfFile.setBackground(oc);
 		} else {
-			imputeGenotype.setVcfFile(txtVcfFile.getText());
+			job.setVcfFile(txtVcfFile.getText());
 		}
-		if (txtOutputFile.getText() == null|| txtOutputFile.getText().length()==0) {
-			listErrors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_MANDATORY));
-			txtOutputFile.setBackground(oc);
+		if (txtOutputPrefix.getText() == null|| txtOutputPrefix.getText().length()==0) {
+			listErrors.add(FieldValidator.buildMessage(lblOutputPrefix.getText(), FieldValidator.ERROR_MANDATORY));
+			txtOutputPrefix.setBackground(oc);
+		} else {
+			job.setOutputPrefix(txtOutputPrefix.getText());
 		}
 		if (txtClusters.getText() != null && txtClusters.getText().length()!=0) {
 			if (!FieldValidator.isNumeric(txtClusters.getText(), new Integer(0))) {
 				listErrors.add(FieldValidator.buildMessage(lblClusters.getText(), FieldValidator.ERROR_NUMERIC));
 				txtClusters.setBackground(oc);
 			} else {
-				popGenotypeImpute.setK(Integer.parseInt(txtClusters.getText()));
+				instance.setK(Integer.parseInt(txtClusters.getText()));
 			}
 		}
 		if (txtAverageCMPerKbp.getText()!=null && txtAverageCMPerKbp.getText().length()!=0) {
@@ -290,7 +289,7 @@ public class MainImputeGenotype implements SingleFileInputWindow {
 				listErrors.add(FieldValidator.buildMessage(lblAverageCMPerKbp.getText(), FieldValidator.ERROR_NUMERIC));
 				txtAverageCMPerKbp.setBackground(oc);
 			} else {
-				popGenotypeImpute.setAvgCMPerKbp(Double.parseDouble(txtAverageCMPerKbp.getText()));
+				instance.setAvgCMPerKbp(Double.parseDouble(txtAverageCMPerKbp.getText()));
 			}
 		}
 		if (txtWindowSize.getText()!=null && txtWindowSize.getText().length()!=0) {
@@ -298,7 +297,7 @@ public class MainImputeGenotype implements SingleFileInputWindow {
 				listErrors.add(FieldValidator.buildMessage(lblWindowSize.getText(), FieldValidator.ERROR_INTEGER));
 				txtWindowSize.setBackground(oc);
 			} else {
-				popGenotypeImpute.setWindowSize(Integer.parseInt(txtWindowSize.getText()));
+				instance.setWindowSize(Integer.parseInt(txtWindowSize.getText()));
 			}
 		}
 		if (txtOverlap.getText()!=null && txtOverlap.getText().length()!=0) {
@@ -306,7 +305,7 @@ public class MainImputeGenotype implements SingleFileInputWindow {
 				listErrors.add(FieldValidator.buildMessage(lblOverlap.getText(), FieldValidator.ERROR_INTEGER));
 				txtOverlap.setBackground(oc);
 			} else {
-				popGenotypeImpute.setOverlap(Integer.parseInt(txtOverlap.getText()));
+				instance.setOverlap(Integer.parseInt(txtOverlap.getText()));
 			}
 		}
 		if (listErrors.size() > 0) {
@@ -314,9 +313,9 @@ public class MainImputeGenotype implements SingleFileInputWindow {
 			return;
 		}
 
-		popGenotypeImpute.setSkipTransitionsTraining(btnFixedTransit.getSelection());
-		popGenotypeImpute.setInbredParents(btnInbredParents.getSelection());
-		popGenotypeImpute.setInbredSamples(btnInbredSamples.getSelection());
+		instance.setSkipTransitionsTraining(btnFixedTransit.getSelection());
+		instance.setInbredParents(btnInbredParents.getSelection());
+		instance.setInbredSamples(btnInbredSamples.getSelection());
 		
 		List<String>parentsId=new ArrayList<String>();
 		for (int i = 0; i < tblParentsIds.getItems().length; i++) {
@@ -324,18 +323,13 @@ public class MainImputeGenotype implements SingleFileInputWindow {
 				parentsId.add(tblParentsIds.getItem(i).getText(0));
 			}
 		}
-		popGenotypeImpute.setParentIds(parentsId);
+		instance.setParentIds(parentsId);
 		
-		String outputFile = txtOutputFile.getText();
-		imputeGenotype.setOutputFile(outputFile);
-		imputeGenotype.setNameProgressBar(new File(outputFile).getName());
-		String logFilename = LoggingHelper.getLoggerFilename(outputFile,"IG");
-		imputeGenotype.setLogName(logFilename);
-		imputeGenotype.setPopulationGenotypeImpute(popGenotypeImpute);
+		job.setNameProgressBar(new File(txtOutputPrefix.getText()).getName());
+		String logFilename = txtOutputPrefix.getText()+"IG.log";
+		job.setLogName(logFilename);
 		try {
-			FileHandler logFile = new FileHandler(logFilename, false);
-			imputeGenotype.setLogFile(logFile);
-			imputeGenotype.schedule();	
+			job.schedule();	
 			MessageDialog.openInformation(shell, "Population Impute Genotype",LoggingHelper.MESSAGE_PROGRESS_BAR);
 			shell.dispose();
 		} catch (Exception e) {

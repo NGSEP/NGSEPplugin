@@ -19,6 +19,7 @@
  *******************************************************************************/
 package net.sf.ngsep.view;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import net.sf.ngsep.control.SyncSortAlignment;
@@ -43,19 +44,32 @@ import org.eclipse.swt.widgets.Text;
  * @author Juan Camilo Quintero
  *
  */
-public class MainSortAlignment {
+public class MainSortAlignment implements SingleFileInputWindow {
 
-	protected Shell shell;
-	private Text txtFileSam;
-	private String aliFile;
-	private Button btnCancel;
-	private Label lblFileSam;
-	private Button btnSortAligment;
-	private Text txtOutPutFile;
-	private Button btnOutPutFile;
-	private Label lblOutputFile;
+	//General attributes
+	private Shell shell;
 	private Display display;
-	private Button btnFile;
+	
+	//File selected initially by the user
+	private String selectedFile;
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+	public void setSelectedFile(String selectedFile) {
+		this.selectedFile = selectedFile;
+	}
+	
+	private Label lblInputFile;
+	private Text txtInputFile;
+	private Button btnInputFile;
+	
+	private Label lblOutputFile;
+	private Text txtOutputFile;
+	private Button btnOutputFile;
+	
+	
+	private Button btnSortAligments;
+	private Button btnCancel;
 	
 	/**
 	 * Open the window.
@@ -76,36 +90,77 @@ public class MainSortAlignment {
 
 	protected void createContents() {
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setSize(752, 213);
+		shell.setSize(800, 250);
 		shell.setText("Sort Alignment");
-		shell.setLocation(150, 200);
+		shell.setLocation(10, 10);
 
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
 
-		lblFileSam = new Label(shell, SWT.NONE);
-		lblFileSam.setBounds(23, 40, 95, 20);
-		lblFileSam.setText("(*)File (.bam):");
+		lblInputFile = new Label(shell, SWT.NONE);
+		lblInputFile.setBounds(10, 40, 140, 22);
+		lblInputFile.setText("(*)File:");
 
-		txtFileSam = new Text(shell, SWT.BORDER);
-		String filePathSystem = getAliFile();
-		if (filePathSystem != null && !filePathSystem.equals("")) {
-			txtFileSam.setText(filePathSystem);
+		txtInputFile = new Text(shell, SWT.BORDER);
+		txtInputFile.setBounds(160, 40, 580, 22);
+		txtInputFile.addMouseListener(mouse);
+		txtInputFile.setText(selectedFile);
+		
+		btnInputFile = new Button(shell, SWT.NONE);
+		btnInputFile.setBounds(750, 40, 25, 22);
+		btnInputFile.setText("...");
+		btnInputFile.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile,txtInputFile);
+			}
+		});
+		
+		
+		lblOutputFile = new Label(shell, SWT.NONE);
+		lblOutputFile.setBounds(10, 80, 140, 22);
+		lblOutputFile.setText("(*)Output File:");
+		
+		txtOutputFile = new Text(shell, SWT.BORDER);
+		txtOutputFile.setBounds(160, 80, 580, 22);
+		txtOutputFile.addMouseListener(mouse);
+		String name = SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile);
+		if (name.contains("_sorted")) {
+			name = name.substring(0,name.lastIndexOf("_sorted"));
+			name = name + "_sorted_1.bam";
+		} else if (name.contains("sorted")) {
+			name = name.substring(0,name.lastIndexOf("sorted"));
+			name = name + "_sorted_1.bam";
+		} else {
+			name = name + "_sorted.bam";
 		}
-		txtFileSam.setBounds(124, 37, 545, 21);
-		txtFileSam.addMouseListener(mouse);
+		txtOutputFile.setText(name);
+			
+		btnOutputFile = new Button(shell, SWT.NONE);
+		btnOutputFile.setBounds(750, 80, 25, 22);
+		btnOutputFile.setText("...");
+		btnOutputFile.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, selectedFile,txtOutputFile);
+				}
+			});
+		
 
-		btnSortAligment = new Button(shell, SWT.NONE);
-		btnSortAligment.setBounds(124, 111, 110, 25);
-		btnSortAligment.addSelectionListener(new SelectionAdapter() {
+		
+
+		btnSortAligments = new Button(shell, SWT.NONE);
+		btnSortAligments.setBounds(200, 150, 180, 25);
+		btnSortAligments.setText("Sort Aligments");
+		btnSortAligments.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				proceed();
 
 			}
 		});
-		btnSortAligment.setText("Sort Aligment");
-
+		
 		btnCancel = new Button(shell, SWT.NONE);
+		btnCancel.setBounds(450, 150, 180, 25);
 		btnCancel.setText("Cancel");
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -113,67 +168,6 @@ public class MainSortAlignment {
 				shell.close();
 			}
 		});
-		btnCancel.setBounds(257, 111, 110, 25);
-
-		lblOutputFile = new Label(shell, SWT.NONE);
-		lblOutputFile.setBounds(23, 75, 95, 20);
-		lblOutputFile.setText("(*)Output File:");
-
-		txtOutPutFile = new Text(shell, SWT.BORDER);
-		txtOutPutFile.setBounds(124, 74, 545, 21);
-		txtOutPutFile.addMouseListener(mouse);
-		String runtimeOne = txtFileSam.getText();
-		// Here is validated if the referenced file exists and if so then I
-		// capture file name and you add_Sorted.bam default and is placed
-		// in the box of the output file
-		if (txtFileSam.getText() != null && !txtFileSam.equals("")) {
-			String nameStr = runtimeOne.substring(0,runtimeOne.lastIndexOf("."));
-			if (nameStr.contains(".")) {
-				String outputFileAuxiliary = nameStr.substring(0,nameStr.lastIndexOf("."));
-				if (outputFileAuxiliary != null && !outputFileAuxiliary.equals(""))
-					outputFileAuxiliary = outputFileAuxiliary + "_sorted.bam";
-					txtOutPutFile.setText(outputFileAuxiliary);
-			} else {
-				if (nameStr != null && !nameStr.equals("")) {
-					if (nameStr.contains("_sorted")) {
-						nameStr = runtimeOne.substring(0,runtimeOne.lastIndexOf("_sorted"));
-						nameStr = nameStr + "_sorted_1.bam";
-						txtOutPutFile.setText(nameStr);
-					} else if (nameStr.contains("sorted")) {
-						nameStr = runtimeOne.substring(0,runtimeOne.lastIndexOf("sorted"));
-						nameStr = nameStr + "_sorted_1.bam";
-						txtOutPutFile.setText(nameStr);
-					} else {
-						nameStr = nameStr + "_sorted.bam";
-						txtOutPutFile.setText(nameStr);
-					}
-				}
-			}
-		}
-		btnOutPutFile = new Button(shell, SWT.NONE);
-		btnOutPutFile.setBounds(672, 70, 21, 25);
-		btnOutPutFile.addSelectionListener(new SelectionAdapter() {
-			// this method returns me the path where the eclipse runtime
-			// files according to separator that has the operating system
-			// for windows \ Linux / to trigger the button event to
-			// add a file to the screen, I suggest a name for the
-			// file output with possible extensions
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, aliFile,txtOutPutFile);
-				}
-			});
-		btnOutPutFile.setText("...");
-
-		btnFile = new Button(shell, SWT.NONE);
-		btnFile.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, aliFile,txtFileSam);
-			}
-		});
-		btnFile.setText("...");
-		btnFile.setBounds(673, 37, 21, 25);
 
 	}
 
@@ -183,33 +177,39 @@ public class MainSortAlignment {
 	// the file src the same file name but a reference to the text addiction
 	// _Sorter
 	public void proceed() {
-		try {
-			Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
-			ArrayList<String> errors = new ArrayList<String>();
-			if (txtFileSam.getText() == null || txtFileSam.getText().length()==0) {
-				errors.add(FieldValidator.buildMessage(lblFileSam.getText(), FieldValidator.ERROR_MANDATORY));
-				txtFileSam.setBackground(oc);
-			}
+		SyncSortAlignment job = new SyncSortAlignment("Sort alignments");
+		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
+		
+		ArrayList<String> errors = new ArrayList<String>();
+		if (txtInputFile.getText() == null || txtInputFile.getText().length()==0) {
+			errors.add(FieldValidator.buildMessage(lblInputFile.getText(), FieldValidator.ERROR_MANDATORY));
+			txtInputFile.setBackground(oc);
+		} else {
+			job.setInputFile(txtInputFile.getText());
+		}
 
-			if (txtOutPutFile.getText() == null|| txtOutPutFile.getText().length()==0) {
-				errors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_MANDATORY));
-				txtOutPutFile.setBackground(oc);
-			}
+		if (txtOutputFile.getText() == null|| txtOutputFile.getText().length()==0) {
+			errors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_MANDATORY));
+			txtOutputFile.setBackground(oc);
+		} else {
+			job.setOutputFile(txtOutputFile.getText());
+		}
+		
+		if(txtInputFile.getText().equals(txtOutputFile.getText())){
+			errors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_SAME_NAME));
+			txtOutputFile.setBackground(oc);
+		}
+		
+		if (errors.size() > 0) {
+			FieldValidator.paintErrors(errors, shell, "Statistics");
+			return;
+		}
+		String logFilename = LoggingHelper.getLoggerFilename(txtOutputFile.getText(),"SORT");
+		job.setLogName(logFilename);
+		job.setNameProgressBar(new File(txtOutputFile.getText()).getName());			
 			
-			if(txtFileSam.getText().equals(txtOutPutFile.getText())){
-				errors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_SAME_NAME));
-				txtOutPutFile.setBackground(oc);
-			}
-			
-			if (errors.size() > 0) {
-				FieldValidator.paintErrors(errors, shell, "Statistics");
-				return;
-			}
-					
-			SyncSortAlignment syncSortAligment = new SyncSortAlignment();
-			syncSortAligment.setInputFile(txtFileSam.getText());
-			syncSortAligment.setOutputFile(txtOutPutFile.getText());
-			syncSortAligment.runJob();
+		try {
+			job.schedule();
 			MessageDialog.openInformation(shell, "Sort Alignment is running",LoggingHelper.MESSAGE_PROGRESS_NOBAR);
 			shell.dispose();
 
@@ -218,13 +218,5 @@ public class MainSortAlignment {
 			e.printStackTrace();
 			return;
 		}
-	}
-
-	public String getAliFile() {
-		return aliFile;
-	}
-
-	public void setAliFile(String aliFile) {
-		this.aliFile = aliFile;
 	}
 }

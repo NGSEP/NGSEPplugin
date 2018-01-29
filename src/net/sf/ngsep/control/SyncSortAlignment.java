@@ -25,6 +25,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import net.sf.ngsep.utilities.LoggingHelper;
+import net.sf.ngsep.utilities.SpecialFieldsHelper;
 import net.sf.picard.sam.SortSam;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,47 +36,51 @@ import org.eclipse.core.runtime.jobs.Job;
 /**
  * 
  * @author Juan Camilo Quintero
+ * @author Jorge Duitama
  *
  */
-public class SyncSortAlignment {
+public class SyncSortAlignment extends Job {
+	
 	private String inputFile;
 	private String outputFile;
-
-	private final Job job = new Job("Sort Sam Process") {
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			File file=new File(inputFile);
-			String adressOutputFile=file.getAbsolutePath();
-			String nameLog=adressOutputFile.substring(adressOutputFile.lastIndexOf(File.separator), adressOutputFile.lastIndexOf("."));
-			String logId=nameLog.substring(nameLog.lastIndexOf(File.separator)+1, nameLog.length());
-			String logName = file.getParent()+File.separator+logId+".log";
-			FileHandler logFile;
-			try {
-				logFile = new FileHandler(logName, false);
-			} catch (IOException e) {
-				System.err.println("Could not create log file");
-				e.printStackTrace();
-				return Status.CANCEL_STATUS;
-			}
-			Logger log = LoggingHelper.createLogger(logName, logFile);
-			try {
-				log.info("Started Sort Sam");
-				sortAlignments(logId, inputFile,outputFile,log);
-				log.info("Process finished");
-			} catch (Exception e) {
-				String message = LoggingHelper.serializeException(e);
-				log.severe(message);
-			} finally {
-				LoggingHelper.closeLogger(log);
-			}
-			return Status.OK_STATUS;
-
-		}
-	};
-
-	public void runJob() {
-		job.schedule();
+	
+	//Attributes to set the logger
+	private String logName;
+	
+	//Name for the progress bar
+	private String nameProgressBar;
+	
+	public SyncSortAlignment(String name) {
+		super(name);
 	}
+
+	@Override
+	protected IStatus run(IProgressMonitor monitor) {
+		
+		FileHandler logFile;
+		try {
+			logFile = new FileHandler(logName, false);
+		} catch (IOException e) {
+			System.err.println("Could not create log file");
+			e.printStackTrace();
+			return Status.CANCEL_STATUS;
+		}
+		Logger log = LoggingHelper.createLogger(logName, logFile);
+		try {
+			log.info("Started Sort Sam");
+			String tmpDirName = SpecialFieldsHelper.buildSuggestedOutputPrefix(nameProgressBar);
+			sortAlignments(tmpDirName, inputFile,outputFile,log);
+			log.info("Process finished");
+		} catch (Exception e) {
+			String message = LoggingHelper.serializeException(e);
+			log.severe(message);
+		} finally {
+			LoggingHelper.closeLogger(log);
+		}
+		return Status.OK_STATUS;
+
+	}
+
 	public String getInputFile() {
 		return inputFile;
 	}
@@ -89,10 +94,26 @@ public class SyncSortAlignment {
 		this.outputFile = outputFile;
 	}
 
-	public static void sortAlignments(String jobId, String inFile, String outFile, Logger log) throws IOException {
+	public String getLogName() {
+		return logName;
+	}
+
+	public void setLogName(String logName) {
+		this.logName = logName;
+	}
+
+	public String getNameProgressBar() {
+		return nameProgressBar;
+	}
+
+	public void setNameProgressBar(String nameProgressBar) {
+		this.nameProgressBar = nameProgressBar;
+	}
+
+	public static void sortAlignments(String tmpDirName, String inFile, String outFile, Logger log) throws IOException {
 		String [] args = new String [5];
 		File f = new File (outFile);
-		File sortDirectory = new File(f.getParentFile().getAbsolutePath() + File.separator+jobId+"_tmpDir");
+		File sortDirectory = new File(f.getParentFile().getAbsolutePath() + File.separator+tmpDirName+"_tmpDir");
 		if (!sortDirectory.exists()) {
 			if (!sortDirectory.mkdirs()) {
 				throw new IOException("Could not create temporary directory for sorting");
