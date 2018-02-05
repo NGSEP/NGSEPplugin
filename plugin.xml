@@ -640,6 +640,26 @@
                      </with>
                </visibleWhen>
          </command>
+         <command commandId="net.sf.ngsep.view.MainMutatedPeptidesExtractor" label="Mutated Peptides Extractor" style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                     <with
+                           variable="activeMenuSelection">
+                           <iterate
+                           		ifEmpty="false"
+                           		operator="or">
+                           	<adapt
+                           		type="org.eclipse.core.resources.IFile">
+                           		<or>
+                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
+                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
+                           			<test property="org.eclipse.core.resources.extension" value="gz" />
+                           		</or>
+                           	</adapt>
+                           </iterate>
+                     </with>
+               </visibleWhen>
+         </command>
          </menu>
       </menuContribution>
    </extension>
@@ -673,7 +693,8 @@
       <command id="ReadDepthComparator" name="Read Depth Comparator" defaultHandler="net.sf.ngsep.control.PlugCNVcompare"/>
       <command id="KmersCounter" name="Kmers Counter" defaultHandler="net.sf.ngsep.control.PlugKmersCounter"/>
       <command id="DistanceMatrixCalculator" name="Distance Matrix Calculator" defaultHandler="net.sf.ngsep.control.PlugDistanceMatrixCalculator"/>
- 	  <command id="NeighborJoining" name="Neighbor Joining Generation" defaultHandler="net.sf.ngsep.control.PlugNeighborJoining"/>  
+ 	  <command id="NeighborJoining" name="Neighbor Joining Generation" defaultHandler="net.sf.ngsep.control.PlugNeighborJoining"/>
+ 	  <command id="net.sf.ngsep.view.MainMutatedPeptidesExtractor" name="Mutated Peptides Extractor" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
    </extension>
   <extension
 		point="org.eclipse.ui.views">
