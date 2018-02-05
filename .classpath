@@ -6,6 +6,6 @@
 	<classpathentry kind="lib" path="lib/jcommon-1.0.17.jar"/>
 	<classpathentry kind="lib" path="lib/SortSam.jar"/>
 	<classpathentry kind="lib" path="lib/xchart-2.4.2.jar"/>
-	<classpathentry kind="lib" path="lib/NGSEPcore_3.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/NGSEPcore_3.1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
