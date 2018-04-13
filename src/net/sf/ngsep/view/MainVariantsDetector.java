@@ -255,7 +255,7 @@ public class MainVariantsDetector {
 					
 				}
 				
-				if(commandsVDMain.get("RunRDAnalysis")==null||commandsVDMain.get("FindRepeats")==null||commandsVDMain.get("RunRPAnalysis")==null){
+				if(commandsVDMain.get("RunRDAnalysis")!=null || commandsVDMain.get("FindRepeats")!=null || commandsVDMain.get("RunRPAnalysis")!=null){
 					vd.setOutStructural(new PrintStream((String)commandsVDMain.get("destFile")+ "_SV.gff"));
 				}
 				
@@ -310,7 +310,7 @@ public class MainVariantsDetector {
 					} else {
 						sd.setVcfFile(null);
 					}
-					if (commandsVDMain.get("RunRDAnalysis")==null||commandsVDMain.get("FindRepeats")==null||commandsVDMain.get("RunRPAnalysis")==null) {
+					if (commandsVDMain.get("RunRDAnalysis")!=null || commandsVDMain.get("FindRepeats")!=null || commandsVDMain.get("RunRPAnalysis")!=null) {
 						vdMulti.setOutStructural(new PrintStream(sd.getSvFile()));
 					}
 					if(commandsVDMain.get("KnownVariantsFile")!=null) {

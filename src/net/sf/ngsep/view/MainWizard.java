@@ -345,7 +345,7 @@ public class MainWizard {
 					sampleTmp.setVcfFileGT(null);
 				}
 
-				if(commandsVDMain.get("RunRDAnalysis")==null||commandsVDMain.get("FindRepeats")==null||commandsVDMain.get("RunRPAnalysis")==null){
+				if(commandsVDMain.get("RunRDAnalysis")!=null || commandsVDMain.get("FindRepeats")!=null || commandsVDMain.get("RunRPAnalysis")!=null){
 					vdSample.setOutStructural(new PrintStream(sampleTmp.getSvFile()));
 				}else{
 					sampleTmp.setSvFile(null);

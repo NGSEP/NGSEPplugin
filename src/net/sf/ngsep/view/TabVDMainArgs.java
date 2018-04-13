@@ -73,10 +73,10 @@ public class TabVDMainArgs extends Composite {
 	private Text txtIgnoreBases5;
 	private Label lblIgnoreBases3;
 	private Text txtIgnoreBases3;
-	private Button btnSkipRDChk;
-	private Button btnSkipRepeatsChk;
+	private Button btnRunRDChk;
+	private Button btnRunRepeatsChk;
 	private Button btnSkipSNVSDetection;
-	private Button btnSkipRPChk;
+	private Button btnRunRPChk;
 	private Button btnSkipNewCNVChk;
 
 
@@ -195,28 +195,22 @@ public class TabVDMainArgs extends Composite {
 				}
 			});
 
-			btnSkipRepeatsChk = new Button(this, SWT.CHECK);
-			btnSkipRepeatsChk.setText("Skip detection of repetitive regions");
-			btnSkipRepeatsChk.setBounds(10, 220, 300, 20);
+			btnRunRepeatsChk = new Button(this, SWT.CHECK);
+			btnRunRepeatsChk.setText("Run detection of repetitive regions");
+			btnRunRepeatsChk.setBounds(10, 220, 300, 20);
 
-			btnSkipRDChk = new Button(this, SWT.CHECK);	
-			btnSkipRDChk.setText("Skip read depth analysis");
-			btnSkipRDChk.setBounds(10, 253, 300, 20);
-			btnSkipRDChk.addSelectionListener(new SelectionAdapter() {
+			btnRunRDChk = new Button(this, SWT.CHECK);	
+			btnRunRDChk.setText("Run read depth analysis");
+			btnRunRDChk.setBounds(10, 253, 300, 20);
+			btnRunRDChk.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					if(btnSkipRDChk.getSelection()) {
-						btnSkipNewCNVChk.setSelection(true);
-						btnSkipNewCNVChk.setEnabled(false);
-						/*					tblCNVAlgorithms.setEnabled(false);
-					for ( int i = 0 ; i<tblCNVAlgorithms.getItems().length ; i++){
-						tblCNVAlgorithms.getItem(i).setChecked(false);
-					}*/
-					} else {
+					if(btnRunRDChk.getSelection()) {
 						btnSkipNewCNVChk.setSelection(false);
 						btnSkipNewCNVChk.setEnabled(true);
-						/*					tblCNVAlgorithms.getItem(0).setChecked(true);
-					tblCNVAlgorithms.setEnabled(true);*/
+					} else {
+						btnSkipNewCNVChk.setSelection(true);
+						btnSkipNewCNVChk.setEnabled(false);
 					}
 				}
 			});
@@ -237,9 +231,9 @@ public class TabVDMainArgs extends Composite {
 			}
 		});*/
 
-			btnSkipRPChk = new Button(this, SWT.CHECK);
-			btnSkipRPChk.setBounds(10, 313, 300, 20);
-			btnSkipRPChk.setText("Skip read pair analysis");
+			btnRunRPChk = new Button(this, SWT.CHECK);
+			btnRunRPChk.setBounds(10, 313, 300, 20);
+			btnRunRPChk.setText("Run read pair analysis");
 
 			btnSkipSNVSDetection = new Button(this, SWT.CHECK);
 			btnSkipSNVSDetection.setText("Skip detection of SNVs and small indels");
@@ -553,12 +547,16 @@ public class TabVDMainArgs extends Composite {
 			}
 		}
 
-		if (btnSkipRepeatsChk.getSelection()) {
-			commonUserParameters.put("FindRepeats", false);
+		if (btnRunRepeatsChk.getSelection()) {
+			commonUserParameters.put("FindRepeats", true);
 		}
 
-		if (btnSkipRDChk.getSelection()) {
-			commonUserParameters.put("RunRDAnalysis", false);
+		if (btnRunRDChk.getSelection()) {
+			commonUserParameters.put("RunRDAnalysis", true);
+		}
+		
+		if (btnRunRPChk.getSelection()) {
+			commonUserParameters.put("RunRPAnalysis", true);
 		}
 
 		if (btnSkipNewCNVChk.getSelection()) {
@@ -569,9 +567,7 @@ public class TabVDMainArgs extends Composite {
 			commonUserParameters.put("FindSNVs", false);
 		}
 
-		if (btnSkipRPChk.getSelection()) {
-			commonUserParameters.put("RunRPAnalysis", false);
-		}
+		
 
 
 

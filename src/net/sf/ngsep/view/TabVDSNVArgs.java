@@ -82,6 +82,7 @@ public class TabVDSNVArgs extends Composite {
 	private Text txtPloidy;
 	
 	private Button btnkeepLowerCaseRefChk;
+	private Button btnIncludeAllPrimaryAlignments;
 	private Button btnIncludeSecondaryAlignments;
 	private Button btnGenotypeAllCovered;
 	private Button btnEmbeddedSNVs;
@@ -207,17 +208,21 @@ public class TabVDSNVArgs extends Composite {
 		btnkeepLowerCaseRefChk.setBounds(500, 100, 325, 23);
 		btnkeepLowerCaseRefChk.setText("Ignore Lower Case Reference");
 		
+		btnIncludeAllPrimaryAlignments = new Button(this, SWT.CHECK);
+		btnIncludeAllPrimaryAlignments.setText("Include Non Unique Primary Alignments");
+		btnIncludeAllPrimaryAlignments.setBounds(500, 140, 325, 23);
+		
 		btnIncludeSecondaryAlignments = new Button(this, SWT.CHECK);
 		btnIncludeSecondaryAlignments.setText("Include Secondary Alignments");
-		btnIncludeSecondaryAlignments.setBounds(500, 140, 325, 23);
+		btnIncludeSecondaryAlignments.setBounds(500, 180, 325, 23);
 				
 		btnGenotypeAllCovered = new Button(this, SWT.CHECK);
 		btnGenotypeAllCovered.setText("Genotype All Covered Sites");
-		btnGenotypeAllCovered.setBounds(500, 180, 325, 23);
+		btnGenotypeAllCovered.setBounds(500, 220, 325, 23);
 
 		btnEmbeddedSNVs = new Button(this, SWT.CHECK);
 		btnEmbeddedSNVs.setText("Call SNVs within STRs");
-		btnEmbeddedSNVs.setBounds(500, 220, 350, 20);
+		btnEmbeddedSNVs.setBounds(500, 260, 350, 20);
 		
 		lblHapAvgCov = new Label(this, SWT.NONE);
 		lblHapAvgCov.setEnabled(false);
@@ -376,6 +381,10 @@ public class TabVDSNVArgs extends Composite {
 		
 		if (btnkeepLowerCaseRefChk.getSelection()) {
 			commonUserParameters.put("IgnoreLowerCaseRef", true);
+		}
+		
+		if (btnIncludeAllPrimaryAlignments.getSelection()) {
+			commonUserParameters.put("ProcessNonUniquePrimaryAlignments", true);
 		}
 		
 		if (btnIncludeSecondaryAlignments.getSelection()) {
