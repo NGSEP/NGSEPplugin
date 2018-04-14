@@ -52,6 +52,8 @@ public class TabVDSNVArgs extends Composite {
 	
 	private Label lblQuerySeq;
 	private Text txtQuerySeq;
+	private Text txtQueryFirst;
+	private Text txtQueryLast;
 		
 	
 	private Label lblHete;
@@ -113,13 +115,28 @@ public class TabVDSNVArgs extends Composite {
 		
 		
 		lblQuerySeq = new Label(this, SWT.NONE);
-		lblQuerySeq.setBounds(10, 20, 139, 20);
-		lblQuerySeq.setText("Genomic Location:");
+		lblQuerySeq.setBounds(10, 20, 100, 22);
+		lblQuerySeq.setText("Region:");
 
 		txtQuerySeq = new Text(this, SWT.BORDER);
-		txtQuerySeq.setToolTipText("Position coordinate ranges.\nExample: 'chr21:33,031,597-33,041,570' ");
-		txtQuerySeq.setBounds(155, 20, 180, 21);
+		txtQuerySeq.setBounds(110, 20, 80, 22);
 		txtQuerySeq.addMouseListener(mouse);
+		
+		Label lbl1 = new Label(this,  SWT.NONE);
+		lbl1.setBounds(195, 20, 10, 22);
+		lbl1.setText(":");
+		
+		txtQueryFirst = new Text(this, SWT.BORDER);
+		txtQueryFirst.setBounds(210, 20, 80, 22);
+		txtQueryFirst.addMouseListener(mouse);
+		
+		Label lbl2 = new Label(this,  SWT.NONE);
+		lbl2.setBounds(295, 20, 10, 22);
+		lbl2.setText("-");
+		
+		txtQueryLast = new Text(this, SWT.BORDER);
+		txtQueryLast.setBounds(310, 20, 80, 22);
+		txtQueryLast.addMouseListener(mouse);
 		
 		lblHete = new Label(this, SWT.NONE);
 		lblHete.setBounds(10, 60, 139, 20);
@@ -260,62 +277,51 @@ public class TabVDSNVArgs extends Composite {
 	
 	public Map<String,Object> getParams(){
 		
-		// Common Fields
 		// This map stores parameters set by the user that are common for all samples
 		errorsOne.clear();
 		Map<String,Object> commonUserParameters = new TreeMap<String, Object>();
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		
-		
-		// SNPs fields
-		// This validation is to verify that it entered the box Genomic
-		// Location: either in the format provided by example: chr01 :58-98,
-		// also validates that the entered after chr01 eg: non-numeric
-		// characters and then validates I entered after such chr01: 58 is
-		// numeric, otherwise get a message with the appropriate error.
 		if (txtQuerySeq.getText() != null && !txtQuerySeq.getText().equals("")) {
-			String str = txtQuerySeq.getText();
-			int indexStart = str.lastIndexOf(":");
-			int indexIntermediate = str.lastIndexOf("-");
-			if (indexStart > 1 && indexIntermediate > 1 && indexStart+1<indexIntermediate) {
-				String seqName = str.substring(0,indexStart);
-				String firstStr = str.substring(indexStart+1,indexIntermediate);
-				String lastStr = str.substring(indexIntermediate+1);
-				boolean error = false;
-				if (!FieldValidator.isAlphaNumeric(seqName)) {
-					errorsOne.add(lblQuerySeq.getText()+ " :" + " Invalid characters for sequence name\n");
-					txtQuerySeq.setBackground(oc);
-					error = true;
-				} 
-				if (!FieldValidator.isNumeric(firstStr, new Integer(0))){
-					errorsOne.add(lblQuerySeq.getText() + " :" + " First position should be integer\n");
-					txtQuerySeq.setBackground(oc);
-					error = true;
-				}
-				if (!FieldValidator.isNumeric(lastStr, new Integer(0))) {
-					errorsOne.add(lblQuerySeq.getText()+ " :" + " Last position should be integer \n");
-					txtQuerySeq.setBackground(oc);
-					error = true;
-				}
-				int first = Integer.parseInt(firstStr);
-				int last = Integer.parseInt(lastStr);
-				if(first > last) {
-					errorsOne.add(lblQuerySeq.getText()+ " :" + " Last position should be greater or equal than first position \n");
-					txtQuerySeq.setBackground(oc);
-					error = true;
-				}
-				if(!error) {
-					commonUserParameters.put("QuerySeq", seqName);
-					commonUserParameters.put("QueryFirst", first);
-					commonUserParameters.put("QueryLast", last);
-				}
-			} else {
-				errorsOne.add(lblQuerySeq.getText()+ " :" + " Invalid format");
+			
+			if (!FieldValidator.isAlphaNumeric(txtQuerySeq.getText())) {
+				errorsOne.add(lblQuerySeq.getText()+ " :" + " Invalid characters for sequence name");
 				txtQuerySeq.setBackground(oc);
+			} else {
+				commonUserParameters.put("QuerySeq", txtQuerySeq.getText());
 			}
 		}
-		
-		
+		int first = -1;
+		int last = -1;
+		if (txtQueryFirst.getText() != null && !txtQueryFirst.getText().equals("")) {
+			if (!FieldValidator.isNumeric(txtQueryFirst.getText(), new Integer(0))){
+				errorsOne.add(lblQuerySeq.getText() + " :" + " First position should be integer");
+				txtQuerySeq.setBackground(oc);
+			} else {
+				first = Integer.parseInt(txtQueryFirst.getText());
+				//commonUserParameters.put("QueryFirst", first);
+			}
+		}
+		if (txtQueryLast.getText() != null && !txtQueryLast.getText().equals("")) {
+			if (!FieldValidator.isNumeric(txtQueryLast.getText(), new Integer(0))){
+				errorsOne.add(lblQuerySeq.getText() + " :" + " Last position should be integer");
+				txtQuerySeq.setBackground(oc);
+			} else {
+				last = Integer.parseInt(txtQueryLast.getText());
+				//commonUserParameters.put("QueryLast", last);
+			}
+		}
+			
+		if((first == -1 && last!=-1) || (first != -1 && last==-1) ) {
+			errorsOne.add(lblQuerySeq.getText()+ " :" + " Both first and last position should be provided \n");
+			txtQuerySeq.setBackground(oc);
+		} else if(first > last) {
+			errorsOne.add(lblQuerySeq.getText()+ " :" + " Last position should be greater or equal than first position \n");
+			txtQuerySeq.setBackground(oc);
+		} else if (first !=-1 && last!=-1){
+			commonUserParameters.put("QueryFirst", first);
+			commonUserParameters.put("QueryLast", last);
+		}
 		if (txtHete.getText() != null && !txtHete.getText().equals("")) {
 			if (!FieldValidator.isNumeric(txtHete.getText(), new Double(0))) {
 				errorsOne.add(FieldValidator.buildMessage(lblHete.getText(), FieldValidator.ERROR_NUMERIC));
