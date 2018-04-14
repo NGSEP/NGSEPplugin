@@ -129,14 +129,67 @@ public class TabVDMainArgs extends Composite {
 
 	public void paint() {
 		try {
+			if(source == MainVariantsDetector.SOURCE_SINGLE) { 					//One sample paint 
+				lblFile = new Label(this, SWT.NONE);
+				lblFile.setText("(*)File:");
+				lblFile.setBounds(10, 20, 190, 22);
 
+				txtFile = new Text(this, SWT.BORDER);
+				txtFile.setBounds(210, 20, 540, 22);
+				txtFile.addMouseListener(mouse);
+				txtFile.setText(initialAlignmentsFile.getAbsolutePath());
+
+				btnFile = new Button(this, SWT.NONE);
+				btnFile.setText("...");
+				btnFile.setBounds(760, 20, 25, 22);
+				btnFile.addSelectionListener(new SelectionAdapter() {
+					// this method returns me the path where the eclipse runtime files
+					// according to separator that has the operating system for windows
+					// \ Linux / and I suggested the route for the event of selecting a
+					// route
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						SpecialFieldsHelper.updateFileTextBox(parent.getShell(), SWT.OPEN, outputDirectory, txtFile);
+					}
+				});
+
+				lblDestFile = new Label(this, SWT.NONE);
+				lblDestFile.setText("(*)Output File Prefix:");
+				lblDestFile.setBounds(10, 60, 190, 20);
+
+				txtDestFile = new Text(this, SWT.BORDER);
+				txtDestFile.setBounds(210, 60, 540, 22);
+				txtDestFile.setToolTipText("Please enter your output file, you can use the button next to this field to browse it");
+				txtDestFile.addMouseListener(mouse);
+				txtDestFile.setText(extractPrefix(initialAlignmentsFile.getAbsolutePath()));
+
+				// in this cycle is validated that this initial selected file to suggest
+				// it as the output file without extension and without sorted if he were
+				// to take it into the text box Output File
+
+
+				btnDest = new Button(this, SWT.NONE);
+				btnDest.setBounds(760, 60, 25, 22);
+				btnDest.setText("...");
+				btnDest.addSelectionListener(new SelectionAdapter() {
+					// this method returns me the path where the eclipse runtime files
+					// according to separator that has the operating system for windows
+					// \ Linux / and I suggested the route for the event of selecting a
+					// route
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						SpecialFieldsHelper.updateFileTextBox(parent.getShell(), SWT.SAVE, outputDirectory, txtDestFile);
+						outputDirectory = new File(txtDestFile.getText()).getParentFile().getAbsolutePath();
+					}
+				});
+			}
 
 			lblReferenceFile = new Label(this, SWT.NONE);
-			lblReferenceFile.setBounds(10, 74, 190, 20);
+			lblReferenceFile.setBounds(10, 100, 190, 22);
 			lblReferenceFile.setText("(*)Reference File:");
 
 			txtReferenceFile = new Text(this, SWT.BORDER);
-			txtReferenceFile.setBounds(210, 74, 575, 21);
+			txtReferenceFile.setBounds(210, 100, 540, 22);
 			txtReferenceFile.addMouseListener(mouse);
 
 			String directoryProject = EclipseProjectHelper.findProjectDirectory(outputDirectory);
@@ -147,7 +200,7 @@ public class TabVDMainArgs extends Composite {
 			}		
 
 			btnRef = new Button(this, SWT.NONE);
-			btnRef.setBounds(800, 72, 21, 23);
+			btnRef.setBounds(760, 100, 25, 22);
 			btnRef.setText("...");
 			btnRef.addSelectionListener(new SelectionAdapter() {
 				@Override
@@ -156,22 +209,17 @@ public class TabVDMainArgs extends Composite {
 				}
 			});
 
-			lblReferenceFile.setBounds(10, 80, 190, 20);
-			txtReferenceFile.setBounds(210, 80, 575, 21);
-			btnRef.setBounds(800, 80, 21, 23);
-
-
 			lblKnownSVs = new Label(this, SWT.NONE);
 			lblKnownSVs.setText("Known SVs (.gff) File:");
-			lblKnownSVs.setBounds(10, 115, 190, 20);
+			lblKnownSVs.setBounds(10, 140, 190, 22);
 
 			txtKnownSVs = new Text(this, SWT.BORDER);
-			txtKnownSVs.setBounds(210, 115, 575, 21);
+			txtKnownSVs.setBounds(210, 140, 540, 22);
 			txtKnownSVs.addMouseListener(mouse);
 
 			btnKnownSVs = new Button(this, SWT.NONE);
 			btnKnownSVs.setText("...");
-			btnKnownSVs.setBounds(800, 115, 21, 25);
+			btnKnownSVs.setBounds(760, 140, 25, 22);
 			btnKnownSVs.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -179,29 +227,49 @@ public class TabVDMainArgs extends Composite {
 				}
 			});
 			lblKnownSTRs = new Label(this, SWT.NONE);
-			lblKnownSTRs.setText("known short tandem repeats File:");
-			lblKnownSTRs.setBounds(10, 150, 190, 20);
+			lblKnownSTRs.setText("known STRs File:");
+			lblKnownSTRs.setBounds(10, 180, 190, 22);
 			
 			txtKnownSTRs = new Text(this, SWT.BORDER);
-			txtKnownSTRs.setBounds(210, 150, 575, 21);
+			txtKnownSTRs.setBounds(210, 180, 540, 22);
 			
 			btnKnownSTRs = new Button(this, SWT.NONE);
 			btnKnownSTRs.setText("...");
-			btnKnownSTRs.setBounds(800, 150, 21, 25);
+			btnKnownSTRs.setBounds(760, 180, 25, 22);
 			btnKnownSTRs.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					SpecialFieldsHelper.updateFileTextBox(parent.getShell(), SWT.OPEN, outputDirectory, txtKnownSTRs);
 				}
 			});
+			
+			if(source != MainVariantsDetector.SOURCE_WIZARD){
+				lblKnownVariantsFile = new Label(this, SWT.NONE);
+				lblKnownVariantsFile.setText("Known Variants (.vcf) File:");
+				lblKnownVariantsFile.setBounds(10, 220, 190, 22);
+
+				txtKnownVariantsFile = new Text(this, SWT.BORDER);
+				txtKnownVariantsFile.setBounds(210, 220, 540, 22);
+				txtKnownVariantsFile.addMouseListener(mouse);
+
+				btnKnownVariantsFile = new Button(this, SWT.NONE);
+				btnKnownVariantsFile.setText("...");
+				btnKnownVariantsFile.setBounds(760, 220, 25, 22);
+				btnKnownVariantsFile.addSelectionListener(new SelectionAdapter() {
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						SpecialFieldsHelper.updateFileTextBox(parent.getShell(), SWT.OPEN, outputDirectory, txtKnownVariantsFile);
+					}
+				});
+			}
 
 			btnRunRepeatsChk = new Button(this, SWT.CHECK);
 			btnRunRepeatsChk.setText("Run detection of repetitive regions");
-			btnRunRepeatsChk.setBounds(10, 220, 300, 20);
+			btnRunRepeatsChk.setBounds(10, 260, 300, 22);
 
 			btnRunRDChk = new Button(this, SWT.CHECK);	
-			btnRunRDChk.setText("Run read depth analysis");
-			btnRunRDChk.setBounds(10, 253, 300, 20);
+			btnRunRDChk.setText("Run read depth (RD) analysis");
+			btnRunRDChk.setBounds(10, 300, 300, 22);
 			btnRunRDChk.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
@@ -217,157 +285,69 @@ public class TabVDMainArgs extends Composite {
 
 			btnSkipNewCNVChk = new Button(this, SWT.CHECK);	
 			btnSkipNewCNVChk.setText("Skip new CNV detection with RD");
-			btnSkipNewCNVChk.setBounds(10, 283, 300, 20);
-
-			// does it worth to keep?? 
-			/*		btnSkipNewCNVChk.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if(btnSkipNewCNVChk.getSelection()) {
-
-				} else {
-
-				}
-			}
-		});*/
+			btnSkipNewCNVChk.setBounds(10, 340, 300, 22);
 
 			btnRunRPChk = new Button(this, SWT.CHECK);
-			btnRunRPChk.setBounds(10, 313, 300, 20);
-			btnRunRPChk.setText("Run read pair analysis");
+			btnRunRPChk.setBounds(10, 380, 300, 22);
+			btnRunRPChk.setText("Run read pair (RP) analysis");
 
 			btnSkipSNVSDetection = new Button(this, SWT.CHECK);
 			btnSkipSNVSDetection.setText("Skip detection of SNVs and small indels");
-			btnSkipSNVSDetection.setBounds(10, 343, 300, 20);
+			btnSkipSNVSDetection.setBounds(10, 420, 300, 20);
+			
+			//Second half
 			
 			lblMinMQ = new Label(this, SWT.NONE);
-			lblMinMQ.setBounds(400, 220, 330, 20);
+			lblMinMQ.setBounds(400, 260, 320, 22);
 			lblMinMQ.setText("Minimum mapping quality unique alignments:");
 			
 			txtMinMQ = new Text(this, SWT.BORDER);
-			txtMinMQ.setBounds(750, 220, 50, 20);
+			txtMinMQ.setBounds(720, 260, 70, 22);
 			txtMinMQ.addMouseListener(mouse);
 			txtMinMQ.setText(""+ReadAlignment.DEF_MIN_MQ_UNIQUE_ALIGNMENT);
 
 			lblIgnoreBase=new Label(this, SWT.NONE);
 			lblIgnoreBase.setText("Ignore Basepairs :");
-			lblIgnoreBase.setBounds(400, 260, 140, 20);
+			lblIgnoreBase.setBounds(400, 300, 130, 22);
 
 			lblIgnoreBases5 = new Label(this, SWT.NONE);
 			lblIgnoreBases5.setText("5':");
-			lblIgnoreBases5.setBounds(550, 260, 30, 20);
+			lblIgnoreBases5.setBounds(540, 300, 30, 22);
 
 			txtIgnoreBases5 = new Text(this, SWT.BORDER);
 			txtIgnoreBases5.setText("0");
-			txtIgnoreBases5.setBounds(590,260,40,21);
+			txtIgnoreBases5.setBounds(580, 300, 50, 22);
 			txtIgnoreBases5.addMouseListener(mouse);
 
 			lblIgnoreBases3 = new Label(this, SWT.NONE);
 			lblIgnoreBases3.setText("3':");
-			lblIgnoreBases3.setBounds(650, 260, 30, 20);
+			lblIgnoreBases3.setBounds(640, 300, 30, 22);
 
 			txtIgnoreBases3 = new Text(this, SWT.BORDER);
 			txtIgnoreBases3.setText("0");
-			txtIgnoreBases3.setBounds(690, 260, 40, 21);
+			txtIgnoreBases3.setBounds(680, 300, 50, 22);
 			txtIgnoreBases3.addMouseListener(mouse);
-			
-
-
-			if(source != MainVariantsDetector.SOURCE_WIZARD){
-				lblKnownVariantsFile = new Label(this, SWT.NONE);
-				lblKnownVariantsFile.setText("Known Variants (.vcf) File:");
-				lblKnownVariantsFile.setBounds(10, 185, 190, 20);
-
-				txtKnownVariantsFile = new Text(this, SWT.BORDER);
-				txtKnownVariantsFile.setBounds(210, 185, 575, 21);
-				txtKnownVariantsFile.addMouseListener(mouse);
-
-				btnKnownVariantsFile = new Button(this, SWT.NONE);
-				btnKnownVariantsFile.setText("...");
-				btnKnownVariantsFile.setBounds(800, 185, 21, 25);
-				btnKnownVariantsFile.addSelectionListener(new SelectionAdapter() {
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						SpecialFieldsHelper.updateFileTextBox(parent.getShell(), SWT.OPEN, outputDirectory, txtKnownVariantsFile);
-					}
-				});
-			}
+		
 
 			if(source == MainVariantsDetector.SOURCE_MULTI){ 					//Multi paint
-				lblReferenceFile.setBounds(10, 80, 190, 20);
-				txtReferenceFile.setBounds(210, 80, 575, 21);
-				btnRef.setBounds(800, 80, 21, 23);
 
 				lblNumberOfProcessors = new Label(this, SWT.NONE);
 				lblNumberOfProcessors.setText("Number Of Processors:");
-				lblNumberOfProcessors.setBounds(400, 340, 240, 21);	
+				lblNumberOfProcessors.setBounds(400, 340, 240, 22);	
 				txtNumberOfProcessors = new Text(this, SWT.BORDER);
-				txtNumberOfProcessors.setBounds(650, 340, 100, 21);
+				txtNumberOfProcessors.setBounds(650, 340, 100, 22);
 				//by default it suggests the user to use all possible processor minus 1, to be able to use his computer.
 				int processors = Runtime.getRuntime().availableProcessors()-1;
 				txtNumberOfProcessors.setText(String.valueOf(processors));		
 
 			}
-
-			if(source == MainVariantsDetector.SOURCE_SINGLE){ 					//One sample paint 
-				lblFile = new Label(this, SWT.NONE);
-				lblFile.setText("(*)File:");
-				lblFile.setBounds(10, 10, 190, 20);
-
-				txtFile = new Text(this, SWT.BORDER);
-				txtFile.setBounds(210, 10, 575, 21);
-				txtFile.addMouseListener(mouse);
-				txtFile.setText(initialAlignmentsFile.getAbsolutePath());
-
-				btnFile = new Button(this, SWT.NONE);
-				btnFile.setText("...");
-				btnFile.setBounds(800, 10, 21, 23);
-				btnFile.addSelectionListener(new SelectionAdapter() {
-					// this method returns me the path where the eclipse runtime files
-					// according to separator that has the operating system for windows
-					// \ Linux / and I suggested the route for the event of selecting a
-					// route
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						SpecialFieldsHelper.updateFileTextBox(parent.getShell(), SWT.OPEN, outputDirectory, txtFile);
-					}
-				});
-
-				lblDestFile = new Label(this, SWT.NONE);
-				lblDestFile.setText("(*)Output File Prefix:");
-				lblDestFile.setBounds(10, 45, 190, 20);
-
-				txtDestFile = new Text(this, SWT.BORDER);
-				txtDestFile.setBounds(210, 45, 575, 21);
-				txtDestFile.setToolTipText("Please enter your output file, you can use the button next to this field to browse it");
-				txtDestFile.addMouseListener(mouse);
-				txtDestFile.setText(extractPrefix(initialAlignmentsFile.getAbsolutePath()));
-
-				// in this cycle is validated that this initial selected file to suggest
-				// it as the output file without extension and without sorted if he were
-				// to take it into the text box Output File
-
-
-				btnDest = new Button(this, SWT.NONE);
-				btnDest.setBounds(800, 45, 21, 23);
-				btnDest.setText("...");
-				btnDest.addSelectionListener(new SelectionAdapter() {
-					// this method returns me the path where the eclipse runtime files
-					// according to separator that has the operating system for windows
-					// \ Linux / and I suggested the route for the event of selecting a
-					// route
-					@Override
-					public void widgetSelected(SelectionEvent e) {
-						SpecialFieldsHelper.updateFileTextBox(parent.getShell(), SWT.SAVE, outputDirectory, txtDestFile);
-						outputDirectory = new File(txtDestFile.getText()).getParentFile().getAbsolutePath();
-					}
-				});
-
+			if(source == MainVariantsDetector.SOURCE_SINGLE){ 					//One sample paint
 				lblSampleId = new Label(this, SWT.NONE);
 				lblSampleId.setText("(*)Sample Id:");
-				lblSampleId.setBounds(400, 300, 150, 20);
+				lblSampleId.setBounds(400, 340, 120, 22);
 
 				txtSampleId = new Text(this, SWT.BORDER);
-				txtSampleId.setBounds(560, 300, 240, 21);
+				txtSampleId.setBounds(530, 340, 250, 22);
 				txtSampleId.addMouseListener(mouse);
 				try {
 					List<String> readGroups = MainMultiVariantsDetector.extractReadGroups(initialAlignmentsFile.getAbsolutePath());

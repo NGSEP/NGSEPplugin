@@ -115,95 +115,35 @@ public class TabVDSNVArgs extends Composite {
 		
 		
 		lblQuerySeq = new Label(this, SWT.NONE);
-		lblQuerySeq.setBounds(10, 20, 100, 22);
+		lblQuerySeq.setBounds(10, 20, 60, 22);
 		lblQuerySeq.setText("Region:");
 
 		txtQuerySeq = new Text(this, SWT.BORDER);
-		txtQuerySeq.setBounds(110, 20, 80, 22);
+		txtQuerySeq.setBounds(80, 20, 110, 22);
 		txtQuerySeq.addMouseListener(mouse);
 		
 		Label lbl1 = new Label(this,  SWT.NONE);
-		lbl1.setBounds(195, 20, 10, 22);
+		lbl1.setBounds(195, 20, 15, 22);
 		lbl1.setText(":");
 		
 		txtQueryFirst = new Text(this, SWT.BORDER);
-		txtQueryFirst.setBounds(210, 20, 80, 22);
+		txtQueryFirst.setBounds(210, 20, 110, 22);
 		txtQueryFirst.addMouseListener(mouse);
 		
 		Label lbl2 = new Label(this,  SWT.NONE);
-		lbl2.setBounds(295, 20, 10, 22);
+		lbl2.setBounds(325, 20, 15, 22);
 		lbl2.setText("-");
 		
 		txtQueryLast = new Text(this, SWT.BORDER);
-		txtQueryLast.setBounds(310, 20, 80, 22);
+		txtQueryLast.setBounds(340, 20, 110, 22);
 		txtQueryLast.addMouseListener(mouse);
-		
-		lblHete = new Label(this, SWT.NONE);
-		lblHete.setBounds(10, 60, 139, 20);
-		lblHete.setText("Heterozygosity Rate:");
-
-		txtHete = new Text(this, SWT.BORDER);
-		txtHete.setBounds(155, 60, 180, 21);
-		txtHete.setText(String.valueOf(DEF_HETEROZYGOSITY));
-		txtHete.addMouseListener(mouse);
-		
-		lblMinQuality = new Label(this, SWT.NONE);
-		lblMinQuality.setText("Minimun Genotype Quality Score:");
-		lblMinQuality.setBounds(10, 113, 223, 20);
-
-		txtMinQuality = new Text(this, SWT.BORDER);
-		txtMinQuality.setText(String.valueOf(DEF_MIN_QUAL));
-		txtMinQuality.setBounds(239, 113, 57, 21);
-		txtMinQuality.addMouseListener(mouse);
-		
-		lblMaxBaseQS = new Label(this, SWT.NONE);
-		lblMaxBaseQS.setText("Maximun Base Quality Score:");
-		lblMaxBaseQS.setBounds(10, 144, 223, 20);
-
-		txtMaxBaseQS = new Text(this, SWT.BORDER);
-		txtMaxBaseQS.setText(String.valueOf(DEF_MAX_BASE_QS));
-		txtMaxBaseQS.setBounds(239, 144, 57, 21);
-		txtMaxBaseQS.addMouseListener(mouse);
-		
-		lblAltCov = new Label(this, SWT.NONE);
-		lblAltCov.setBounds(10, 180, 193, 20);
-		lblAltCov.setText("Alternative  Allele Coverage:");
-		
-		lblAltMin = new Label(this, SWT.NONE);
-		lblAltMin.setText("Min:");
-		lblAltMin.setBounds(218, 180, 35, 20);
-
-		lblAltMax = new Label(this, SWT.NONE);
-		lblAltMax.setBounds(300, 180, 35, 20);
-		lblAltMax.setText("Max:");
-
-		txtAltMin = new Text(this, SWT.BORDER);
-		txtAltMin.setBounds(259, 180, 35, 21);
-		txtAltMin.addMouseListener(mouse);
-		
-		txtAltMax = new Text(this, SWT.BORDER);
-		txtAltMax.setBounds(344, 180, 35, 21);
-		txtAltMax.addMouseListener(mouse);
-		
-		lblMaximunAlignmentPer = new Label(this, SWT.NONE);
-		lblMaximunAlignmentPer.setText("Maximun Alignment Per Start Position:");
-		lblMaximunAlignmentPer.setBounds(10, 220, 284, 20);
-
-		txtMaximunAlignmentStartPosition = new Text(this, SWT.BORDER);
-		txtMaximunAlignmentStartPosition.setText(String.valueOf(DEF_ALIGN_PER_STARTPOS));
-		txtMaximunAlignmentStartPosition.setBounds(300, 220, 70, 21);
-		txtMaximunAlignmentStartPosition.addMouseListener(mouse);
-		
-		btnPrintSamplePloidy = new Button(this, SWT.CHECK);
-		btnPrintSamplePloidy.setBounds(500, 20, 325, 23);
-		btnPrintSamplePloidy.setText("Print Sample Ploidy");
 		
 		lblPloidy = new Label(this, SWT.NONE);
 		lblPloidy.setText("Ploidy:");
-		lblPloidy.setBounds(500, 60, 50, 20);
+		lblPloidy.setBounds(10, 60, 300, 22);
 
 		txtPloidy = new Text(this, SWT.BORDER);
-		txtPloidy.setBounds(600, 60, 57, 21);
+		txtPloidy.setBounds(340, 60, 80, 22);
 		txtPloidy.setText(String.valueOf(DEF_PLOIDY));
 		txtPloidy.addFocusListener(new FocusAdapter() {
 			// This method captures the field entered the ploidy and can fit
@@ -217,62 +157,119 @@ public class TabVDSNVArgs extends Composite {
 				}
 				txtHete.setText(String.valueOf(het));
 				txtHete.update();
+				if (!"2".equals(txtPloidy.getText())) {
+					btnPrintSamplePloidy.setSelection(true);
+				}
 			}
 		});
 		txtPloidy.addMouseListener(mouse);
 		
+		lblHete = new Label(this, SWT.NONE);
+		lblHete.setBounds(10, 100, 300, 22);
+		lblHete.setText("Heterozygosity Rate:");
+
+		txtHete = new Text(this, SWT.BORDER);
+		txtHete.setBounds(340, 100, 120, 22);
+		txtHete.setText(String.valueOf(DEF_HETEROZYGOSITY));
+		txtHete.addMouseListener(mouse);
+		
+		lblMinQuality = new Label(this, SWT.NONE);
+		lblMinQuality.setText("Minimum Genotype Quality Score:");
+		lblMinQuality.setBounds(10, 140, 300, 22);
+
+		txtMinQuality = new Text(this, SWT.BORDER);
+		txtMinQuality.setText(String.valueOf(DEF_MIN_QUAL));
+		txtMinQuality.setBounds(340, 140, 80, 22);
+		txtMinQuality.addMouseListener(mouse);
+		
+		lblMaxBaseQS = new Label(this, SWT.NONE);
+		lblMaxBaseQS.setText("Maximum Base Quality Score:");
+		lblMaxBaseQS.setBounds(10, 180, 300, 22);
+
+		txtMaxBaseQS = new Text(this, SWT.BORDER);
+		txtMaxBaseQS.setText(String.valueOf(DEF_MAX_BASE_QS));
+		txtMaxBaseQS.setBounds(340, 180, 80, 21);
+		txtMaxBaseQS.addMouseListener(mouse);
+		
+		lblAltCov = new Label(this, SWT.NONE);
+		lblAltCov.setBounds(10, 220, 200, 20);
+		lblAltCov.setText("Alternative  Allele Coverage:");
+		
+		lblAltMin = new Label(this, SWT.NONE);
+		lblAltMin.setText("Min:");
+		lblAltMin.setBounds(220, 220, 40, 20);
+
+		txtAltMin = new Text(this, SWT.BORDER);
+		txtAltMin.setBounds(270, 220, 50, 22);
+		txtAltMin.addMouseListener(mouse);
+		
+		lblAltMax = new Label(this, SWT.NONE);
+		lblAltMax.setBounds(340, 220, 40, 22);
+		lblAltMax.setText("Max:");
+		
+		txtAltMax = new Text(this, SWT.BORDER);
+		txtAltMax.setBounds(390, 220, 50, 22);
+		txtAltMax.addMouseListener(mouse);
+		
+		lblMaximunAlignmentPer = new Label(this, SWT.NONE);
+		lblMaximunAlignmentPer.setText("Maximum Alignments Per Start Position:");
+		lblMaximunAlignmentPer.setBounds(10, 260, 300, 22);
+
+		txtMaximunAlignmentStartPosition = new Text(this, SWT.BORDER);
+		txtMaximunAlignmentStartPosition.setText(String.valueOf(DEF_ALIGN_PER_STARTPOS));
+		txtMaximunAlignmentStartPosition.setBounds(340, 260, 80, 22);
+		txtMaximunAlignmentStartPosition.addMouseListener(mouse);
+		
+		if(source == 'W'){
+			
+			lblWizMinGQ = new Label(this, SWT.NONE);
+			lblWizMinGQ.setText("Use minimun Genotype Quality Score in:");
+			lblWizMinGQ.setBounds(10, 300, 300, 22);
+			
+			cmbWizMinGQ = new Combo(this, SWT.READ_ONLY);
+			cmbWizMinGQ.setItems(new String[] {"Only for discovery", "Discovery and genotyping"});
+			cmbWizMinGQ.setBounds(320, 300, 160, 22);
+			cmbWizMinGQ.select(0);
+		}
+		
+		btnPrintSamplePloidy = new Button(this, SWT.CHECK);
+		btnPrintSamplePloidy.setBounds(500, 20, 290, 22);
+		btnPrintSamplePloidy.setText("Print Sample Ploidy");
+		
 		btnkeepLowerCaseRefChk = new Button(this, SWT.CHECK);
-		btnkeepLowerCaseRefChk.setBounds(500, 100, 325, 23);
+		btnkeepLowerCaseRefChk.setBounds(500, 60, 290, 22);
 		btnkeepLowerCaseRefChk.setText("Ignore Lower Case Reference");
 		
 		btnIncludeAllPrimaryAlignments = new Button(this, SWT.CHECK);
-		btnIncludeAllPrimaryAlignments.setText("Include Non Unique Primary Alignments");
-		btnIncludeAllPrimaryAlignments.setBounds(500, 140, 325, 23);
+		btnIncludeAllPrimaryAlignments.setText("Process All Primary Alignments");
+		btnIncludeAllPrimaryAlignments.setBounds(500, 100, 290, 22);
 		
 		btnIncludeSecondaryAlignments = new Button(this, SWT.CHECK);
-		btnIncludeSecondaryAlignments.setText("Include Secondary Alignments");
-		btnIncludeSecondaryAlignments.setBounds(500, 180, 325, 23);
+		btnIncludeSecondaryAlignments.setText("Process Secondary Alignments");
+		btnIncludeSecondaryAlignments.setBounds(500, 140, 290, 22);
 				
 		btnGenotypeAllCovered = new Button(this, SWT.CHECK);
 		btnGenotypeAllCovered.setText("Genotype All Covered Sites");
-		btnGenotypeAllCovered.setBounds(500, 220, 325, 23);
+		btnGenotypeAllCovered.setBounds(500, 180, 290, 22);
 
 		btnEmbeddedSNVs = new Button(this, SWT.CHECK);
 		btnEmbeddedSNVs.setText("Call SNVs within STRs");
-		btnEmbeddedSNVs.setBounds(500, 260, 350, 20);
+		btnEmbeddedSNVs.setBounds(500, 220, 290, 22);
 		
 		lblHapAvgCov = new Label(this, SWT.NONE);
 		lblHapAvgCov.setEnabled(false);
 		lblHapAvgCov.setVisible(false);
 		lblHapAvgCov.setText("Haploid Average Coverage:");
-		lblHapAvgCov.setBounds(500, 240, 160, 20);
+		lblHapAvgCov.setBounds(500, 260, 160, 22);
 		
 		txtHapAvgCov = new Text(this, SWT.BORDER);
 		txtHapAvgCov.setEnabled(false);
 		txtHapAvgCov.setVisible(false);
-		txtHapAvgCov.setBounds(680, 240, 57, 21);
+		txtHapAvgCov.setBounds(680, 260, 80, 22);
 		
 		
 		
 		txtHapAvgCov.addMouseListener(mouse);
-		
-		if(source == 'W'){
-		
-			lblWizMinGQ = new Label(this, SWT.NONE);
-			lblWizMinGQ.setText("Use minimun Genotype Quality Score in:");
-			lblWizMinGQ.setBounds(10, 252, 249, 20);
-			
-			
-			
-			cmbWizMinGQ = new Combo(this, SWT.READ_ONLY);
-			cmbWizMinGQ.setItems(new String[] {"Only for discovery", "Discovery and genotyping"});
-			cmbWizMinGQ.setBounds(272, 252, 168, 23);
-			cmbWizMinGQ.select(0);
-			
-			
-		}
-		
-		
 	}
 	
 	public Map<String,Object> getParams(){
@@ -296,7 +293,7 @@ public class TabVDSNVArgs extends Composite {
 		if (txtQueryFirst.getText() != null && !txtQueryFirst.getText().equals("")) {
 			if (!FieldValidator.isNumeric(txtQueryFirst.getText(), new Integer(0))){
 				errorsOne.add(lblQuerySeq.getText() + " :" + " First position should be integer");
-				txtQuerySeq.setBackground(oc);
+				txtQueryFirst.setBackground(oc);
 			} else {
 				first = Integer.parseInt(txtQueryFirst.getText());
 				//commonUserParameters.put("QueryFirst", first);
@@ -305,7 +302,7 @@ public class TabVDSNVArgs extends Composite {
 		if (txtQueryLast.getText() != null && !txtQueryLast.getText().equals("")) {
 			if (!FieldValidator.isNumeric(txtQueryLast.getText(), new Integer(0))){
 				errorsOne.add(lblQuerySeq.getText() + " :" + " Last position should be integer");
-				txtQuerySeq.setBackground(oc);
+				txtQueryLast.setBackground(oc);
 			} else {
 				last = Integer.parseInt(txtQueryLast.getText());
 				//commonUserParameters.put("QueryLast", last);
@@ -314,10 +311,12 @@ public class TabVDSNVArgs extends Composite {
 			
 		if((first == -1 && last!=-1) || (first != -1 && last==-1) ) {
 			errorsOne.add(lblQuerySeq.getText()+ " :" + " Both first and last position should be provided \n");
-			txtQuerySeq.setBackground(oc);
+			txtQueryFirst.setBackground(oc);
+			txtQueryLast.setBackground(oc);
 		} else if(first > last) {
 			errorsOne.add(lblQuerySeq.getText()+ " :" + " Last position should be greater or equal than first position \n");
-			txtQuerySeq.setBackground(oc);
+			txtQueryFirst.setBackground(oc);
+			txtQueryLast.setBackground(oc);
 		} else if (first !=-1 && last!=-1){
 			commonUserParameters.put("QueryFirst", first);
 			commonUserParameters.put("QueryLast", last);
@@ -348,24 +347,26 @@ public class TabVDSNVArgs extends Composite {
 				commonUserParameters.put("MaxBaseQS", Short.parseShort(txtMaxBaseQS.getText()));
 			}
 		}
-		
-		if (txtAltMax.getText() != null && !txtAltMax.getText().equals("")) {
-			if (!FieldValidator.isNumeric(txtAltMax.getText(), new Integer(0))) {
-				errorsOne.add(FieldValidator.buildMessage(lblAltMax.getText(), FieldValidator.ERROR_INTEGER));
-				txtAltMax.setBackground(oc);
-			}else{
-				commonUserParameters.put("MaxAltCoverage", Double.parseDouble(txtAltMax.getText()));
-			}
-		}
 
 		if (txtAltMin.getText() != null && !txtAltMin.getText().equals("")) {
 			if (!FieldValidator.isNumeric(txtAltMin.getText(), new Integer(0))) {
 				errorsOne.add(FieldValidator.buildMessage(lblAltMin.getText(), FieldValidator.ERROR_INTEGER));
 				txtAltMin.setBackground(oc);
 			}else{
-				commonUserParameters.put("MinAltCoverage", Double.parseDouble(txtAltMin.getText()));
+				commonUserParameters.put("MinAltCoverage", Integer.parseInt(txtAltMin.getText()));
 			}
 		}
+		
+		if (txtAltMax.getText() != null && !txtAltMax.getText().equals("")) {
+			if (!FieldValidator.isNumeric(txtAltMax.getText(), new Integer(0))) {
+				errorsOne.add(FieldValidator.buildMessage(lblAltMax.getText(), FieldValidator.ERROR_INTEGER));
+				txtAltMax.setBackground(oc);
+			}else{
+				commonUserParameters.put("MaxAltCoverage", Integer.parseInt(txtAltMax.getText()));
+			}
+		}
+
+
 		
 		if (txtMaximunAlignmentStartPosition.getText() != null && !txtMaximunAlignmentStartPosition.getText().equals("")) {
 			if (!FieldValidator.isNumeric(txtMaximunAlignmentStartPosition.getText(),new Integer(0))) {

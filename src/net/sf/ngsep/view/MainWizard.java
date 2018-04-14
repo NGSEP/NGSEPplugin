@@ -154,7 +154,7 @@ public class MainWizard {
 				shell.close();
 			}
 		});
-		shell.setSize(900, 567);
+		shell.setSize(900, 600);
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {

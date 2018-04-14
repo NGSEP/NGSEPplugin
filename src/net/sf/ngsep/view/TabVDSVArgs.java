@@ -87,31 +87,31 @@ public class TabVDSVArgs extends Composite {
 		
 		lblGenomicSize = new Label(this, SWT.NONE);
 		lblGenomicSize.setText("Genome Size:");
-		lblGenomicSize.setBounds(10, 20, 139, 20);
+		lblGenomicSize.setBounds(10, 20, 160, 22);
 
 		txtGenomicSize = new Text(this, SWT.BORDER);
-		txtGenomicSize.setBounds(155, 20, 180, 21);
+		txtGenomicSize.setBounds(180, 20, 180, 22);
 		txtGenomicSize.addMouseListener(mouse);
 		
 		lblBinSize = new Label(this, SWT.NONE);
 		lblBinSize.setText("Bin Size:");
-		lblBinSize.setBounds(10, 60, 139, 20);
+		lblBinSize.setBounds(10, 60, 160, 22);
 
 		txtBinSize = new Text(this, SWT.BORDER);
-		txtBinSize.setBounds(155, 60, 91, 21);
+		txtBinSize.setBounds(180, 60, 100, 22);
 		txtBinSize.setText(String.valueOf(DEF_BIN_SIZE));
 		txtBinSize.addMouseListener(mouse);
 		
 		btnIgnoreProperPairFlagChk = new Button(this, SWT.CHECK);	
 		btnIgnoreProperPairFlagChk.setText("Ignore proper pair flag");
-		btnIgnoreProperPairFlagChk.setBounds(10, 100, 400, 20);
+		btnIgnoreProperPairFlagChk.setBounds(10, 100, 350, 22);
 		
 		lblCNVAlgorithms = new Label(this, SWT.NONE);
 		lblCNVAlgorithms.setText("(*)Choose Algorithm for CNV detection:");
-		lblCNVAlgorithms.setBounds(10, 150, 300, 20);			
+		lblCNVAlgorithms.setBounds(10, 150, 350, 22);			
 
 		tblCNVAlgorithms =new Table(this, SWT.MULTI | SWT.BORDER| SWT.V_SCROLL| SWT.CHECK);
-		tblCNVAlgorithms.setBounds(10, 180, 200, 200);
+		tblCNVAlgorithms.setBounds(10, 180, 200, 100);
 		tblCNVAlgorithms.setHeaderVisible(true);
 		List<String> CNValgorithms = new ArrayList<String>();
 		CNValgorithms.add("CNVnator");
@@ -127,37 +127,37 @@ public class TabVDSVArgs extends Composite {
 		
 		lblMinSVQuality = new Label(this, SWT.NONE);
 		lblMinSVQuality.setText("Min Quality:");
-		lblMinSVQuality.setBounds(450, 20, 190, 20);
+		lblMinSVQuality.setBounds(420, 20, 240, 22);
 
 		txtMinSVQuality = new Text(this, SWT.BORDER);
-		txtMinSVQuality.setBounds(650, 20, 100, 21);
+		txtMinSVQuality.setBounds(670, 20, 100, 22);
 		txtMinSVQuality.setText(String.valueOf(DEF_MIN_SV_QUALITY));
 		txtMinSVQuality.addMouseListener(mouse);
 		
 		lblMaxLenDeletion = new Label(this, SWT.NONE);
 		lblMaxLenDeletion.setText("Max Deletion Length:");
-		lblMaxLenDeletion.setBounds(450, 60, 190, 20);
+		lblMaxLenDeletion.setBounds(420, 60, 240, 22);
 
 		txtMaxLenDeletion = new Text(this, SWT.BORDER);
-		txtMaxLenDeletion.setBounds(650, 60, 100, 21);
+		txtMaxLenDeletion.setBounds(670, 60, 100, 22);
 		txtMaxLenDeletion.setText(String.valueOf(DEF_MAX_DELETION_SIZE));
 		txtMaxLenDeletion.addMouseListener(mouse);
 		
 		lblSizeSplitReadSeed = new Label(this, SWT.NONE);
 		lblSizeSplitReadSeed.setText("Seed Size (Split Read):");
-		lblSizeSplitReadSeed.setBounds(450, 100, 190, 20);
+		lblSizeSplitReadSeed.setBounds(420, 100, 240, 22);
 
 		txtSizeSplitReadSeed = new Text(this, SWT.BORDER);
-		txtSizeSplitReadSeed.setBounds(650, 100, 100, 21);
+		txtSizeSplitReadSeed.setBounds(670, 100, 100, 22);
 		txtSizeSplitReadSeed.setText(String.valueOf(DEF_SEED_SIZE_SR));
 		txtSizeSplitReadSeed.addMouseListener(mouse);
 		
 		lblMaxPCTOverlapCNVs = new Label(this, SWT.NONE);
 		lblMaxPCTOverlapCNVs.setText("Max % Overlap repeats-CNVs:");
-		lblMaxPCTOverlapCNVs.setBounds(450, 140, 240, 20);
+		lblMaxPCTOverlapCNVs.setBounds(420, 140, 240, 20);
 
 		txtMaxPCTOverlapCNVs = new Text(this, SWT.BORDER);
-		txtMaxPCTOverlapCNVs.setBounds(700, 140, 100, 21);
+		txtMaxPCTOverlapCNVs.setBounds(670, 140, 100, 21);
 		txtMaxPCTOverlapCNVs.setText(String.valueOf(DEF_MAX_PCT_OVLAP_CNV));
 		txtMaxPCTOverlapCNVs.addMouseListener(mouse);
 		
