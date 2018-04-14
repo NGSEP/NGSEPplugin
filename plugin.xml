@@ -640,7 +640,32 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="net.sf.ngsep.view.MainMutatedPeptidesExtractor" label="Mutated Peptides Extractor" style="push">
+         <command commandId="net.sf.ngsep.view.MainSingleIndividualSimulator" label="Single Individual Simulator" style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                     <with
+                           variable="activeMenuSelection">
+                           <iterate
+                           		ifEmpty="false"
+                           		operator="or">
+                           	<adapt
+                           		type="org.eclipse.core.resources.IFile">
+                           		<or>
+                           			<test property="org.eclipse.core.resources.extension" value="fa" />
+                           			<test property="org.eclipse.core.resources.extension" value="fasta" />
+                           			<test property="org.eclipse.core.resources.extension" value="fna" />
+                           			<test property="org.eclipse.core.resources.extension" value="mfa" />
+                           			<test property="org.eclipse.core.resources.extension" value="FA" />
+                           			<test property="org.eclipse.core.resources.extension" value="FASTA" />
+	                           		<test property="org.eclipse.core.resources.extension" value="FNA" />
+	                           		<test property="org.eclipse.core.resources.extension" value="MFA" />
+                           		</or>
+                           	</adapt>
+                           </iterate>
+                     </with>
+               </visibleWhen>
+         </command>
+<!--         <command commandId="net.sf.ngsep.view.MainMutatedPeptidesExtractor" label="Mutated Peptides Extractor" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -660,6 +685,7 @@
                      </with>
                </visibleWhen>
          </command>
+-->
          </menu>
       </menuContribution>
    </extension>
@@ -694,7 +720,9 @@
       <command id="KmersCounter" name="Kmers Counter" defaultHandler="net.sf.ngsep.control.PlugKmersCounter"/>
       <command id="DistanceMatrixCalculator" name="Distance Matrix Calculator" defaultHandler="net.sf.ngsep.control.PlugDistanceMatrixCalculator"/>
  	  <command id="NeighborJoining" name="Neighbor Joining Generation" defaultHandler="net.sf.ngsep.control.PlugNeighborJoining"/>
- 	  <command id="net.sf.ngsep.view.MainMutatedPeptidesExtractor" name="Mutated Peptides Extractor" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+ 	  <command id="net.sf.ngsep.view.MainSingleIndividualSimulator" name="Single Individual Simulator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+<!-- 	  <command id="net.sf.ngsep.view.MainMutatedPeptidesExtractor" name="Mutated Peptides Extractor" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+-->
    </extension>
   <extension
 		point="org.eclipse.ui.views">
