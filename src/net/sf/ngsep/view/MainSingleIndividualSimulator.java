@@ -92,7 +92,7 @@ public class MainSingleIndividualSimulator implements SingleFileInputWindow {
 		shell = new Shell(display, SWT.SHELL_TRIM);
 		shell.setText("Compare VCFs");
 		shell.setLocation(150, 200);
-		shell.setSize(855, 417);
+		shell.setSize(800, 350);
 		createContents();
 		shell.open();
 
@@ -138,7 +138,7 @@ public class MainSingleIndividualSimulator implements SingleFileInputWindow {
 		txtOutputPrefix = new Text(shell, SWT.BORDER);
 		txtOutputPrefix.setBounds(220, 60, 530, 22);
 		txtOutputPrefix.addMouseListener(mouse);
-		String suggestedOutPrefix = SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile);
+		String suggestedOutPrefix = SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile)+"_sim";
 		txtOutputPrefix.setText(suggestedOutPrefix);
 		
 		btnOutputPrefix = new Button(shell, SWT.NONE);
@@ -189,10 +189,10 @@ public class MainSingleIndividualSimulator implements SingleFileInputWindow {
 		
 		lblMutatedSTRFraction = new Label(shell, SWT.NONE);
 		lblMutatedSTRFraction.setText("Fraction of STRs mutated");
-		lblMutatedSTRFraction.setBounds(10, 140, 250, 22);
+		lblMutatedSTRFraction.setBounds(10, 220, 250, 22);
 		
 		txtMutatedSTRFraction = new Text(shell, SWT.BORDER);
-		txtMutatedSTRFraction.setBounds(280, 140, 100, 22);
+		txtMutatedSTRFraction.setBounds(280, 220, 100, 22);
 		txtMutatedSTRFraction.setText(""+SingleIndividualSimulator.DEF_MUTATED_STR_FRACTION);
 		txtMutatedSTRFraction.addMouseListener(mouse);
 		
@@ -224,7 +224,7 @@ public class MainSingleIndividualSimulator implements SingleFileInputWindow {
 		txtStrUnitIndex.addMouseListener(mouse);
 		
 		btnSimulate = new Button(shell, SWT.NONE);
-		btnSimulate.setBounds(240, 240, 130, 22);
+		btnSimulate.setBounds(240, 280, 130, 22);
 		btnSimulate.setText("Simulate");
 		btnSimulate.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -235,7 +235,7 @@ public class MainSingleIndividualSimulator implements SingleFileInputWindow {
 		
 		btnCancel = new Button(shell, SWT.NONE);
 		btnCancel.setText("Cancel");
-		btnCancel.setBounds(410, 240, 130, 22);
+		btnCancel.setBounds(410, 280, 130, 22);
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {

@@ -52,7 +52,7 @@ public class SyncSingleIndividualSimulator extends Job {
 			
 			//Start progress bar
 			monitor.beginTask(nameProgressBar, 50000);
-			log.info("Started relative allele counts calculator");
+			log.info("Started Single Individual Simulator");
 			log.info("Input file: "+inputFile);
 			log.info("Output prefix: "+outputPrefix);
 			log.info("STRs file: "+instance.getStrsFile());
@@ -80,7 +80,7 @@ public class SyncSingleIndividualSimulator extends Job {
 			log.info("Process finished");
 			monitor.done();
 		} catch (Exception e) {
-			log.info("Error running relative allele counts calculator: ");
+			log.info("Error running Single Individual Simulator: ");
 			String message = LoggingHelper.serializeException(e);
 			log.severe(message);
 		} finally {
