@@ -23,8 +23,8 @@ package net.sf.ngsep.view;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import net.sf.ngsep.utilities.EclipseProjectHelper;
@@ -350,18 +350,14 @@ public class TabVDMainArgs extends Composite {
 				txtSampleId.setBounds(530, 340, 250, 22);
 				txtSampleId.addMouseListener(mouse);
 				try {
-					List<String> readGroups = MainMultiVariantsDetector.extractReadGroups(initialAlignmentsFile.getAbsolutePath());
-					if(readGroups.size()>0) {
-						String sampleId=readGroups.get(0);	
-						if (MainMultiVariantsDetector.isSampleIdUnique(readGroups, sampleId)) txtSampleId.setText(sampleId);
+					Set<String> sampleIds = MainMultiVariantsDetector.extractSampleIds(parent.getShell(), initialAlignmentsFile.getAbsolutePath());
+					if(sampleIds.size()==1) {
+						txtSampleId.setText(sampleIds.iterator().next());
 					}
 				} catch (IOException e) {
 					MessageDialog.openError(parent.getShell(), " Variants Detector Error","error while trying to obtain read groups from the alignments file"+ e.getMessage());
 				}
 			}
-				
-	
-
 		} catch (Exception e) {
 			e.getMessage();
 			MessageDialog.openError(parent.getShell(), " Variants Detector Error",""+ e.getMessage());

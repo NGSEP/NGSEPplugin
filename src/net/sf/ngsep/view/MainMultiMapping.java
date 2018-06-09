@@ -21,15 +21,15 @@ package net.sf.ngsep.view;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.JOptionPane;
 
 import net.sf.ngsep.control.SampleData;
-
+import net.sf.ngsep.utilities.SpecialFieldsHelper;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -41,7 +41,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -54,13 +53,22 @@ import org.eclipse.swt.widgets.Text;
 /**
  * 
  * @author Juan Camilo Quintero
+ * @author Jorge Duitama
  *
  */
-public class MainMultiMapping {
+public class MainMultiMapping implements MultipleFilesInputWindow  {
 	protected Shell shell;
-	private String folder;
-	private boolean pairedEndReads;
 	private Display display;
+	//Files selected initially by the user
+	private Set<String> selectedFiles;
+	
+	@Override
+	public void setSelectedFiles(Set<String> selectedFiles) {
+		this.selectedFiles = selectedFiles;
+		
+	}
+	private boolean pairedEndReads = false;
+	
 	private Table table;
 	private TableColumn tbcCheck;
 	private TableColumn tbcFileOne;
@@ -71,8 +79,18 @@ public class MainMultiMapping {
 	private TableColumn tbcFullPathFile1;
 	private TableColumn tbcFullPathFile2;
 	private Font tfont;
-
-	private static final String [] DETECTED_FILE_EXTS = {"fa","fasta","fastq","fq","gz"};
+	
+	private static final Set<String> ACCEPTED_FILE_EXTS=new TreeSet<>();
+	static {
+		ACCEPTED_FILE_EXTS.add("fa");
+		ACCEPTED_FILE_EXTS.add("fasta");
+		ACCEPTED_FILE_EXTS.add("fq");
+		ACCEPTED_FILE_EXTS.add("fastq");
+		ACCEPTED_FILE_EXTS.add("fa.gz");
+		ACCEPTED_FILE_EXTS.add("fasta.gz");
+		ACCEPTED_FILE_EXTS.add("fq.gz");
+		ACCEPTED_FILE_EXTS.add("fastq.gz");
+	}
 	private Label lblListFilesTo;
 	private Button btnNext;
 	private Button btnCancel;
@@ -110,15 +128,6 @@ public class MainMultiMapping {
 		}
 		shell.setLocation(150, 200);
 		tfont = new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD);
-
-		File file = null;
-		File[] files = null;
-		if (getFolder() != null && !getFolder().equals("")) {
-			file = new File(getFolder());
-			if (file.exists()) {
-				files = file.listFiles();
-			}
-		}
 
 		table = new Table(shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.CHECK | SWT.H_SCROLL | SWT.HIDE_SELECTION | SWT.SINGLE | SWT.FULL_SELECTION);
 		table.setHeaderVisible(true);
@@ -162,67 +171,36 @@ public class MainMultiMapping {
 		lblListFilesTo.setText("List files to align");
 		lblListFilesTo.setFont(tfont);
 		lblListFilesTo.setBounds(52, 7, 186, 21);
-
-		lblOutput = new Label(shell, SWT.NONE);
-		lblOutput.setText("(*)Output Directory:");
-		txtOutput = new Text(shell, SWT.BORDER);
-		txtOutput.setText(folder);
-		btnOutput = new Button(shell, SWT.NONE);
-		btnOutput.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				DirectoryDialog dialog=new DirectoryDialog(shell);
-				File file = new File(folder);
-				dialog.setFilterPath(file.getAbsolutePath());
-				dialog.open();
-				String out=dialog.getFilterPath();
-				if (out!=null){
-					txtOutput.setText(out);
-				}
-			}
-		});
-
-		btnOutput.setText("...");
-
-		btnNext = new Button(shell, SWT.NONE);
-		btnNext.setText("Next");
-		btnNext.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				process();
-			}
-		});
-
-		btnCancel = new Button(shell, SWT.NONE);
-		btnCancel.setText("Cancel");
-		btnCancel.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				shell.close();
-			}
-		});
-
-		List<File> listFiles = new ArrayList<File>(Arrays.asList(files));
+		
 		//Temporal list just to paint later. It does not have full paths of the fastq files
 		List<SampleData> pairedSamples = new ArrayList<SampleData>();
-		Collections.sort(listFiles,new FilesComparator());
-		for (int i=0;i<listFiles.size();i++) {
-			String filename = listFiles.get(i).getAbsolutePath();
-			if(!correctFormat(filename)) {
+		List<String> selectedFilesList = new ArrayList<>(selectedFiles);
+		Collections.sort(selectedFilesList);
+		String suggestedOutFolder = null;
+		for (int i=0;i<selectedFilesList.size();i++) {
+			String filepath = selectedFilesList.get(i);
+			if(!correctFormat(filepath)) {
+				continue;
+			}
+			File file = new File(filepath);
+			if(!file.exists()) {
 				continue;
 			}
 			SampleData sd = new SampleData();
-			sd.setFastq1(filename);
+			sd.setFastq1(filepath);
 			if(pairedEndReads){
-				if(i<listFiles.size()-1) {
-					String filename2 = listFiles.get(i+1).getAbsolutePath();
-					if(areCompatible(filename, filename2)) {
-						sd.setFastq2(filename2);
+				if(i<selectedFilesList.size()-1) {
+					String filepath2 = selectedFilesList.get(i+1);
+					if(areCompatible(filepath, filepath2)) {
+						sd.setFastq2(filepath2);
 						i++;
 					}
 				}
 			}
 			pairedSamples.add(sd);
+			if(suggestedOutFolder==null) {
+				suggestedOutFolder = file.getParentFile().getAbsolutePath();
+			}
 		}
 
 		for (SampleData sd:pairedSamples) {
@@ -252,6 +230,40 @@ public class MainMultiMapping {
 			item.setText(5, prefix);
 		}
 
+		lblOutput = new Label(shell, SWT.NONE);
+		lblOutput.setText("(*)Output Directory:");
+		txtOutput = new Text(shell, SWT.BORDER);
+		txtOutput.setText(suggestedOutFolder);
+		btnOutput = new Button(shell, SWT.NONE);
+		btnOutput.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				SpecialFieldsHelper.updateDirectoryTextBox(shell, SWT.SAVE, selectedFiles.iterator().next(), txtOutput);
+			}
+		});
+
+		btnOutput.setText("...");
+
+		btnNext = new Button(shell, SWT.NONE);
+		btnNext.setText("Next");
+		btnNext.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				process();
+			}
+		});
+
+		btnCancel = new Button(shell, SWT.NONE);
+		btnCancel.setText("Cancel");
+		btnCancel.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				shell.close();
+			}
+		});
+
+		
+
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
@@ -274,10 +286,21 @@ public class MainMultiMapping {
 				String toModify = item.getText(column);
 				if(column == 1 || column == 2) {
 					FileDialog dialog = new FileDialog(shell);
-					dialog.setFilterPath(folder);
+					dialog.setFileName(toModify);
+					String absolutePath = item.getText(column);
+					dialog.setFilterPath(absolutePath);
 					String newFile = dialog.open();
 					if(newFile!=null){
 						File f = new File (newFile);
+						if(!f.exists()) {
+							MessageDialog.openError(shell, " Variants Detector Error","The selected file does not exist");
+							return;
+						}
+						String filename = f.getName();
+						if(!correctFormat(filename)) {
+							MessageDialog.openError(shell, " Variants Detector Error","The selected file must be a fasta or fastq file");
+							return;
+						}
 						item.setText(column,f.getName());
 						item.setText(column+5,f.getAbsolutePath());
 					}		
@@ -322,7 +345,7 @@ public class MainMultiMapping {
 		buttons.add(1, btnNext);
 		buttons.add(2, btnCancel);
 
-		paint(listFiles.size(), shell, table, columns, lblOutput, txtOutput, buttons,true);
+		paint(pairedSamples.size(), shell, table, columns, lblOutput, txtOutput, buttons,true);
 	}
 
 	public void process(){
@@ -391,10 +414,10 @@ public class MainMultiMapping {
 	}
 
 	public boolean correctFormat(String file) {
-		int i = file.lastIndexOf('.');
-		if(i<0) return false;
-		String ext = file.substring(i+1);
-		return Arrays.binarySearch(DETECTED_FILE_EXTS, ext)>=0;
+		for(String ext:ACCEPTED_FILE_EXTS) {
+			if(file.endsWith(ext)) return true;
+		}
+		return false;
 	}
 
 	public boolean areCompatible(String file1, String file2) {
@@ -406,14 +429,6 @@ public class MainMultiMapping {
 		} else {
 			return true;
 		}
-	}
-
-	public String getFolder() {
-		return folder;
-	}
-
-	public void setFolder(String folder) {
-		this.folder = folder;
 	}
 
 	public boolean isPairedEndReads() {
@@ -492,14 +507,6 @@ public class MainMultiMapping {
 			btnNext.setBounds(150, 620, 122, 30);
 			btnCancel.setBounds(326, 620, 122, 30);	
 		}
-	}
-
-}
-class FilesComparator implements Comparator<File> {
-
-	@Override
-	public int compare(File f1, File f2) {
-		return f1.getName().compareTo(f2.getName());
 	}
 
 }

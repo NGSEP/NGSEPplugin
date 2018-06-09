@@ -39,8 +39,6 @@ import org.eclipse.ui.handlers.HandlerUtil;
  *
  */
 public class PlugMapRead extends AbstractHandler {
-	// This class performs the task of allowing select a project two file in
-	// which demos right-click menu and options appear NGSEP
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {

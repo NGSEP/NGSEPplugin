@@ -22,14 +22,15 @@ package net.sf.ngsep.view;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
 import net.sf.ngsep.control.SampleData;
-import net.sf.ngsep.utilities.EclipseProjectHelper;
 import net.sf.ngsep.utilities.FieldValidator;
+import net.sf.ngsep.utilities.SpecialFieldsHelper;
 import ngsep.alignments.io.ReadAlignmentFileReader;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -42,7 +43,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -53,13 +53,22 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * 
  * @author Juan Camilo Quintero
- *
+ * @author Jorge Duitama
  */
-public class MainMultiVariantsDetector {
+public class MainMultiVariantsDetector implements MultipleFilesInputWindow {
 	protected Shell shell;
 	private Display display;
+	
+	//Files selected initially by the user
+	private Set<String> selectedFiles;
+	
+	@Override
+	public void setSelectedFiles(Set<String> selectedFiles) {
+		this.selectedFiles = selectedFiles;
+		
+	}
+			
 	private Table table;
 	private TableColumn tbcCheck;
 	private TableColumn tbcFileOne;
@@ -74,7 +83,7 @@ public class MainMultiVariantsDetector {
 	private Label lblOutput;
 	private Text txtOutput;
 	private Button btnOutput;
-	private String folder;
+	
 
 	/**
 	 * Open the window.
@@ -101,15 +110,6 @@ public class MainMultiVariantsDetector {
 		shell.setText("Multi Variants Detector");
 		shell.setLocation(150, 200);
 		tfont = new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD);
-
-		File file = null;
-		File[] files = null;
-		if (folder != null && !folder.equals("")) {
-			file = new File(folder);
-			if (file.exists()) {
-				files = file.listFiles();
-			}
-		}
 
 		table = new Table(shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL| SWT.CHECK | SWT.H_SCROLL | SWT.HIDE_SELECTION | SWT.SINGLE | SWT.FULL_SELECTION);
 		table.setHeaderVisible(true);
@@ -141,25 +141,55 @@ public class MainMultiVariantsDetector {
 		lblListFiles.setText("List of files to discover variants");
 		lblListFiles.setFont(tfont);
 		lblListFiles.setBounds(52, 7, 260, 21);
+		
+		int countAccepted = 0;
+		String suggestedOutFolder = null;
+		for (String filePath:selectedFiles) {
+			String fnLowerCase = filePath.toLowerCase();
+			if (!fnLowerCase.endsWith(".bam")) {
+				continue;
+			}
+			File file = new File(filePath);
+			if(!file.exists()) {
+				continue;
+			}
+			String filename = file.getName();
+			String sampleId="";
+			Set<String> sampleIds;
+			try {
+				sampleIds = extractSampleIds(shell, filePath);
+				if(sampleIds.size()==1) {
+					sampleId = sampleIds.iterator().next();
+				}
+			} catch (IOException e) {
+				MessageDialog.openError(shell, " Variants Detector Error","Error loading sample ids from the alignments file "+ filename+": "+ e.getMessage()+". Skipping file");
+				continue;
+			}
+			
+			if(suggestedOutFolder==null) {
+				suggestedOutFolder = file.getParentFile().getAbsolutePath();
+			}
+			TableItem item = new TableItem(table, SWT.CHECK);
+			item.setText(1, filename);
+			if(sampleId!=null) item.setText(2, sampleId);
+			String nameVCF=filename.substring(0, filename.lastIndexOf("."));
+			item.setText(3, nameVCF);
+			item.setText(4,filePath);
+			countAccepted++;
+		}	
+
 
 		lblOutput = new Label(shell, SWT.NONE);
 		lblOutput.setText("(*)Output Directory:");
 
 		txtOutput = new Text(shell, SWT.BORDER);
-		txtOutput.setText(folder);
+		txtOutput.setText(suggestedOutFolder);
 
 		btnOutput = new Button(shell, SWT.NONE);
 		btnOutput.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				DirectoryDialog dialog=new DirectoryDialog(shell);
-				File file = new File(folder);
-				dialog.setFilterPath(file.getAbsolutePath());
-				dialog.open();
-				String out=dialog.getFilterPath();
-				if (out!=null){
-					txtOutput.setText(out);
-				}
+				SpecialFieldsHelper.updateDirectoryTextBox(shell, SWT.SAVE, selectedFiles.iterator().next(), txtOutput);
 			}
 		});
 		btnOutput.setText("...");
@@ -181,36 +211,7 @@ public class MainMultiVariantsDetector {
 				shell.close();
 			}
 		});
-
-		List<File> listFiles = Arrays.asList(files);
-		int countAccepted = 0;
-		for (int i = 0; i < listFiles.size(); i++) {
-			String filename = listFiles.get(i).getName();
-			String fnLowerCase = filename.toLowerCase();
-			String fileabsolutePath = listFiles.get(i).getAbsolutePath();
-			if (!fnLowerCase.endsWith(".bam")) {
-				continue;
-			}
-			String sampleId=null;
-			try {
-				List<String> readGroups = extractReadGroups(fileabsolutePath);
-				if(readGroups.size()>0) {
-					String sampleIdTmp = readGroups.get(0);
-					if (isSampleIdUnique(readGroups, sampleIdTmp)) sampleId = sampleIdTmp;
-				}
-			} catch (IOException e1) {
-				MessageDialog.openError(shell, "Variants Detector error", "Could not extract read group from file "+fileabsolutePath+". Skipping file");
-				continue;
-			}
-			TableItem item = new TableItem(table, SWT.CHECK);
-			item.setText(1, filename);
-			if(sampleId!=null) item.setText(2, sampleId);
-			String nameVCF=filename.substring(0, filename.lastIndexOf("."));
-			item.setText(3, nameVCF);
-			item.setText(4,listFiles.get(i).getAbsolutePath());
-			countAccepted++;
-		}	
-
+		
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
@@ -234,12 +235,35 @@ public class MainMultiVariantsDetector {
 				if(column == 1) {
 					FileDialog dialog = new FileDialog(shell);
 					dialog.setFileName(toModify);
-					dialog.setFilterPath(folder);
+					String absolutePath = item.getText(4);
+					dialog.setFilterPath(absolutePath);
 					String newFile = dialog.open();
 					if(newFile!=null){
 						File f = new File (newFile);
-						item.setText(column,f.getName());
+						if(!f.exists()) {
+							MessageDialog.openError(shell, " Variants Detector Error","The selected file does not exist");
+							return;
+						}
+						String filename = f.getName();
+						if(!filename.toLowerCase().endsWith(".bam")) {
+							MessageDialog.openError(shell, " Variants Detector Error","The selected file must be a bam file");
+							return;
+						}
+						Set<String> sampleIds;
+						try {
+							sampleIds = extractSampleIds(shell, f.getAbsolutePath());
+						} catch (IOException e1) {
+							MessageDialog.openError(shell, " Variants Detector Error","Error loading sample ids from the alignments file "+ filename+": "+ e1.getMessage()+". Skipping file");
+							return;
+						}
+						item.setText(column,filename);
 						item.setText(4,f.getAbsolutePath());
+						
+						if(sampleIds.size()==1) {
+							item.setText(2,sampleIds.iterator().next());
+							String nameVCF=filename.substring(0, filename.lastIndexOf("."));
+							item.setText(3, nameVCF);
+						}
 					}		
 				}
 			
@@ -290,14 +314,12 @@ public class MainMultiVariantsDetector {
 		return true;
 	}
 
-	public static List<String> extractReadGroups(String alignmentsFile) throws IOException {
-		ReadAlignmentFileReader reader = null;
-		try {
-			reader = new ReadAlignmentFileReader(alignmentsFile);
-			return reader.getReadGroups();
-		} finally {
-			if (reader != null) reader.close();
+	public static Set<String> extractSampleIds(Shell shell, String alignmentsFile) throws IOException {
+		Set<String> sampleIds = new HashSet<>();
+		try (ReadAlignmentFileReader reader =  new ReadAlignmentFileReader(alignmentsFile)) {
+			sampleIds.addAll(reader.getSampleIdsByReadGroup().values());
 		}
+		return sampleIds;
 	}
 	public void process(){
 		
@@ -306,14 +328,6 @@ public class MainMultiVariantsDetector {
 			return;
 		}
 		String outputDirectory = txtOutput.getText();
-		try {
-			String pD1 = EclipseProjectHelper.findProjectDirectory(folder);
-			String pD2 = EclipseProjectHelper.findProjectDirectory(outputDirectory);
-			if (!pD1.equals(pD2)) throw new IOException("Please use an output directory within the same project where the bam file is located");
-		} catch (IOException e) {
-			MessageDialog.openError(shell, "Error", e.getMessage());
-			return;
-		}
 		
 		List<SampleData> uniqueDataForSample=new ArrayList<SampleData>();
 		int itemNoChecked=0;
@@ -360,15 +374,6 @@ public class MainMultiVariantsDetector {
 
 		}
 		
-	}
-
-
-	public String getFolder() {
-		return folder;
-	}
-
-	public void setFolder(String folder) {
-		this.folder = folder;
 	}
 
 }

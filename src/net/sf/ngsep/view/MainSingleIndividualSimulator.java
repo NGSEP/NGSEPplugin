@@ -303,7 +303,7 @@ public class MainSingleIndividualSimulator implements SingleFileInputWindow {
 				errors.add(FieldValidator.buildMessage(lblPloidy.getText(), FieldValidator.ERROR_INTEGER));
 				txtPloidy.setBackground(oc);
 			} else {
-				instance.setPloidy(Integer.parseInt(txtPloidy.getText()));
+				instance.setPloidy(Byte.parseByte(txtPloidy.getText()));
 			}
 		}
 		if (txtStrUnitIndex.getText() != null && txtStrUnitIndex.getText().length()>0) {

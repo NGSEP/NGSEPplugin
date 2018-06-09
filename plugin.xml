@@ -109,7 +109,7 @@
                      </with>
                </visibleWhen>
        	    </command>
-            <command commandId="MultiMappingSingleEnd" label="Multi Mapping Single End" style="push">
+            <command commandId="net.sf.ngsep.view.MainMultiMapping" label="Multi Mapping Single End" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -124,7 +124,7 @@
                      </with>
                </visibleWhen>
        	    </command>
-            <command commandId="MultiMappingPairedEnd" label="Multi Mapping Paired End" style="push">
+            <command commandId="net.sf.ngsep.view.MainMultiMappingPairedEnd" label="Multi Mapping Paired End" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -153,8 +153,6 @@
 								<or>
                            			<test property="org.eclipse.core.resources.extension" value="bam" />
                            			<test property="org.eclipse.core.resources.extension" value="BAM" />
-                           			<test property="org.eclipse.core.resources.extension" value="sam" />
-                           			<test property="org.eclipse.core.resources.extension" value="SAM" />
                            		</or>
                            </adapt>
                            </iterate>
@@ -193,8 +191,6 @@
                                  <or>
                            			<test property="org.eclipse.core.resources.extension" value="bam" />
                            			<test property="org.eclipse.core.resources.extension" value="BAM" />
-                           			<test property="org.eclipse.core.resources.extension" value="sam" />
-                    		       	<test property="org.eclipse.core.resources.extension" value="SAM" />
                            		</or>
                            </adapt>
                            </iterate>
@@ -233,8 +229,6 @@
 								<or>
                            			<test property="org.eclipse.core.resources.extension" value="bam" />
                            			<test property="org.eclipse.core.resources.extension" value="BAM" />
-                           			<test property="org.eclipse.core.resources.extension" value="sam" />
-                           			<test property="org.eclipse.core.resources.extension" value="SAM" />
                            		</or>
                            </adapt>
                            </iterate>
@@ -254,15 +248,13 @@
                            <or>
                            	<test property="org.eclipse.core.resources.extension" value="bam" />
                            	<test property="org.eclipse.core.resources.extension" value="BAM" />
-                           	<test property="org.eclipse.core.resources.extension" value="sam" />
-                           	<test property="org.eclipse.core.resources.extension" value="SAM" />
                            </or>
                      </adapt>
                   </iterate>
                </with>
             </visibleWhen>
          </command>
-         <command commandId="MultiVariantsDetector" label="Multi Variants Detector" style="push">
+         <command commandId="net.sf.ngsep.view.MainMultiVariantsDetector" label="Multi Variants Detector" style="push">
                <visibleWhen
                      checkEnabled="false">
                      <with
@@ -562,8 +554,6 @@
                         		<or>
                            			<test property="org.eclipse.core.resources.extension" value="bam" />
                            			<test property="org.eclipse.core.resources.extension" value="BAM" />
-                           			<test property="org.eclipse.core.resources.extension" value="sam" />
-                           			<test property="org.eclipse.core.resources.extension" value="SAM" />
                            		</or>
                            	</adapt>
                            </iterate>
@@ -695,15 +685,15 @@
       <command id="net.sf.ngsep.view.MainSortAlignment" name="Sort Aligments" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="WizardSingleEnd" name="Wizard Single End" defaultHandler="net.sf.ngsep.control.PlugWizardSingleEndReads"/>
       <command id="WizardPairedEnd" name="Wizard Paired End" defaultHandler="net.sf.ngsep.control.PlugWizardPairedEndReads"/>
-      <command id="MultiMappingSingleEnd" name="Multi Mapping Single End" defaultHandler="net.sf.ngsep.control.PlugMultiMappingSingleEndReads"/>
-      <command id="MultiMappingPairedEnd" name="Multi Mapping Paired End" defaultHandler="net.sf.ngsep.control.PlugMultiMappingPairedEndReads"/>
+      <command id="net.sf.ngsep.view.MainMultiMapping" name="Multi Mapping Single End" defaultHandler="net.sf.ngsep.control.PlugMultipleFiles"/>
+      <command id="net.sf.ngsep.view.MainMultiMappingPairedEnd" name="Multi Mapping Paired End" defaultHandler="net.sf.ngsep.control.PlugMultipleFiles"/>
       <command id="net.sf.ngsep.view.MainBasePairQualityStatistics" name="Calculate Basepair Quality Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainPlotQualityStatistics" name="Plot Quality Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainCoverageStatisticsCalculator" name="Calculate Coverage Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainPlotCoverageStatistics" name="Plot Coverage Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainRelativeAlleleCountsCalculator" name="Calculate Relative Allele Counts" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="VariantsDetector" name="Variants Detector" defaultHandler="net.sf.ngsep.control.PlugVariantsDetector"/>
-      <command id="MultiVariantsDetector" name="Multi Variants Detector" defaultHandler="net.sf.ngsep.control.PlugMultiVariantsDetector"/>
+      <command id="net.sf.ngsep.view.MainMultiVariantsDetector" name="Multi Variants Detector" defaultHandler="net.sf.ngsep.control.PlugMultipleFiles"/>
       <command id="MergeVCF" name="Merge VCF" defaultHandler="net.sf.ngsep.control.PlugMergeVCF"/>
       <command id="net.sf.ngsep.view.MainVCFFunctionalAnnotator" name="Variants Functional Annotator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainVCFFilter" name="VCF Filter" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
