@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-	<extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-      		locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
+	<extension point="org.eclipse.ui.menus">
+      <menuContribution locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
             <menu id="NGSEP" label="NGSEP Menu">
             
             <command commandId="CreateIndex" label="Create Index Bowtie" style="push">
@@ -236,15 +234,10 @@
                </visibleWhen>
          </command>
          <command commandId="VariantsDetector" label="Find Variants" style="push">
-               <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="activeMenuSelection">
-                  <iterate
-                        ifEmpty="false"
-                        operator="or">
-                     <adapt
-                           type="org.eclipse.core.resources.IFile">
+               <visibleWhen checkEnabled="false">
+               <with variable="activeMenuSelection">
+                  <iterate ifEmpty="false" operator="or">
+                     <adapt type="org.eclipse.core.resources.IFile">
                            <or>
                            	<test property="org.eclipse.core.resources.extension" value="bam" />
                            	<test property="org.eclipse.core.resources.extension" value="BAM" />
@@ -254,20 +247,7 @@
                </with>
             </visibleWhen>
          </command>
-         <command commandId="net.sf.ngsep.view.MainMultiVariantsDetector" label="Multi Variants Detector" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFolder">
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
+		 <command commandId="net.sf.ngsep.view.MainMultiVariantsDetector" label="Multi Variants Detector" style="push">
          </command>
          <command commandId="MergeVCF" label="Merge VCF" style="push">
                <visibleWhen

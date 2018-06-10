@@ -33,7 +33,7 @@ import net.sf.ngsep.utilities.EclipseProjectHelper;
 /**
  * 
  * @author Jorge Duitama
- *
+ * @deprecated
  */
 public class SamplesDatabase {
 	// Databases indexed by the absolute path of the project directory

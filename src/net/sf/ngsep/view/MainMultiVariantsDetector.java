@@ -71,7 +71,7 @@ public class MainMultiVariantsDetector implements MultipleFilesInputWindow {
 			
 	private Table table;
 	private TableColumn tbcCheck;
-	private TableColumn tbcFileOne;
+	private TableColumn tbcBamFile;
 	private TableColumn tbcSampleId;
 	private TableColumn tbcOutputFile;
 	private TableColumn tbcFullPath;
@@ -80,9 +80,14 @@ public class MainMultiVariantsDetector implements MultipleFilesInputWindow {
 	private Button btnNext;
 	private Button btnCancel;
 	private Button btnSelectAll;
+	private Button btnIndependentAnalysis;
 	private Label lblOutput;
 	private Text txtOutput;
 	private Button btnOutput;
+	
+	private String suggestedOutFolder = null;
+	
+	
 	
 
 	/**
@@ -109,41 +114,62 @@ public class MainMultiVariantsDetector implements MultipleFilesInputWindow {
 		shell = new Shell(display, SWT.SHELL_TRIM);
 		shell.setText("Multi Variants Detector");
 		shell.setLocation(150, 200);
-		tfont = new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD);
+		shell.setSize(800, 750);
+		tfont = new Font(Display.getCurrent(), "Arial", 12, SWT.BOLD);
+		
+		lblListFiles = new Label(shell, SWT.NONE);
+		lblListFiles.setText("List of files to discover variants");
+		lblListFiles.setFont(tfont);
+		lblListFiles.setBounds(50, 10, 300, 25);
+		
+		btnSelectAll = new Button(shell, SWT.PUSH);
+		btnSelectAll.setBounds(10, 55, 30, 30);
+		btnSelectAll.setText(">");
+		btnSelectAll.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				for (int i = 0; i < table.getItemCount(); i++) {
+					if (table.getItems()[i].getChecked()) {
+						table.getItems()[i].setChecked(false);
+					} else {
+						table.getItems()[i].setChecked(true);
+					}
+				}
+			}
+		});
 
 		table = new Table(shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL| SWT.CHECK | SWT.H_SCROLL | SWT.HIDE_SELECTION | SWT.SINGLE | SWT.FULL_SELECTION);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+		table.setBounds(50, 50, 700, 500);
 
 		tbcCheck = new TableColumn(table, SWT.NONE);
-		tbcCheck.setText("Check File");
+		tbcCheck.setText("Select");
 		tbcCheck.setResizable(true);
 		tbcCheck.setMoveable(false);
+		tbcCheck.setWidth(50);
 
-		tbcFileOne = new TableColumn(table, SWT.NONE);
-		tbcFileOne.setText("Input BAM File");
-		tbcFileOne.setResizable(true);
-		tbcFileOne.setMoveable(false);
+		tbcBamFile = new TableColumn(table, SWT.NONE);
+		tbcBamFile.setText("Input BAM File");
+		tbcBamFile.setResizable(true);
+		tbcBamFile.setMoveable(false);
+		tbcBamFile.setWidth(200);
 		
 		tbcSampleId = new TableColumn(table, SWT.NONE);
 		tbcSampleId.setText("Sample Id");
 		tbcSampleId.setResizable(true);
+		tbcSampleId.setWidth(150);
 
 		tbcOutputFile = new TableColumn(table, SWT.NONE);
 		tbcOutputFile.setText("Output Prefix");
 		tbcOutputFile.setResizable(true);
+		tbcOutputFile.setWidth(200);
 		
 		tbcFullPath = new TableColumn(table, SWT.NONE);
 		//tbcFullPath.setWidth(0);
 		tbcFullPath.setResizable(true);
 
-		lblListFiles = new Label(shell, SWT.NONE);
-		lblListFiles.setText("List of files to discover variants");
-		lblListFiles.setFont(tfont);
-		lblListFiles.setBounds(52, 7, 260, 21);
 		
-		int countAccepted = 0;
-		String suggestedOutFolder = null;
 		for (String filePath:selectedFiles) {
 			String fnLowerCase = filePath.toLowerCase();
 			if (!fnLowerCase.endsWith(".bam")) {
@@ -175,27 +201,64 @@ public class MainMultiVariantsDetector implements MultipleFilesInputWindow {
 			String nameVCF=filename.substring(0, filename.lastIndexOf("."));
 			item.setText(3, nameVCF);
 			item.setText(4,filePath);
-			countAccepted++;
-		}	
+		}
+		
+		
+		Button btnJointAnalysis = new Button(shell, SWT.RADIO);
+		btnJointAnalysis.setBounds(10, 600, 370, 25);
+		btnJointAnalysis.setText("Joint analysis");
+		btnJointAnalysis.setSelection(true);
+		btnJointAnalysis.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				lblOutput.setText("(*)Output File:");
+				lblOutput.setVisible(true);
+				lblOutput.setVisible(true);
+				txtOutput.setText(suggestedOutFolder+File.separator+"AllSamples.vcf");
+			}
+		});
+		
+		btnIndependentAnalysis = new Button(shell, SWT.RADIO);
+		btnIndependentAnalysis.setBounds(410, 600, 370, 25);
+		btnIndependentAnalysis.setText("Independent analysis per file");
+		btnIndependentAnalysis.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				lblOutput.setText("(*)Output Directory:");
+				lblOutput.setVisible(true);
+				lblOutput.setVisible(true);
+				txtOutput.setText(suggestedOutFolder);
+			}
+		});
 
 
 		lblOutput = new Label(shell, SWT.NONE);
-		lblOutput.setText("(*)Output Directory:");
+		lblOutput.setText("(*)Output File:");
+		lblOutput.setBounds(10, 640, 180, 25);
 
 		txtOutput = new Text(shell, SWT.BORDER);
-		txtOutput.setText(suggestedOutFolder);
+		txtOutput.setText(suggestedOutFolder+File.separator+"AllSamples.vcf");
+		txtOutput.setBounds(200, 640, 550, 25);
 
 		btnOutput = new Button(shell, SWT.NONE);
+		btnOutput.setBounds(760, 640, 24, 25);
 		btnOutput.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateDirectoryTextBox(shell, SWT.SAVE, selectedFiles.iterator().next(), txtOutput);
+				if(btnIndependentAnalysis.getSelection()) {
+					SpecialFieldsHelper.updateDirectoryTextBox(shell, SWT.SAVE, selectedFiles.iterator().next(), txtOutput);
+				} else {
+					SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, selectedFiles.iterator().next(), txtOutput);
+				}
+				
 			}
 		});
 		btnOutput.setText("...");
-
+		
 		btnNext = new Button(shell, SWT.NONE);
 		btnNext.setText("Next");
+		btnNext.setBounds(200, 680, 150, 30);
+			
 		btnNext.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -205,6 +268,7 @@ public class MainMultiVariantsDetector implements MultipleFilesInputWindow {
 
 		btnCancel = new Button(shell, SWT.NONE);
 		btnCancel.setText("Cancel");
+		btnCancel.setBounds(450, 680, 150, 30);
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -275,36 +339,6 @@ public class MainMultiVariantsDetector implements MultipleFilesInputWindow {
 				}				
 			}
 		});
-		
-		btnSelectAll = new Button(shell, SWT.PUSH);
-		btnSelectAll.setBounds(10, 55, 30, 30);
-		btnSelectAll.setText(">");
-		btnSelectAll.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				for (int i = 0; i < table.getItemCount(); i++) {
-					if (table.getItems()[i].getChecked()) {
-						table.getItems()[i].setChecked(false);
-					} else {
-						table.getItems()[i].setChecked(true);
-					}
-				}
-			}
-		});
-
-		List<TableColumn> columns=new ArrayList<TableColumn>();
-		columns.add(0, tbcCheck);
-		columns.add(1, tbcFileOne);
-		columns.add(2, tbcSampleId);
-		columns.add(3, tbcOutputFile);
-
-		List<Button> buttons=new ArrayList<Button>();
-		buttons.add(0, btnOutput);
-		buttons.add(1, btnNext);
-		buttons.add(2, btnCancel);
-		//TODO: Design this method better
-		MainMultiMapping.paint(countAccepted, shell, table, columns, lblOutput, txtOutput, buttons,false);
-
 	}
 	
 	public static boolean isSampleIdUnique(List<String> readGroups, String sampleId){
@@ -327,7 +361,7 @@ public class MainMultiVariantsDetector implements MultipleFilesInputWindow {
 			MessageDialog.openError(shell, "Error", FieldValidator.buildMessage(lblOutput.getText(), FieldValidator.ERROR_MANDATORY));
 			return;
 		}
-		String outputDirectory = txtOutput.getText();
+		String outputPath = txtOutput.getText();
 		
 		List<SampleData> uniqueDataForSample=new ArrayList<SampleData>();
 		int itemNoChecked=0;
@@ -351,28 +385,33 @@ public class MainMultiVariantsDetector implements MultipleFilesInputWindow {
 					return;
 				}
 				if (namePrefix != null && !namePrefix.equals("")) {
-					sampleData.setVcfFile(outputDirectory + File.separator + namePrefix+".vcf");
-					sampleData.setSvFile(outputDirectory + File.separator + namePrefix+"_SV.gff");
-					sampleData.setVdLogFile(outputDirectory + File.separator + namePrefix+"_VD.log");	
+					sampleData.setVcfFile(outputPath + File.separator + namePrefix+".vcf");
+					sampleData.setSvFile(outputPath + File.separator + namePrefix+"_SV.gff");
+					sampleData.setVdLogFile(outputPath + File.separator + namePrefix+"_VD.log");	
 				} else {
 					MessageDialog.openError(shell, "Error", "Prefix for output files in line: "+i+" can not be empty");
 					return;
 				}
 				uniqueDataForSample.add(sampleData);
-			}else{
+			} else{
 				itemNoChecked++;
 			}
 		}
 		if (itemNoChecked==table.getItemCount()) {
 			MessageDialog.openError(shell, "Multi Variants Detector Error", "Please select at least one sample");
 			return;	
-		}else{
-			MainVariantsDetector shellVariantsDetector=new MainVariantsDetector(outputDirectory, uniqueDataForSample);
-			shellVariantsDetector.open();
-			shell.dispose();
-			
-
 		}
+		MainVariantsDetector shellVariantsDetector=new MainVariantsDetector(outputPath, uniqueDataForSample,btnIndependentAnalysis.getSelection());
+		//MessageDialog.openInformation(shell, "Multi Variants Detector", "Created next window object");
+		try {
+			shellVariantsDetector.open();
+		} catch (Exception e) {
+			MessageDialog.openError(shell, "Multi Variants Detector Error", "Error loading next frame: "+e.getMessage());
+			e.printStackTrace();
+			return;
+		}
+		
+		shell.dispose();
 		
 	}
 

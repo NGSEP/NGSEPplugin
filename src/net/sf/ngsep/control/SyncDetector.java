@@ -37,23 +37,17 @@ import org.eclipse.core.runtime.jobs.Job;
  * @author Jorge Duitama, Juan Camilo Quintero
  *
  */
-public class SyncDetector extends Job{
+public class SyncDetector extends Job {
 
 	public SyncDetector(String name) {
 		super(name);
 	}
 	private VariantsDetector vd;
-	private SampleData sampleData;
 	
-	private boolean isGT;
+	private String logName;
 	
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		String logName;
-		if(!isGT)
-			logName = sampleData.getVdLogFile();
-		else
-			logName = sampleData.getVdGTLogFile();
 		FileHandler logFile;
 		try {
 			logFile = new FileHandler(logName, false);
@@ -67,15 +61,13 @@ public class SyncDetector extends Job{
 			monitor.beginTask(vd.getSampleId(), 100);
 			vd.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			vd.setLog(log);
-			//vd.printParameters();
 			vd.processAll();
-			SamplesDatabase.updateSample(sampleData);
 			monitor.done();
 			
 		} catch (Exception e) {
 			String message = LoggingHelper.serializeException(e);
 			log.severe(message);
-			return new Status(IStatus.ERROR, sampleData.getSampleId(), "Error while executing variants detector "+sampleData.getSampleId(),e);
+			return new Status(IStatus.ERROR, vd.getSampleId(), "Error while executing variants detector "+vd.getSampleId(),e);
 		} finally {
 			LoggingHelper.closeLogger(log);
 		}
@@ -91,23 +83,19 @@ public class SyncDetector extends Job{
 		this.vd = vd;
 	}
 
-	public SampleData getSampleData() {
-		return sampleData;
+	/**
+	 * @return the logName
+	 */
+	public String getLogName() {
+		return logName;
 	}
 
-	public void setSampleData(SampleData sampleData) {
-		this.sampleData = sampleData;
+	/**
+	 * @param logName the logName to set
+	 */
+	public void setLogName(String logName) {
+		this.logName = logName;
 	}
-
-	public boolean isGT() {
-		return isGT;
-	}
-
-	public void setGT(boolean isGT) {
-		this.isGT = isGT;
-	}
-
-	
 
 	
 }

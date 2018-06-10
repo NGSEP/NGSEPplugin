@@ -22,7 +22,6 @@ package net.sf.ngsep.control;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -136,7 +135,7 @@ public class SyncThreadAllWizard implements Runnable {
 			List<Job> jobsWizardStep3 = new ArrayList<Job>();
 			
 			sd = null;
-			
+			listVCFs.clear();
 			for (int i=0;i<jobsWizardStep1.size();i++) {
 				SyncWizardMapVD jobStep1 = (SyncWizardMapVD)jobsWizardStep1.get(i);
 				sd = jobStep1.getSampleData();
@@ -146,8 +145,10 @@ public class SyncThreadAllWizard implements Runnable {
 				vdSample.setAlignmentsFile(sd.getSortedBamFile());
 				
 				String vcfFileGT = sd.getVcfFileGT();
-				if(vcfFileGT!=null)
-					vdSample.setOutVars(new PrintStream(vcfFileGT));
+				if(vcfFileGT!=null) {
+					vdSample.setOutVarsFilename(vcfFileGT);
+					listVCFs.add(vcfFileGT);
+				}
 
 				MainVariantsDetector.copyCommonParams(commandsVD,vdSample);
 								
@@ -166,12 +167,10 @@ public class SyncThreadAllWizard implements Runnable {
 				
 				
 				//check if GQ applies
-				if(!bothGQ)
-					vdSample.setMinQuality((short) 0);
+				if(!bothGQ) vdSample.setMinQuality((short) 0);
 				
 				SyncDetector vdJobSample = new SyncDetector(sd.getSampleId()+" GT");
-				vdJobSample.setGT(true);
-				vdJobSample.setSampleData(sd);
+				vdJobSample.setLogName(sd.getVdGTLogFile());
 				vdJobSample.setVd(vdSample);
 				jobsWizardStep3.add(vdJobSample);
 			}
@@ -196,14 +195,13 @@ public class SyncThreadAllWizard implements Runnable {
 			
 			String logFilename = LoggingHelper.getLoggerFilename(popVCF,"MVCF");
 			syncMerge.setLogName(logFilename);
-			listVCFs.clear();
+			List<String> finalListVCFs = new ArrayList<>();
 			for (int i=0;i<jobsWizardStep3.size();i++) {
 				if(errorsStep3.get(i)==null) {
-					SyncDetector jobStep3 = (SyncDetector)jobsWizardStep3.get(i);
-					listVCFs.add(jobStep3.getSampleData().getVcfFileGT());
+					finalListVCFs.add(listVCFs.get(i));
 				}
 			}		
-			syncMerge.setListFiles(listVCFs);
+			syncMerge.setListFiles(finalListVCFs);
 			syncMerge.setSequenceNames(genome.getSequencesMetadata());
 			syncMerge.setOutputFile(popVCF);
 			syncMerge.setNameProgressBar(variantsPrefix+" Population");

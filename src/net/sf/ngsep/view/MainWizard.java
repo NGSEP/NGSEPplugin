@@ -21,7 +21,6 @@
 package net.sf.ngsep.view;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +116,7 @@ public class MainWizard {
 		t_MapAliArgs.paint();
 		t_MapSortArgs.paint();
 
-		t_VDMainArgs.setOutputDirectory(variantsFolder);
+		t_VDMainArgs.setSuggestedOutputPath(variantsFolder);
 		t_VDMainArgs.paint();
 		t_VDSNVArgs.paint();
 		t_VDSVArgs.paint();
@@ -177,46 +176,40 @@ public class MainWizard {
 		tabFolder.setLayoutData( gd_tabFolder);
 		tabFolder.setSimple( false );
 
-
-		/*Source parameter  O = One sample
-		 *					M = Multi
-		 *					W = Wizard 
-		 */
-
 		//Mapping main
 		CTabItem tabMapMainArguments = new CTabItem( tabFolder, SWT.NONE );
 		tabMapMainArguments.setText("Map Main arguments");
-		t_MapMainArgs = new TabMapMainArgs(tabFolder, SWT.NONE, 'W');
+		t_MapMainArgs = new TabMapMainArgs(tabFolder, SWT.NONE, MainVariantsDetector.BEHAVIOR_WIZARD);
 		tabMapMainArguments.setControl(t_MapMainArgs);
 
 		//Mapping Ali
 		CTabItem tabMapAliArguments = new CTabItem( tabFolder, SWT.NONE );
 		tabMapAliArguments.setText("Map Alignment options");
-		t_MapAliArgs = new TabMapAliArgs(tabFolder, SWT.NONE, 'W');
+		t_MapAliArgs = new TabMapAliArgs(tabFolder, SWT.NONE, MainVariantsDetector.BEHAVIOR_WIZARD);
 		tabMapAliArguments.setControl(t_MapAliArgs);
 
 		//Mapping Sort
 		CTabItem tabMapSortArguments = new CTabItem( tabFolder, SWT.NONE );
 		tabMapSortArguments.setText("Map Sorting options");
-		t_MapSortArgs = new TabMapSortArgs(tabFolder, SWT.NONE, 'W');
+		t_MapSortArgs = new TabMapSortArgs(tabFolder, SWT.NONE, MainVariantsDetector.BEHAVIOR_WIZARD);
 		tabMapSortArguments.setControl(t_MapSortArgs);
 
 		//VD main
 		CTabItem tabVDMainArguments = new CTabItem( tabFolder, SWT.NONE );
 		tabVDMainArguments.setText("VD Main arguments");
-		t_VDMainArgs = new TabVDMainArgs(tabFolder, SWT.NONE, 'W');
+		t_VDMainArgs = new TabVDMainArgs(tabFolder, SWT.NONE, MainVariantsDetector.BEHAVIOR_WIZARD);
 		tabVDMainArguments.setControl(t_VDMainArgs);
 
 		//VD SNV
 		CTabItem tabVDSNVArguments = new CTabItem( tabFolder, SWT.NONE );
 		tabVDSNVArguments.setText("VD SNV options");
-		t_VDSNVArgs = new TabVDSNVArgs(tabFolder, SWT.NONE, 'W');
+		t_VDSNVArgs = new TabVDSNVArgs(tabFolder, SWT.NONE, MainVariantsDetector.BEHAVIOR_WIZARD);
 		tabVDSNVArguments.setControl(t_VDSNVArgs);
 
 		//VD SV
 		CTabItem tabVDSVArguments = new CTabItem( tabFolder, SWT.NONE );
 		tabVDSVArguments.setText("VD SV options");
-		t_VDSVArgs = new TabVDSVArgs(tabFolder, SWT.NONE, 'W');
+		t_VDSVArgs = new TabVDSVArgs(tabFolder, SWT.NONE);
 		tabVDSVArguments.setControl(t_VDSVArgs);
 
 
@@ -276,16 +269,14 @@ public class MainWizard {
 			return;
 		}
 
-		Map<String,Object> commandsVDSNV = null;
-		commandsVDSNV = t_VDSNVArgs.getParams();
+		Map<String,Object> commandsVDSNV = t_VDSNVArgs.getParams();
 
 		if (commandsVDSNV==null) {
 			FieldValidator.paintErrors(t_VDSNVArgs.getErrors(), shell, "VD SNV Args");
 			return;
 		}
 
-		Map<String,Object> commandsVDSV = null;
-		commandsVDSV = t_VDSVArgs.getParams();
+		Map<String,Object> commandsVDSV = t_VDSVArgs.getParams();
 
 		if (commandsVDSV==null) {
 			FieldValidator.paintErrors(t_VDSVArgs.getErrors(), shell, "VD SV Args");
@@ -336,17 +327,16 @@ public class MainWizard {
 				vdSample.setSampleId(sampleTmp.getSampleId());
 				vdSample.setAlignmentsFile(sampleTmp.getSortedBamFile());
 				// Output files: vfc, gff
-				String vcfFile = sampleTmp.getVcfFile();
 
-				if(commandsVDMain.get("FindSNVs")==null){
-					vdSample.setOutVars(new PrintStream(vcfFile));
+				if(commandsVDMain.get("FindSNVs")!=null){
+					vdSample.setOutVarsFilename(sampleTmp.getVcfFile());
 				} else {
 					sampleTmp.setVcfFile(null);
 					sampleTmp.setVcfFileGT(null);
 				}
 
 				if(commandsVDMain.get("RunRDAnalysis")!=null || commandsVDMain.get("FindRepeats")!=null || commandsVDMain.get("RunRPAnalysis")!=null){
-					vdSample.setOutStructural(new PrintStream(sampleTmp.getSvFile()));
+					vdSample.setOutSVFilename(sampleTmp.getSvFile());
 				}else{
 					sampleTmp.setSvFile(null);
 				}
@@ -354,7 +344,7 @@ public class MainWizard {
 				MainVariantsDetector.copyCommonParams(commandsVDMain,vdSample);
 				sampleTmp.setReferenceFile(vdSample.getReferenceFile());
 				SyncDetector vdJobSample = new SyncDetector(sampleTmp.getSampleId());
-				vdJobSample.setSampleData(sampleTmp);
+				vdJobSample.setLogName(sampleTmp.getVdLogFile());
 				vdJobSample.setVd(vdSample);
 
 				SyncWizardMapVD wiMapVD = new SyncWizardMapVD("Wizard Step 1: "+sampleTmp.getSampleId());
@@ -364,7 +354,6 @@ public class MainWizard {
 				wiMapVD.setOutputDirectory(currentFolder);
 				jobsWizard.add(wiMapVD);
 			}
-
 			if(jobsWizard.size()>0) {
 				SyncThreadAllWizard allWizard = new SyncThreadAllWizard(currentFolder, variantsFolder);
 				allWizard.setNumProcs(numProcAssig);

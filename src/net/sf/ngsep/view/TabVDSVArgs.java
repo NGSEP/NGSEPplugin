@@ -77,7 +77,7 @@ public class TabVDSVArgs extends Composite {
 	private final static int DEF_MAX_PCT_OVLAP_CNV = 100; 
 	
 	
-	public TabVDSVArgs(Composite parent, int style, char source) {
+	public TabVDSVArgs(Composite parent, int style) {
 		super(parent, style);
 	}
 	
@@ -168,7 +168,7 @@ public class TabVDSVArgs extends Composite {
 		// Common Fields
 
 		errorsOne.clear();
-		Map<String,Object> commonUserParameters = new TreeMap<String, Object>();
+		Map<String,Object> commonUserParameters = new TreeMap<>();
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		
 		
@@ -177,7 +177,7 @@ public class TabVDSVArgs extends Composite {
 				errorsOne.add(FieldValidator.buildMessage(lblGenomicSize.getText(), FieldValidator.ERROR_NUMERIC));
 				txtGenomicSize.setBackground(oc);
 			}else{
-				commonUserParameters.put("GenomeSize", Long.parseLong(txtGenomicSize.getText()));
+				commonUserParameters.put("GenomeSize", txtGenomicSize.getText());
 			}
 		}
 
@@ -186,7 +186,7 @@ public class TabVDSVArgs extends Composite {
 				errorsOne.add(FieldValidator.buildMessage(lblBinSize.getText(), FieldValidator.ERROR_INTEGER));
 				txtBinSize.setBackground(oc);
 			}else{
-				commonUserParameters.put("BinSize", Integer.parseInt(txtBinSize.getText()));
+				commonUserParameters.put("BinSize", txtBinSize.getText());
 			}
 		}
 		
@@ -217,7 +217,7 @@ public class TabVDSVArgs extends Composite {
 				errorsOne.add(FieldValidator.buildMessage(lblMinSVQuality.getText(), FieldValidator.ERROR_INTEGER));
 				txtMinSVQuality.setBackground(oc);
 			}else{
-				commonUserParameters.put("MinSVQuality", Short.parseShort(txtMinSVQuality.getText()));
+				commonUserParameters.put("MinSVQuality", txtMinSVQuality.getText());
 			}
 		}
 		
@@ -226,7 +226,7 @@ public class TabVDSVArgs extends Composite {
 				errorsOne.add(FieldValidator.buildMessage(lblMaxLenDeletion.getText(), FieldValidator.ERROR_INTEGER));
 				txtMaxLenDeletion.setBackground(oc);
 			}else{
-				commonUserParameters.put("MaxLengthDeletion", Integer.parseInt(txtMaxLenDeletion.getText()));
+				commonUserParameters.put("MaxLengthDeletion", txtMaxLenDeletion.getText());
 			}
 		}
 		
@@ -235,7 +235,7 @@ public class TabVDSVArgs extends Composite {
 				errorsOne.add(FieldValidator.buildMessage(lblSizeSplitReadSeed.getText(), FieldValidator.ERROR_INTEGER));
 				txtSizeSplitReadSeed.setBackground(oc);
 			}else{
-				commonUserParameters.put("SplitReadSeed", Integer.parseInt(txtSizeSplitReadSeed.getText()));
+				commonUserParameters.put("SplitReadSeed", txtSizeSplitReadSeed.getText());
 			}
 		}
 		
@@ -244,14 +244,11 @@ public class TabVDSVArgs extends Composite {
 				errorsOne.add(FieldValidator.buildMessage(lblMaxPCTOverlapCNVs.getText(), FieldValidator.ERROR_INTEGER));
 				txtMaxPCTOverlapCNVs.setBackground(oc);
 			}else{
-				commonUserParameters.put("MaxPCTOverlapCNVs", Integer.parseInt(txtMaxPCTOverlapCNVs.getText()));
+				commonUserParameters.put("MaxPCTOverlapCNVs", txtMaxPCTOverlapCNVs.getText());
 			}
 		}
 		
-		if(!errorsOne.isEmpty())
-			return null;
-		
-		return commonUserParameters;
+		return errorsOne.isEmpty()?commonUserParameters:null;
 	}	
 	
 	public ArrayList<String> getErrors() {
