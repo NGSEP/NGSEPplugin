@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Combo;
 
 /**
  * @author Daniel Cruz
- *
+ * @author Jorge Duitama
  */
 public class TabVDSNVArgs extends Composite {
 
@@ -69,12 +69,6 @@ public class TabVDSNVArgs extends Composite {
 	private Label lblMaxBaseQS;
 	private Text txtMaxBaseQS;
 		
-	private Label lblAltCov;
-	private Label lblAltMax;
-	private Label lblAltMin;
-	private Text txtAltMax;
-	private Text txtAltMin;
-		
 	private Label lblMaximunAlignmentPer;
 	private Text txtMaximunAlignmentStartPosition;
 	
@@ -83,14 +77,10 @@ public class TabVDSNVArgs extends Composite {
 	private Label lblPloidy;
 	private Text txtPloidy;
 	
-	private Button btnkeepLowerCaseRefChk;
+	private Button btnIgnoreLowerCaseRefChk;
 	private Button btnIncludeAllPrimaryAlignments;
 	private Button btnIncludeSecondaryAlignments;
-	private Button btnGenotypeAllCovered;
 	private Button btnEmbeddedSNVs;
-	
-	private Label lblHapAvgCov;
-	private Text txtHapAvgCov;
 	
 	private MouseListenerNgsep mouse = new MouseListenerNgsep();
 	private ArrayList<String> errorsOne = new ArrayList<String>();
@@ -200,28 +190,6 @@ public class TabVDSNVArgs extends Composite {
 		txtMaximunAlignmentStartPosition.setBounds(340, 220, 80, 22);
 		txtMaximunAlignmentStartPosition.addMouseListener(mouse);
 		
-		if (behavior!=MainVariantsDetector.BEHAVIOR_MULTI_COMBINED) {
-			lblAltCov = new Label(this, SWT.NONE);
-			lblAltCov.setBounds(10, 260, 200, 20);
-			lblAltCov.setText("Alternative  Allele Coverage:");
-			
-			lblAltMin = new Label(this, SWT.NONE);
-			lblAltMin.setText("Min:");
-			lblAltMin.setBounds(220, 260, 40, 20);
-
-			txtAltMin = new Text(this, SWT.BORDER);
-			txtAltMin.setBounds(270, 260, 50, 22);
-			txtAltMin.addMouseListener(mouse);
-			
-			lblAltMax = new Label(this, SWT.NONE);
-			lblAltMax.setBounds(340, 260, 40, 22);
-			lblAltMax.setText("Max:");
-			
-			txtAltMax = new Text(this, SWT.BORDER);
-			txtAltMax.setBounds(390, 260, 50, 22);
-			txtAltMax.addMouseListener(mouse);
-		}
-		
 		if(behavior == MainVariantsDetector.BEHAVIOR_WIZARD){
 			
 			lblWizMinGQ = new Label(this, SWT.NONE);
@@ -238,9 +206,9 @@ public class TabVDSNVArgs extends Composite {
 		btnPrintSamplePloidy.setBounds(500, 20, 290, 22);
 		btnPrintSamplePloidy.setText("Print Sample Ploidy");
 		
-		btnkeepLowerCaseRefChk = new Button(this, SWT.CHECK);
-		btnkeepLowerCaseRefChk.setBounds(500, 60, 290, 22);
-		btnkeepLowerCaseRefChk.setText("Ignore Lower Case Reference");
+		btnIgnoreLowerCaseRefChk = new Button(this, SWT.CHECK);
+		btnIgnoreLowerCaseRefChk.setBounds(500, 60, 290, 22);
+		btnIgnoreLowerCaseRefChk.setText("Ignore Lower Case Reference");
 		
 		btnIncludeAllPrimaryAlignments = new Button(this, SWT.CHECK);
 		btnIncludeAllPrimaryAlignments.setText("Process All Primary Alignments");
@@ -253,27 +221,6 @@ public class TabVDSNVArgs extends Composite {
 		btnEmbeddedSNVs = new Button(this, SWT.CHECK);
 		btnEmbeddedSNVs.setText("Call SNVs within STRs");
 		btnEmbeddedSNVs.setBounds(500, 180, 290, 22);
-		
-		btnGenotypeAllCovered = new Button(this, SWT.CHECK);
-		btnGenotypeAllCovered.setEnabled(false);
-		btnGenotypeAllCovered.setVisible(false);
-		btnGenotypeAllCovered.setText("Genotype All Covered Sites");
-		btnGenotypeAllCovered.setBounds(500, 220, 290, 22);
-		
-		lblHapAvgCov = new Label(this, SWT.NONE);
-		lblHapAvgCov.setEnabled(false);
-		lblHapAvgCov.setVisible(false);
-		lblHapAvgCov.setText("Haploid Average Coverage:");
-		lblHapAvgCov.setBounds(500, 260, 160, 22);
-		
-		txtHapAvgCov = new Text(this, SWT.BORDER);
-		txtHapAvgCov.setEnabled(false);
-		txtHapAvgCov.setVisible(false);
-		txtHapAvgCov.setBounds(680, 260, 80, 22);
-		
-		
-		
-		txtHapAvgCov.addMouseListener(mouse);
 	}
 	
 	public Map<String,Object> getParams(){
@@ -370,28 +317,7 @@ public class TabVDSNVArgs extends Composite {
 			}
 		}
 		
-		if (behavior!=MainVariantsDetector.BEHAVIOR_MULTI_COMBINED) {
-			if (txtAltMin.getText() != null && !txtAltMin.getText().equals("")) {
-				if (!FieldValidator.isNumeric(txtAltMin.getText(), new Integer(0))) {
-					errorsOne.add(FieldValidator.buildMessage(lblAltMin.getText(), FieldValidator.ERROR_INTEGER));
-					txtAltMin.setBackground(oc);
-				}else{
-					commonUserParameters.put("MinAltCoverage", txtAltMin.getText());
-				}
-			}
-			
-			if (txtAltMax.getText() != null && !txtAltMax.getText().equals("")) {
-				if (!FieldValidator.isNumeric(txtAltMax.getText(), new Integer(0))) {
-					errorsOne.add(FieldValidator.buildMessage(lblAltMax.getText(), FieldValidator.ERROR_INTEGER));
-					txtAltMax.setBackground(oc);
-				}else{
-					commonUserParameters.put("MaxAltCoverage", txtAltMax.getText());
-				}
-			}
-
-		}
-		
-		if (btnkeepLowerCaseRefChk.getSelection()) {
+		if (btnIgnoreLowerCaseRefChk.getSelection()) {
 			commonUserParameters.put("IgnoreLowerCaseRef", true);
 		}
 		
@@ -403,28 +329,15 @@ public class TabVDSNVArgs extends Composite {
 			commonUserParameters.put("ProcessSecondaryAlignments", true);
 		}
 		
-		if (btnGenotypeAllCovered.getSelection()) {
-			commonUserParameters.put("GenotypeAll", true);
-		}
-		
 		if (btnEmbeddedSNVs.getSelection()) {
 			commonUserParameters.put("CallEmbeddedSNVs", true);
-		}
-		
-		if (txtHapAvgCov.getText() != null && !txtHapAvgCov.getText().equals("")) {
-			if (!FieldValidator.isNumeric(txtHapAvgCov.getText(), new Double(0))) {
-				errorsOne.add(FieldValidator.buildMessage(lblHapAvgCov.getText(), FieldValidator.ERROR_NUMERIC));
-				txtHapAvgCov.setBackground(oc);
-			} else {
-				commonUserParameters.put("HaploidAverageCoverage", txtHapAvgCov.getText());
-			}
 		}
 		
 		if (btnPrintSamplePloidy.getSelection()) {
 			commonUserParameters.put("PrintSamplePloidy", true);
 		}
 		
-		if(behavior == MainVariantsDetector.BEHAVIOR_WIZARD){
+		if(behavior == MainVariantsDetector.BEHAVIOR_WIZARD) {
 			if(cmbWizMinGQ.getSelectionIndex()==0){
 				commonUserParameters.put("UseGQboth",false);
 			}else{ 
