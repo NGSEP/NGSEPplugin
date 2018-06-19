@@ -378,7 +378,7 @@
       <command id="net.sf.ngsep.view.MainCoverageStatisticsCalculator" name="Calculate Coverage Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainPlotCoverageStatistics" name="Plot Coverage Statistics" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainRelativeAlleleCountsCalculator" name="Calculate Relative Allele Counts" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
-      <command id="VariantsDetector" name="Variants Detector" defaultHandler="net.sf.ngsep.control.PlugVariantsDetector"/>
+      <command id="net.sf.ngsep.view.MainVariantsDetector" name="Variants Detector" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainMultiVariantsDetector" name="Multi Variants Detector" defaultHandler="net.sf.ngsep.control.PlugMultipleFiles"/>
       <command id="net.sf.ngsep.view.MainMergeVCF" name="Merge VCF" defaultHandler="net.sf.ngsep.control.PlugMultipleFiles"/>
       <command id="net.sf.ngsep.view.MainVCFFunctionalAnnotator" name="Variants Functional Annotator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>

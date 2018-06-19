@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.Text;
  * @author Cristian Loaiza
  *
  */
-public class MainDistanceMatrixCalculator {
+public class MainDistanceMatrixCalculator implements SingleFileInputWindow {
 	//General attributes
 	protected Shell shell;
 	private Display display;

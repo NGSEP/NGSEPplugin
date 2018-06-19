@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Text;
  * @author Cristian Loaiza
  *
  */
-public class MainNeighborJoining {
+public class MainNeighborJoining implements SingleFileInputWindow {
 	//General attributes
 	protected Shell shell;
 	private Display display;

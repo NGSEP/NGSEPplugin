@@ -55,16 +55,27 @@ import org.eclipse.swt.widgets.Shell;
  * @author Daniel Cruz, Jorge Duitama, Juan Camilo Quintero
  *
  */
-public class MainVariantsDetector {
+public class MainVariantsDetector implements SingleFileInputWindow {
 
 	public static final char BEHAVIOR_SINGLE = 'O';
 	public static final char BEHAVIOR_MULTI_INDIVIDUAL = 'M';
 	public static final char BEHAVIOR_MULTI_COMBINED = 'C';
 	public static final char BEHAVIOR_WIZARD = 'W';
+	//General attributes
 	protected Shell shell;
 	private Display display;
 	
-	private String initialAlignmentsFile;
+	//File selected initially by the user
+	private String selectedFile;
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+	public void setSelectedFile(String selectedFile) {
+		this.selectedFile = selectedFile;
+		outputPath = extractPrefix(this.selectedFile);
+		behavior = BEHAVIOR_SINGLE;
+	}
+	
 	private String outputPath;
 	
 	private List<SampleData> uniqueData=new ArrayList<SampleData>();
@@ -91,15 +102,9 @@ public class MainVariantsDetector {
 			behavior = BEHAVIOR_MULTI_COMBINED;
 		}
 	}
-
-	public MainVariantsDetector(String alignmentsFile) throws IOException {
-		//single variants detection
-		if(!FieldValidator.isFileExistenceWithData(alignmentsFile)) throw new IOException("File "+alignmentsFile+" could not be opened or is empty");
-		initialAlignmentsFile = alignmentsFile;
-		outputPath = extractPrefix(initialAlignmentsFile);
-		behavior = BEHAVIOR_SINGLE;
+	public MainVariantsDetector() {
+		
 	}
-
 	/**
 	 * Open the window.
 	 */
@@ -120,7 +125,7 @@ public class MainVariantsDetector {
 		createTabs(shell);
 		
 		if (behavior == BEHAVIOR_SINGLE) {
-			t_VDMainArgs.setInitialAlignmentsFile(initialAlignmentsFile);
+			t_VDMainArgs.setInitialAlignmentsFile(selectedFile);
 		}
 		t_VDMainArgs.setSuggestedOutputPath(outputPath);
 		t_VDMainArgs.paint();
