@@ -54,6 +54,12 @@
 			<iterate ifEmpty="false" operator="or">
 				<adapt type="org.eclipse.core.resources.IFile">
 					<not>
+						<test property="org.eclipse.core.resources.extension" value="fa" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="fasta" />
+					</not>
+					<not>
 						<test property="org.eclipse.core.resources.extension" value="fq" />
 					</not>
 					<not>
@@ -63,11 +69,18 @@
 						<test property="org.eclipse.core.resources.extension" value="gz" />
 					</not>
 					<not>
-						<test property="org.eclipse.core.resources.extension" value="FASTQ" />
+						<test property="org.eclipse.core.resources.extension" value="FA" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="FASTA" />
 					</not>
 					<not>
 						<test property="org.eclipse.core.resources.extension" value="FQ" />
 					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="FASTQ" />
+					</not>
+					
 					<not>
 						<test property="org.eclipse.core.resources.extension" value="bam" />
 					</not>
@@ -100,7 +113,7 @@
 <extension point="org.eclipse.ui.menus">
 	<menuContribution locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
 		<menu id="NGSEP" label="NGSEP Menu">    
-			<command commandId="CreateIndex" label="Create Index Bowtie" style="push">
+			<command commandId="net.sf.ngsep.view.MainIndexBowtie" label="Create Index Bowtie2" style="push">
 				<visibleWhen checkEnabled="false">
 					<reference definitionId="net.sf.ngsep.SingleFastaEnablement"/>
 				</visibleWhen>
@@ -142,15 +155,10 @@
 				</visibleWhen>
 			</command>     
          <command commandId="WizardSingleEnd" label="Wizard Single End" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFolder">
+               <visibleWhen checkEnabled="false">
+                     <with variable="activeMenuSelection">
+                           <iterate ifEmpty="false" operator="or">
+                           	<adapt type="org.eclipse.core.resources.IFolder">
                            	</adapt>
                            </iterate>
                      </with>
@@ -230,14 +238,30 @@
 					<reference definitionId="net.sf.ngsep.SingleBAMEnablement"/>
 				</visibleWhen>
 			</command>
-			<command commandId="VariantsDetector" label="Find Variants" style="push">
+			<command commandId="net.sf.ngsep.view.MainVariantsDetector" label="Find Variants" style="push">
 				<visibleWhen checkEnabled="false">
 					<reference definitionId="net.sf.ngsep.SingleBAMEnablement"/>
 				</visibleWhen>
 			</command>
 			<command commandId="net.sf.ngsep.view.MainMultiVariantsDetector" label="Multi Variants Detector" style="push">
+				<visibleWhen checkEnabled="false">
+                     <with variable="activeMenuSelection">
+                           <iterate ifEmpty="false" operator="or">
+                           	<adapt type="org.eclipse.core.resources.IFolder">
+                           	</adapt>
+                           </iterate>
+                     </with>
+               </visibleWhen>
 			</command>
 			<command commandId="net.sf.ngsep.view.MainMergeVCF" label="Merge VCF" style="push">
+				<visibleWhen checkEnabled="false">
+                     <with variable="activeMenuSelection">
+                           <iterate ifEmpty="false" operator="or">
+                           	<adapt type="org.eclipse.core.resources.IFolder">
+                           	</adapt>
+                           </iterate>
+                     </with>
+               </visibleWhen>
 			</command>
 			<command commandId="net.sf.ngsep.view.MainVCFFunctionalAnnotator" label="Variants Functional Annotation" style="push">
 				<visibleWhen checkEnabled="false">

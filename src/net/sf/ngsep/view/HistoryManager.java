@@ -35,7 +35,7 @@ import net.sf.ngsep.utilities.EclipseProjectHelper;
  */
 public class HistoryManager {
 	
-	private static final String HISTORY_FILENAME = "NGSEPFilesHistory.txt";
+	private static final String HISTORY_FILENAME = "NGSEPFilesHistory.properties";
 	
 	public static final String KEY_BOWTIE2_INDEX = "Bowtie2Index";
 	public static final String KEY_REFERENCE_FILE = "Reference";
