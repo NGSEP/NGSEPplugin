@@ -110,13 +110,14 @@ public class SyncSortAlignment extends Job {
 		this.nameProgressBar = nameProgressBar;
 	}
 
-	public static void sortAlignments(String tmpDirName, String inFile, String outFile, Logger log) throws IOException {
+	public static void sortAlignments(String tmpDirName, String inFile, String outFile, Logger log) {
 		String [] args = new String [5];
 		File f = new File (outFile);
 		File sortDirectory = new File(f.getParentFile().getAbsolutePath() + File.separator+tmpDirName+"_tmpDir");
 		if (!sortDirectory.exists()) {
 			if (!sortDirectory.mkdirs()) {
-				throw new IOException("Could not create temporary directory for sorting");
+				log.severe("Could not create temporary directory for sorting");
+				return;
 			} else {
 				log.info("Temporary directory created");
 			}
@@ -129,8 +130,10 @@ public class SyncSortAlignment extends Job {
 		log.info("Sorting alignments");
 		new SortSam().instanceMain(args);
 		log.info("Sorted alignments. Deleting temporary directory");
-		sortDirectory.delete();
+		try {
+			sortDirectory.delete();
+		} catch (Exception e) {
+			log.warning("Can not delete temporary directory: "+LoggingHelper.serializeException(e));
+		}
 	}
-	
-
 }

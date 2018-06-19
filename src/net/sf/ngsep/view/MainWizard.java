@@ -328,16 +328,11 @@ public class MainWizard {
 				vdSample.setAlignmentsFile(sampleTmp.getSortedBamFile());
 				// Output files: vfc, gff
 
-				if(commandsVDMain.get("FindSNVs")!=null){
-					vdSample.setOutVarsFilename(sampleTmp.getVcfFile());
-				} else {
-					sampleTmp.setVcfFile(null);
-					sampleTmp.setVcfFileGT(null);
-				}
+				vdSample.setOutVarsFilename(sampleTmp.getVcfFile());
 
 				if(commandsVDMain.get("RunRDAnalysis")!=null || commandsVDMain.get("FindRepeats")!=null || commandsVDMain.get("RunRPAnalysis")!=null){
 					vdSample.setOutSVFilename(sampleTmp.getSvFile());
-				}else{
+				} else{
 					sampleTmp.setSvFile(null);
 				}
 

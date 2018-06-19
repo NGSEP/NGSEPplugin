@@ -292,6 +292,7 @@ public class TabVDMainArgs extends Composite {
 			btnSkipSNVSDetection = new Button(this, SWT.CHECK);
 			btnSkipSNVSDetection.setText("Skip detection of SNVs and small indels");
 			btnSkipSNVSDetection.setBounds(10, 420, 300, 20);
+			if(behavior == MainVariantsDetector.BEHAVIOR_WIZARD) btnSkipSNVSDetection.setEnabled(false);
 		}
 		
 		
