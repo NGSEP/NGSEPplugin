@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import net.sf.ngsep.control.SyncVCFComparator;
-import net.sf.ngsep.utilities.EclipseProjectHelper;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
@@ -170,20 +169,10 @@ public class MainVCFComparator implements SingleFileInputWindow {
 			txtReferenceFile=new Text(shell, SWT.BORDER);
 			txtReferenceFile.setBounds(219, 105, 545, 25);
 			txtReferenceFile.addMouseListener(mouse);
+			
 			// Suggest the latest stored genome
-			try {
-				String directoryProject = EclipseProjectHelper.findProjectDirectory(selectedFile);
-				String historyFile = HistoryManager.createPathRecordGeneral(directoryProject);
-				String historyReference = HistoryManager.getPathRecordReference(historyFile);
-				if (historyReference!=null) {
-					txtReferenceFile.setText(historyReference);
-				}
-			} catch (Exception e) {
-				e.getMessage();
-				MessageDialog.openError(shell, " Functional Annotator error","error while trying to place the reference path history most recently used"+ e.getMessage());
-			}
-			
-			
+			String historyReference = HistoryManager.getHistory(selectedFile, HistoryManager.KEY_REFERENCE_FILE);
+			if (historyReference!=null) txtReferenceFile.setText(historyReference);
 			
 			btnReferenceFile=new Button(shell, SWT.NONE);
 			btnReferenceFile.setBounds(770, 105, 24, 25);
@@ -324,26 +313,18 @@ public class MainVCFComparator implements SingleFileInputWindow {
 				return;
 			}
 			
-			try {
-				String directoryProject = EclipseProjectHelper.findProjectDirectory(selectedFile);
-				String historyOne = HistoryManager.createPathRecordGeneral(directoryProject);
-				HistoryManager.createPathRecordFiles(historyOne, txtReferenceFile.getText().toString());
-			} catch (Exception e) {
-				MessageDialog.openError(shell, " Variants Functional Annotator Error","error while trying to place the reference path history most recently used"+ e.getMessage());
-				return;
-			}
-			
 			String logFilename = LoggingHelper.getLoggerFilename(txtOutputFile.getText(),"VCFC");
 			job.setLogName(logFilename);
 			job.setNameProgressBar(new File(txtOutputFile.getText()).getName());
 			try {
-				job.schedule();
-				MessageDialog.openInformation(shell, "Compare VCF",LoggingHelper.MESSAGE_PROGRESS_NOBAR);
-				shell.dispose();	
+				job.schedule();	
 			} catch (Exception e) {
 				MessageDialog.openError(shell, "Compare VCF", e.getMessage());
 				e.printStackTrace();
 				return;
 			}
+			HistoryManager.saveInHistory(HistoryManager.KEY_REFERENCE_FILE, txtReferenceFile.getText());
+			MessageDialog.openInformation(shell, "Compare VCF",LoggingHelper.MESSAGE_PROGRESS_NOBAR);
+			shell.dispose();
 		}
 }

@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.view.SingleFileInputWindow;
 
 public class PlugSingleFile extends AbstractHandler {
@@ -33,8 +34,8 @@ public class PlugSingleFile extends AbstractHandler {
 			try {	
 				window.open();
 			} catch (Exception e) {
-				MessageDialog.openInformation(shell, "Error opening window", e.getMessage());
-				throw new ExecutionException(e.getMessage(),e); 
+				String message = LoggingHelper.serializeException(e);
+				MessageDialog.openError(shell, "Error loading window", message); 
 			}
 		} else {
 			MessageDialog.openInformation(shell, "Info", "Please select a single file");

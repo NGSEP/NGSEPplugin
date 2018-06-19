@@ -30,6 +30,7 @@ import javax.swing.JOptionPane;
 
 import net.sf.ngsep.control.SampleData;
 import net.sf.ngsep.utilities.FieldValidator;
+import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
 import ngsep.alignments.io.ReadAlignmentFileReader;
 
@@ -406,11 +407,9 @@ public class MainMultiVariantsDetector implements MultipleFilesInputWindow {
 		try {
 			shellVariantsDetector.open();
 		} catch (Exception e) {
-			MessageDialog.openError(shell, "Multi Variants Detector Error", "Error loading next frame: "+e.getMessage());
-			e.printStackTrace();
-			return;
+			String message = LoggingHelper.serializeException(e);
+			MessageDialog.openError(shell, "Multi Variants Detector Error", "Error loading next frame: "+message);
 		}
-		
 		shell.dispose();
 		
 	}

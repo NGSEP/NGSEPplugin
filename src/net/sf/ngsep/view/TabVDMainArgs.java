@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import net.sf.ngsep.utilities.EclipseProjectHelper;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
@@ -43,9 +42,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * 
  * @author Daniel Cruz
- *
+ * @author Jorge Duitama
  */
 public class TabVDMainArgs extends Composite {
 
@@ -81,6 +79,8 @@ public class TabVDMainArgs extends Composite {
 	private Text txtIgnoreBases5;
 	private Label lblIgnoreBases3;
 	private Text txtIgnoreBases3;
+	private Label lblMinMQ;
+	private Text txtMinMQ;
 	private Button btnRunRDChk;
 	private Button btnRunRepeatsChk;
 	private Button btnSkipSNVSDetection;
@@ -103,8 +103,7 @@ public class TabVDMainArgs extends Composite {
 	private Label lblSampleId;
 	private Text txtSampleId;
 	
-	private Label lblMinMQ;
-	private Text txtMinMQ;
+	
 
 	
 
@@ -167,7 +166,6 @@ public class TabVDMainArgs extends Composite {
 			txtDestFile = new Text(this, SWT.BORDER);
 			txtDestFile.setBounds(210, 60, 540, 22);
 			txtDestFile.addMouseListener(mouse);
-			if(suggestedOutputPath==null) suggestedOutputPath = extractPrefix(initialAlignmentsFile);
 			txtDestFile.setText(suggestedOutputPath);
 			
 			btnDest = new Button(this, SWT.NONE);
@@ -191,17 +189,8 @@ public class TabVDMainArgs extends Composite {
 		txtReferenceFile.setBounds(210, 100, 540, 22);
 		txtReferenceFile.addMouseListener(mouse);
 
-		String historyReference =null;
-		try {
-			String directoryProject = EclipseProjectHelper.findProjectDirectory(suggestedOutputPath);
-			String historyFile = HistoryManager.createPathRecordGeneral(directoryProject);
-			historyReference = HistoryManager.getPathRecordReference(historyFile);
-		} catch (IOException e) {
-			MessageDialog.openError(parent.getShell(), "Variants Detector Error","Error loading the latest reference genome: "+ e.getMessage());
-		}
-		if (historyReference!=null) {
-			txtReferenceFile.setText(historyReference);
-		}		
+		String historyReference = HistoryManager.getHistory(suggestedOutputPath, HistoryManager.KEY_REFERENCE_FILE);
+		if (historyReference!=null) txtReferenceFile.setText(historyReference);	
 
 		btnRef = new Button(this, SWT.NONE);
 		btnRef.setBounds(760, 100, 25, 22);
@@ -234,11 +223,14 @@ public class TabVDMainArgs extends Composite {
 			});
 		}
 		lblKnownSTRs = new Label(this, SWT.NONE);
-		lblKnownSTRs.setText("known STRs File:");
+		lblKnownSTRs.setText("Known STRs File:");
 		lblKnownSTRs.setBounds(10, 180, 190, 22);
 		
 		txtKnownSTRs = new Text(this, SWT.BORDER);
 		txtKnownSTRs.setBounds(210, 180, 540, 22);
+		
+		String historySTRs = HistoryManager.getHistory(suggestedOutputPath, HistoryManager.KEY_STRS_FILE);
+		if (historySTRs!=null) txtKnownSTRs.setText(historySTRs);
 		
 		btnKnownSTRs = new Button(this, SWT.NONE);
 		btnKnownSTRs.setText("...");
@@ -376,9 +368,6 @@ public class TabVDMainArgs extends Composite {
 		Map<String,Object> commonUserParameters = new TreeMap<>();
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 
-
-		String directoryProject = null;
-
 		if (behavior==MainVariantsDetector.BEHAVIOR_SINGLE || behavior == MainVariantsDetector.BEHAVIOR_MULTI_COMBINED){
 			//Validation of fields that are only present in the screen to find variants for a single sample
 			if (txtDestFile.getText() == null || txtDestFile.getText().equals("")) {
@@ -414,7 +403,7 @@ public class TabVDMainArgs extends Composite {
 					errorsOne.add(FieldValidator.buildMessage(lblNumberOfProcessors.getText(), FieldValidator.ERROR_NUMPROCESSORS));
 					txtNumberOfProcessors.setBackground(oc);
 				} else {
-					commonUserParameters.put("numProc", txtNumberOfProcessors.getText());
+					commonUserParameters.put("numProc", Integer.parseInt(txtNumberOfProcessors.getText()));
 				}
 			} else {
 				FieldValidator.buildMessage(lblNumberOfProcessors.getText(), FieldValidator.ERROR_MANDATORY);
@@ -443,14 +432,6 @@ public class TabVDMainArgs extends Composite {
 		} else {
 			errorsOne.add(FieldValidator.buildMessage(lblReferenceFile.getText(), FieldValidator.ERROR_FILE_EMPTY));
 			txtReferenceFile.setBackground(oc);
-		}
-		try {
-			directoryProject = EclipseProjectHelper.findProjectDirectory(suggestedOutputPath);
-			String routeRef = HistoryManager.createPathRecordGeneral(directoryProject);
-			HistoryManager.createPathRecordFiles(routeRef, txtReferenceFile.getText().toString());
-		} catch (Exception e) {
-			errorsOne.add(FieldValidator.buildMessage(" Error while trying to locate the reference path history most recently used",FieldValidator.ERROR_FILE_EMPTY));
-
 		}
 
 		if (txtIgnoreBases3.getText() != null && !txtIgnoreBases3.getText().equals("")) {
@@ -518,8 +499,12 @@ public class TabVDMainArgs extends Composite {
 				commonUserParameters.put("FindSNVs", false);
 			}
 		}
-
-		return errorsOne.isEmpty()?commonUserParameters:null;
+		if(errorsOne.isEmpty()) {
+			HistoryManager.saveInHistory(HistoryManager.KEY_REFERENCE_FILE, txtReferenceFile.getText());
+			HistoryManager.saveInHistory(HistoryManager.KEY_STRS_FILE, txtKnownSTRs.getText());
+			return commonUserParameters;
+		}
+		return null;
 	}
 
 	@Override
@@ -529,20 +514,5 @@ public class TabVDMainArgs extends Composite {
 
 	public ArrayList<String> getErrors() {
 		return errorsOne;
-	}
-
-	public static String extractPrefix(String samFile){
-		int index = samFile.lastIndexOf(".");
-		if(index <0) return samFile;
-		String nameBam= samFile.substring(0,index);
-		if (nameBam.contains("Sorted")) {
-			nameBam = nameBam.substring(0,samFile.lastIndexOf("Sorted") - 1);
-			return nameBam;
-		} else if (nameBam.contains("sorted")) {
-			nameBam = nameBam.substring(0,samFile.lastIndexOf("sorted") - 1);
-			return nameBam;
-		} else {
-			return nameBam;
-		}
 	}
 }

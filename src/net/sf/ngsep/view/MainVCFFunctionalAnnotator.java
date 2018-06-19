@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import net.sf.ngsep.control.SyncVCFFunctionalAnnotator;
-import net.sf.ngsep.utilities.EclipseProjectHelper;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
@@ -148,17 +147,8 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		txtTranscriptomeGFF3.addMouseListener(mouse);
 		
 		// Suggest the latest stored transcriptome
-		try {
-			String directoryProject = EclipseProjectHelper.findProjectDirectory(selectedFile);
-			String historyFile = HistoryManager.createPathRecordGff3(directoryProject);
-			String historyReference = HistoryManager.getPathRecordReference(historyFile);
-			if (historyReference!=null) {
-				txtTranscriptomeGFF3.setText(historyReference);
-			}
-		} catch (Exception e) {
-			e.getMessage();
-			MessageDialog.openError(shell, " Functional Annotator error","error while trying to place the reference path history most recently used"+ e.getMessage());
-		}
+		String historyTranscriptome = HistoryManager.getHistory(selectedFile, HistoryManager.KEY_TRANSCRIPTOME_FILE);
+		if (historyTranscriptome!=null) txtTranscriptomeGFF3.setText(historyTranscriptome);
 		
 		btnTranscriptomeGFF3 = new Button(shell, SWT.NONE);
 		btnTranscriptomeGFF3.setBounds(760, 70, 25, 22);
@@ -180,17 +170,8 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 		txtReferenceFile.setBounds(200, 110, 550, 22);
 		txtReferenceFile.addMouseListener(mouse);
 		// Suggest the latest stored genome
-		try {
-			String directoryProject = EclipseProjectHelper.findProjectDirectory(selectedFile);
-			String historyFile = HistoryManager.createPathRecordGeneral(directoryProject);
-			String historyReference = HistoryManager.getPathRecordReference(historyFile);
-			if (historyReference!=null) {
-				txtReferenceFile.setText(historyReference);
-			}
-		} catch (Exception e) {
-			e.getMessage();
-			MessageDialog.openError(shell, " Functional Annotator error","error while trying to place the reference path history most recently used"+ e.getMessage());
-		}
+		String historyReference = HistoryManager.getHistory(selectedFile, HistoryManager.KEY_REFERENCE_FILE);
+		if (historyReference!=null) txtReferenceFile.setText(historyReference);
 		
 		btnReferenceFile = new Button(shell, SWT.NONE);
 		btnReferenceFile.setBounds(760, 110, 25, 22);
@@ -407,16 +388,7 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 			return;
 		}
 		
-		try {
-			String directoryProject = EclipseProjectHelper.findProjectDirectory(selectedFile);
-			String historyOne = HistoryManager.createPathRecordGeneral(directoryProject);
-			HistoryManager.createPathRecordFiles(historyOne, txtReferenceFile.getText().toString());
-			String history = HistoryManager.createPathRecordGff3(directoryProject);
-			HistoryManager.createPathRecordFiles(history,txtTranscriptomeGFF3.getText());
-		} catch (Exception e) {
-			MessageDialog.openError(shell, " Variants Functional Annotator Error","error while trying to place the reference path history most recently used"+ e.getMessage());
-			return;
-		}
+		
 		
 		String outputFile = txtOutputFile.getText();
 		String logFilename = LoggingHelper.getLoggerFilename(outputFile,"VFA");
@@ -428,6 +400,8 @@ public class MainVCFFunctionalAnnotator implements SingleFileInputWindow {
 			MessageDialog.openError(shell," Variants Functional Annotator Error", e.getMessage());
 			e.printStackTrace();
 		}
+		HistoryManager.saveInHistory(HistoryManager.KEY_TRANSCRIPTOME_FILE, txtTranscriptomeGFF3.getText());
+		HistoryManager.saveInHistory(HistoryManager.KEY_REFERENCE_FILE, txtReferenceFile.getText());
 		MessageDialog.openInformation(shell,"Variants Functional Annotator is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
 		shell.dispose();
 

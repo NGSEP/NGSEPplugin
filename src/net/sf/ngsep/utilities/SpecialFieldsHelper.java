@@ -74,7 +74,7 @@ public class SpecialFieldsHelper {
 				suggestedDirectory = file;
 			} else {
 				suggestedDirectory = file.getParentFile();
-				suggestedName = file.getName();
+				if(method == SWT.SAVE) suggestedName = file.getName();
 			}
 		}
 		if(dialog instanceof FileDialog) {
@@ -82,7 +82,7 @@ public class SpecialFieldsHelper {
 			if(suggestedDirectory!=null && suggestedDirectory.exists()) {
 				fileDialog.setFilterPath(suggestedDirectory.getAbsolutePath());
 			}
-			fileDialog.setFileName(suggestedName);
+			if(suggestedName.length()>0) fileDialog.setFileName(suggestedName);
 		} else if (dialog instanceof DirectoryDialog) {
 			DirectoryDialog dirDialog = (DirectoryDialog)dialog;
 			if(suggestedDirectory!=null && suggestedDirectory.exists()) {

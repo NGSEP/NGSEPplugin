@@ -249,21 +249,7 @@
          </command>
 		 <command commandId="net.sf.ngsep.view.MainMultiVariantsDetector" label="Multi Variants Detector" style="push">
          </command>
-         <command commandId="MergeVCF" label="Merge VCF" style="push">
-               <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="activeMenuSelection">
-                  <iterate
-                        ifEmpty="false"
-                        operator="or">
-                     <adapt
-                           type="org.eclipse.core.resources.IFile">
-                           <test property="org.eclipse.core.resources.extension" value="ini" />
-                     </adapt>
-                  </iterate>
-               </with>
-            </visibleWhen>
+         <command commandId="net.sf.ngsep.view.MainMergeVCF" label="Merge VCF" style="push">
          </command>
          <command commandId="net.sf.ngsep.view.MainVCFFunctionalAnnotator" label="Variants Functional Annotation" style="push">
                <visibleWhen
@@ -674,7 +660,7 @@
       <command id="net.sf.ngsep.view.MainRelativeAlleleCountsCalculator" name="Calculate Relative Allele Counts" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="VariantsDetector" name="Variants Detector" defaultHandler="net.sf.ngsep.control.PlugVariantsDetector"/>
       <command id="net.sf.ngsep.view.MainMultiVariantsDetector" name="Multi Variants Detector" defaultHandler="net.sf.ngsep.control.PlugMultipleFiles"/>
-      <command id="MergeVCF" name="Merge VCF" defaultHandler="net.sf.ngsep.control.PlugMergeVCF"/>
+      <command id="net.sf.ngsep.view.MainMergeVCF" name="Merge VCF" defaultHandler="net.sf.ngsep.control.PlugMultipleFiles"/>
       <command id="net.sf.ngsep.view.MainVCFFunctionalAnnotator" name="Variants Functional Annotator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainVCFFilter" name="VCF Filter" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainVCFConverter" name="VCF Converter" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>

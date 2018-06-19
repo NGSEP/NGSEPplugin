@@ -19,71 +19,74 @@
  *******************************************************************************/
 package net.sf.ngsep.view;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.PrintStream;
+import java.util.Properties;
+import java.util.Set;
+
+import net.sf.ngsep.utilities.EclipseProjectHelper;
 
 /**
- * 
  * @author Juan Camilo Quintero
+ * @author Jorge Duitama
  *
  */
 public class HistoryManager {
-
 	
-	public static String createPathRecordGeneral(String nameRoute) {
-		return nameRoute + File.separator + "References.projectNGSEP";
-	}
-
-	// This method receives as a parameter the path to the project and added
-	// References a file with extension. INI. This file will contain the history
-	// of the last reference used
-	public static String createPathRecordGff3(String route) {
-		return route + File.separator + "ReferencesGff3.projectNGSEP";
-	}
-
-	// This method receives as a parameter the path to the project and added
-	// ReferencesMAp a file with extension. INI. This file will contain the
-	// history of the last reference used
-	public static String createPathRecordMap(String route) {
-		return route + File.separator + "ReferencesMap.projectNGSEP";
-	}
-
-	public static File createPathRecordVCF(String directoryProject) {
-		return new File(directoryProject + File.separator + "HistoryFileVCF.ini");
-	}
-
-	// this method as a parameter I get a file and verify that it exists and if
-	// there reads each line of the
-	// file and save the result set me on a string, which serve to have the
-	// reference file path.
-	public static String getPathRecordReference(String strFile) throws IOException {
-		File file = new File(strFile);
-		if (!file.exists())
+	private static final String HISTORY_FILENAME = "NGSEPFilesHistory.txt";
+	
+	public static final String KEY_BOWTIE2_INDEX = "Bowtie2Index";
+	public static final String KEY_REFERENCE_FILE = "Reference";
+	public static final String KEY_TRANSCRIPTOME_FILE = "Transcriptome";
+	public static final String KEY_STRS_FILE = "STRS";
+	
+	/**
+	 * Retrieves from the history the path with the given key
+	 * @param searchFile File within the project to use as pivot to search for history
+	 * @param key to search within the history
+	 * @return String path associated with the given key. Null if the path can not be found
+	 */
+	public static String getHistory(String searchFile, String key) {
+		String directoryProject = EclipseProjectHelper.findProjectDirectory(searchFile);
+		if(directoryProject==null) return null;
+		String historyFile = directoryProject+ File.separator + HISTORY_FILENAME;
+		Properties p = new Properties();
+		try (FileReader reader = new FileReader(historyFile)) {
+			p.load(reader);
+		} catch (IOException e) {
 			return null;
-		FileReader fr = null;
-		try {
-			fr = new FileReader(file);
-			BufferedReader br = new BufferedReader(fr);
-			return br.readLine();
-		} finally {
-			if (fr != null)
-				fr.close();
+		}
+		return p.getProperty(key);
+	}
+	/**
+	 * Saves the given path with the given property
+	 * @param key to store the given path 
+	 * @param path to save
+	 */
+	public static void saveInHistory(String key, String path) {
+		if(path==null || path.length()==0) return;
+		String directoryProject = EclipseProjectHelper.findProjectDirectory(path);
+		if(directoryProject==null) return;
+		String historyFile = directoryProject+ File.separator + HISTORY_FILENAME;
+		Properties p = new Properties();
+		if((new File(historyFile)).exists()) {
+			try (FileReader reader = new FileReader(historyFile)) {
+				p.load(reader);
+			} catch (IOException e) {
+				return;
+			}
+		}
+		if(path.equals(p.getProperty(key))) return;
+		p.setProperty(key, path);
+		try (PrintStream out=new PrintStream(historyFile)) {
+			Set<?> keys = p.keySet();
+			for(Object key2:keys) {
+				out.println(key2.toString()+"="+p.getProperty(key2.toString()));
+			}
+		} catch (IOException e) {
+			return;
 		}
 	}
-	
-	// this method as a parameter I get the project path and the path to the
-	// reference file and saved to a text file
-	public static void createPathRecordFiles(String strFile, String ref) throws FileNotFoundException {
-		// routesrt = routeForHistory(strFile, pathFile);
-		PrintWriter outFileReferencesHistory = new PrintWriter(new FileOutputStream(strFile));
-		outFileReferencesHistory.print(ref);
-		outFileReferencesHistory.flush();
-		outFileReferencesHistory.close();
-	}
-
 }

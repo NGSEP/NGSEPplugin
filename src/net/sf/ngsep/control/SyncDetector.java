@@ -61,6 +61,7 @@ public class SyncDetector extends Job {
 			monitor.beginTask(vd.getSampleId(), 100);
 			vd.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			vd.setLog(log);
+			log.info("Output vars filename: "+vd.getOutVarsFilename());
 			vd.processAll();
 			monitor.done();
 			

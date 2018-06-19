@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import net.sf.ngsep.control.SyncBasePairQualityStatistics;
-import net.sf.ngsep.utilities.EclipseProjectHelper;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
@@ -146,19 +145,9 @@ public class MainBasePairQualityStatistics implements SingleFileInputWindow {
 		txtReferenceFile = new Text(shell, SWT.BORDER);
 		txtReferenceFile.setBounds(160, 60, 580, 22);
 		txtReferenceFile.addMouseListener(mouse);
-		// Here you take the route of the project in the system and suggest the
-		// direction for the text box reference file
-		try {
-			String directoryProject = EclipseProjectHelper.findProjectDirectory(selectedFile);
-			String historyFile = HistoryManager.createPathRecordGeneral(directoryProject);
-			String historyReference = HistoryManager.getPathRecordReference(historyFile);
-			if (historyReference!=null) {
-				txtReferenceFile.setText(historyReference);
-			}
-		} catch (Exception e) {
-			e.getMessage();
-			MessageDialog.openError(shell," Quality Statistics Error","An error occurred while locating the file path of the reference, possibly the system can not recover that route."+ e.getMessage());
-		}
+		// Suggest the latest stored genome
+		String historyReference = HistoryManager.getHistory(selectedFile, HistoryManager.KEY_REFERENCE_FILE);
+		if (historyReference!=null) txtReferenceFile.setText(historyReference);
 		
 		btnReferenceFile = new Button(shell, SWT.NONE);
 		btnReferenceFile.setBounds(760, 60, 25, 22);
@@ -289,21 +278,6 @@ public class MainBasePairQualityStatistics implements SingleFileInputWindow {
 		job.setLogName(logFilename);
 		job.setNameProgressBar(new File(txtOutputPrefix.getText()).getName());
 		
-			
-		// this piece is stored in the project path in the system and the
-		// address entered by the user to the reference file,
-		// then stored in a file such paths that will have the long history
-		// of the last reference entered.
-		String directoryProject = null;
-		try {
-			directoryProject = EclipseProjectHelper.findProjectDirectory(txtInputFile.getText());
-			String routeMap = HistoryManager.createPathRecordGeneral(directoryProject);
-			HistoryManager.createPathRecordFiles(routeMap, txtReferenceFile.getText().toString());
-		} catch (Exception e) {
-			MessageDialog.openError(shell, " Quality Statistics Error","error while trying to place the reference path history most recently used"+ e.getMessage());
-			return;
-		}
-		
 		try {
 			job.schedule();
 		} catch (Exception e) {
@@ -311,6 +285,7 @@ public class MainBasePairQualityStatistics implements SingleFileInputWindow {
 			e.printStackTrace();
 			return;
 		}
+		HistoryManager.saveInHistory(HistoryManager.KEY_REFERENCE_FILE, txtReferenceFile.getText());
 		MessageDialog.openInformation(shell,"Calculate Quality Statistics is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
 		shell.dispose();
 	}

@@ -20,7 +20,6 @@
 package net.sf.ngsep.utilities;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * 
@@ -28,29 +27,21 @@ import java.io.IOException;
  *
  */
 public class EclipseProjectHelper {
-	public static boolean containsEclipseProjectFile(File directory) {
-		if (!directory.isDirectory())
-			return false;
-		if (directory.exists()) {
-			File[] content = directory.listFiles();
-			for (File f : content) {
-				if (".project".equals(f.getName())) {
-					return true;
-				}
+	private static boolean containsEclipseProjectFile(File f) {
+		if (!f.exists() || !f.isDirectory()) return false;
+		for (File f2 : f.listFiles()) {
+			if (".project".equals(f2.getName())) {
+				return true;
 			}
 		}
 		return false;
 	}
 
-	public static String findProjectDirectory(String filename)
-			throws IOException {
-		File f = new File(filename);
-		while (f != null && !containsEclipseProjectFile(f)) {
-			f = f.getParentFile();
+	public static String findProjectDirectory(String filename) {
+		for (File f = new File(filename);f != null;f = f.getParentFile()) {
+			if(containsEclipseProjectFile(f)) return f.getAbsolutePath();
+			
 		}
-		if (f != null)
-			return f.getAbsolutePath();
-		throw new IOException(
-				"Can not find eclipse project for the chosen output directory. Please use as output a directory located within an eclipse project.");
+		return null;
 	}
 }

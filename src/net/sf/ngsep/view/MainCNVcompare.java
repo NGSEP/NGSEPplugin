@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.logging.FileHandler;
 
 import net.sf.ngsep.control.SyncCNVcompare;
-import net.sf.ngsep.utilities.EclipseProjectHelper;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
@@ -183,20 +182,9 @@ public class MainCNVcompare {
 				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFileX, txtRefGenome);
 			}
 		});
-		
-		// Here you take the route of the project in the system and suggest the
-		// direction for the text box reference file
-		try {
-			String directoryProject = EclipseProjectHelper.findProjectDirectory(selectedFileX);
-			String historyFile = HistoryManager.createPathRecordGeneral(directoryProject);
-			String historyReference = HistoryManager.getPathRecordReference(historyFile);
-			if (historyReference!=null) {
-				txtRefGenome.setText(historyReference);
-			}
-		} catch (Exception e) {
-			e.getMessage();
-			MessageDialog.openError(shell, " CNV comparator Error","error while trying to place the reference path history most recently used"+ e.getMessage());
-		}
+		// Suggest the latest stored genome
+		String historyReference = HistoryManager.getHistory(selectedFileX, HistoryManager.KEY_REFERENCE_FILE);
+		if (historyReference!=null) txtRefGenome.setText(historyReference);
 		
 		lblOutput = new Label (shell, SWT.NONE);
 		lblOutput.setBounds(20, 180, 170, 22);
@@ -366,6 +354,7 @@ public class MainCNVcompare {
 		cnvSeqObj.setBamXfile(txtFileX.getText());
 		cnvSeqObj.setBamYfile(txtFileY.getText());
 		cnvSeqObj.setOutFile(txtOutput.getText()+".cnvSeq");
+		//TODO: Set genome
 		cnvSeqObj.setReference(txtRefGenome.getText());
 		cnvSeqObj.setGcCorrection(btnCGcorrection.getSelection());
 		cnvSeqObj.setWholeGenomePrnt(btnWholeGenome.getSelection());
@@ -379,12 +368,13 @@ public class MainCNVcompare {
 		try {
 			syncCNVcompare.setLogFile(new FileHandler(logFilename, false));
 			syncCNVcompare.schedule();
-			MessageDialog.openInformation(shell, "Read Depth Comparator is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
-			shell.dispose();
 		} catch (Exception e) {
 			MessageDialog.openError(shell, "Read Depth Comparator Error",e.getMessage());
 			e.printStackTrace();
 			return;
 		}
+		HistoryManager.saveInHistory(HistoryManager.KEY_REFERENCE_FILE, txtRefGenome.getText());
+		MessageDialog.openInformation(shell, "Read Depth Comparator is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
+		shell.dispose();
 	}
 }

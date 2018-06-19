@@ -23,14 +23,12 @@ package net.sf.ngsep.view;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
-import net.sf.ngsep.control.SampleData;
-import net.sf.ngsep.control.SamplesDatabase;
 import net.sf.ngsep.control.SyncDetermineVariants;
 import net.sf.ngsep.control.SyncMergeVCF;
-import net.sf.ngsep.utilities.EclipseProjectHelper;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
@@ -54,45 +52,39 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * 
- * @author Juan Camilo Quintero, Jorge Duitama
- *
+ * @author Juan Camilo Quintero
+ * @author Jorge Duitama
  */
-public class MainMergeVCF {
+public class MainMergeVCF implements MultipleFilesInputWindow {
 	
-	private String selectedFile;
+	protected Shell shell;
+	private Display display;
 	
-	protected Shell shlMergeVcf;
-	private Font tfont;
-	private Text txtOutputFile;
-	private Label lblListMixForVCF;
-	private Label lbloutputFile;
-	private Button btnMixList;
-	private Button btnCancel;
-	private Button btnOutputFile;
+	//Files selected initially by the user
+	private Set<String> selectedFiles;
+	
+	@Override
+	public void setSelectedFiles(Set<String> selectedFiles) {
+		this.selectedFiles = selectedFiles;
+		
+	}
 	
 	private Table table;
-	private TableColumn tableColumn;
-	private TableColumn tableColumn_2;
-	private TableColumn tableColumn_1;
-	private TableColumn tblclmnVcfFile;
-	private TableColumn tblclmnCheck;
-	Map<String,SampleData> samplesDB;
-	private TableItem item;
 	private Button btnSelectAll;
-	private Text text;
-	private TableEditor tableEditor;
+	
+	private Label lblReferenceFile;
+	private Text txtReferenceFile;
+	private Button btnReferenceFile;
+	
+	private Label lblOutputFile;
+	private Text txtOutputFile;
+	private Button btnOutputFile;
+	
+	private Button btnMixList;
 	private Button btnMergeVcfFiles;
-	private Button btnDeselectAllFiles;
-	private Display display;
-
-	public String getSelectedFile() {
-		return selectedFile;
-	}
-
-	public void setSelectedFile(String selectedFile) {
-		this.selectedFile = selectedFile;
-	}
+	private Button btnCancel;
+	
+	
 
 	/**
 	 * Open the window.
@@ -101,200 +93,148 @@ public class MainMergeVCF {
 	 */
 	public void open() {
 		display = Display.getDefault();
-		boolean created = createContents();
-		if(created) {
-			shlMergeVcf.open();
-			shlMergeVcf.layout();
-			while (!shlMergeVcf.isDisposed()) {
+		if(createContents()) {
+			shell.open();
+			shell.layout();
+			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch()) {
 					display.sleep();
 				}
 			}
+		} else {
+			shell.dispose();
 		}
-
 	}
 
 	/**
 	 * Create contents of the shell.
 	 */
 	protected boolean createContents() {
-		shlMergeVcf = new Shell(display, SWT.SHELL_TRIM);
-		shlMergeVcf.setSize(1078, 600);
-		shlMergeVcf.setText("Merge VCF");
-		shlMergeVcf.setLocation(150, 200);
+		shell = new Shell(display, SWT.SHELL_TRIM);
+		shell.setSize(800, 600);
+		shell.setText("Merge VCF");
+		shell.setLocation(150, 200);
 
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
-		tfont = new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD);
-		lblListMixForVCF = new Label(shlMergeVcf, SWT.NONE);
-		lblListMixForVCF.setText("List Merge For VCF");
+		Font tfont = new Font(Display.getCurrent(), "Arial", 10, SWT.BOLD);
+		Label lblListMixForVCF = new Label(shell, SWT.NONE);
+		lblListMixForVCF.setText("List of files to merge");
 		lblListMixForVCF.setFont(tfont);
-		lblListMixForVCF.setBounds(468, 30, 169, 21);
+		lblListMixForVCF.setBounds(450, 30, 200, 25);
 
+		// Method to invert selection
+		btnSelectAll = new Button(shell, SWT.PUSH);
+		btnSelectAll.setBounds(10, 70, 30, 30);
+		btnSelectAll.setText(">");
+		btnSelectAll.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				for (int i = 0; i < table.getItemCount(); i++) {
+					if (table.getItems()[i].getChecked()) {
+						table.getItems()[i].setChecked(false);
+					} else {
+						table.getItems()[i].setChecked(true);
+					}
+				}
+			}
+		});
 		
 
-		table = new Table(shlMergeVcf, SWT.BORDER | SWT.CHECK | SWT.MULTI| SWT.V_SCROLL);
-		table.setBounds(211, 71, 831, 298);
+		table = new Table(shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL| SWT.CHECK | SWT.H_SCROLL | SWT.HIDE_SELECTION | SWT.SINGLE | SWT.FULL_SELECTION);
+		table.setBounds(50, 70, 730, 300);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
-		tblclmnCheck = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnCheck = new TableColumn(table, SWT.NONE);
 		tblclmnCheck.setText("Check");
 		tblclmnCheck.setResizable(true);
-		tblclmnCheck.setWidth(62);
+		tblclmnCheck.setWidth(50);
 
-		tblclmnVcfFile = new TableColumn(table, SWT.NONE);
+		TableColumn tblclmnVcfFile = new TableColumn(table, SWT.NONE);
 		tblclmnVcfFile.setResizable(true);
-		tblclmnVcfFile.setWidth(141);
-		tblclmnVcfFile.setText("Sample ID");
+		tblclmnVcfFile.setWidth(680);
+		tblclmnVcfFile.setText("VCF file");
 
-		tableColumn = new TableColumn(table, SWT.NONE);
-		tableColumn.setResizable(true);
-		tableColumn.setWidth(185);
-		tableColumn.setText(" VCF File");
+		
 
-		tableColumn_2 = new TableColumn(table, SWT.NONE);
-		tableColumn_2.setResizable(true);
-		tableColumn_2.setWidth(201);
-		tableColumn_2.setText("Name BAM");
-
-		tableColumn_1 = new TableColumn(table, SWT.NONE);
-		tableColumn_1.setResizable(true);
-		tableColumn_1.setWidth(250);
-		tableColumn_1.setText("Name Reference");
-
-		String directoryProject = null;
-		try {
-			directoryProject = EclipseProjectHelper.findProjectDirectory(selectedFile);
-		} catch (Exception e) {
-			MessageDialog.openError(shlMergeVcf, " Map reads Error","error while trying to place the reference path history most recently used"+ e.getMessage());
+		
+		List<String> filesList = new ArrayList<>();
+		for(String file:selectedFiles) {
+			String filelc=file.toLowerCase();
+			if(filelc.endsWith(".vcf") || filelc.endsWith(".vcf.gz")) filesList.add(file);
+		}
+		if(filesList.size()<2) {
+			MessageDialog.openError(shell, "Merge VCF Error","Not enough variant files were found. Please select at least two valid files");
 			return false;
 		}
-
-		File historyVD = HistoryManager.createPathRecordVCF(directoryProject);
-		if (historyVD.getAbsoluteFile() != null) {
-			SamplesDatabase samplesDatabase;
-			try {
-				samplesDatabase=new SamplesDatabase(historyVD.getAbsoluteFile().getAbsolutePath());
-			} catch (IOException e1) {
-				MessageDialog.openError(shlMergeVcf," Merge VCF Error",e1.getMessage());
-				return false;
-			}
-			samplesDB=samplesDatabase.getSamplesWithValidData();
-			//MessageDialog.openInformation(shlMergeVcf, "Merge VCF","Number of samples: "+samplesDB.size());
-			// through the list and added to each column of the table for the
-			// corresponding item
-			if(samplesDB.size()==0){
-				MessageDialog.openError(Display.getDefault().getActiveShell(),"Merge VCF Error","The selected file is not a samples database file or is empty.");
-				return false;
-			}
-			for (String sampleId:samplesDB.keySet()) {
-				SampleData sample = samplesDB.get(sampleId);
-				item = new TableItem(table, SWT.CHECK);
-				String nameVCF = sample.getVcfFile();
-				String srtNameVCF = nameVCF.substring(0, nameVCF.lastIndexOf("."));
-				String nameBAM = sample.getSortedBamFile();
-				String srtNameBam = nameBAM.substring(0, nameBAM.lastIndexOf("."));
-				String nameReference = sample.getReferenceFile();
-				String srtNameReference = nameReference.substring(0, nameReference.lastIndexOf("."));
-				item.setText(1, sampleId);
-				item.setText(2, srtNameVCF);
-				item.setText(3, srtNameBam);
-				item.setText(4, srtNameReference);
-				String variantsFile=sample.getVariantsFile();
-				if(variantsFile!=null){
-					String srtvariantsFile = variantsFile.substring(0, variantsFile.lastIndexOf("."));
-					item.setText(5, srtvariantsFile);
-				}
-			}
-			
-
+		Collections.sort(filesList);
+		selectedFiles.clear();
+		selectedFiles.addAll(filesList);
+		for (String vcfFile:filesList) {
+			TableItem item = new TableItem(table, SWT.CHECK);
+			item.setText(1, vcfFile);
 		}
 
-		tableEditor = new TableEditor(table);
+		TableEditor tableEditor = new TableEditor(table);
 		tableEditor.horizontalAlignment = SWT.LEFT;
 		tableEditor.grabHorizontal = true;
 		tableEditor.minimumWidth = 50;
 
-		// Method to select all and select combo box
-		btnSelectAll = new Button(shlMergeVcf, SWT.PUSH);
-		btnSelectAll.setBounds(10, 90, 150, 25);
-		btnSelectAll.addSelectionListener(new SelectionAdapter() {
+		
+		
+		String firstSelectedFile = filesList.get(0);
+		
+		lblReferenceFile = new Label(shell, SWT.NONE);
+		lblReferenceFile.setBounds(10, 400, 180, 25);
+		lblReferenceFile.setText("(*FASTA) Reference Genome:");
+		
+
+		txtReferenceFile = new Text(shell, SWT.BORDER);
+		txtReferenceFile.setBounds(200, 400, 550, 25);
+		txtReferenceFile.addMouseListener(mouse);
+		// Suggest the latest stored genome
+		String historyReference = HistoryManager.getHistory(firstSelectedFile, HistoryManager.KEY_REFERENCE_FILE);
+		if (historyReference!=null) txtReferenceFile.setText(historyReference);
+		
+		btnReferenceFile = new Button(shell, SWT.NONE);
+		btnReferenceFile.setBounds(760, 400, 25, 25);
+		btnReferenceFile.setText("...");
+		btnReferenceFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				boolean checkBoxFlag = false;
-				for (int i = 0; i < table.getItemCount(); i++) {
-					if (table.getItems()[i].getChecked()) {
-						checkBoxFlag = true;
-					}
-					if (!checkBoxFlag) {
-						for (int m = 0; m < table.getItemCount(); m++) {
-							table.getItems()[m].setChecked(true);
-							table.selectAll();
-							checkBoxFlag = true;
-						}
-					}
-
-				}
-			}
-		});
-		btnSelectAll.setText("Select all files ");
-
-		btnDeselectAllFiles = new Button(shlMergeVcf, SWT.PUSH);
-		btnDeselectAllFiles.setText("Deselect all files ");
-		btnDeselectAllFiles.setBounds(10, 125, 150, 25);
-		btnDeselectAllFiles.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				boolean checkBoxFlag = false;
-				for (int i = 0; i < table.getItemCount(); i++) {
-					if (table.getItems()[i].getChecked()) {
-						checkBoxFlag = true;
-					}
-				}
-
-				if (checkBoxFlag) {
-					for (int m = 0; m < table.getItemCount(); m++) {
-						table.getItems()[m].setChecked(false);
-						table.deselectAll();
-						checkBoxFlag = false;
-					}
-				}
+				SpecialFieldsHelper.updateFileTextBox(shell,SWT.OPEN, selectedFiles.iterator().next(), txtReferenceFile);
 			}
 		});
 
-		lbloutputFile = new Label(shlMergeVcf, SWT.NONE);
-		lbloutputFile.setText("(*)Output File:");
-		lbloutputFile.setFont(tfont);
-		lbloutputFile.setBounds(50, 400, 125, 25);
+		lblOutputFile = new Label(shell, SWT.NONE);
+		lblOutputFile.setText("(*)Output File:");
+		lblOutputFile.setFont(tfont);
+		lblOutputFile.setBounds(10, 450, 180, 25);
 
-		txtOutputFile = new Text(shlMergeVcf, SWT.BORDER);
-		txtOutputFile.setBounds(200, 400, 680, 25);
+		txtOutputFile = new Text(shell, SWT.BORDER);
+		txtOutputFile.setBounds(200, 450, 550, 25);
 		txtOutputFile.addMouseListener(mouse);
 		
 	
-		File outputFile=new File(selectedFile);
+		File outputFile=new File(selectedFiles.iterator().next());
 		String dirAbsolutePath = outputFile.getParentFile().getAbsolutePath();
 		String suggestedOutFile = dirAbsolutePath+File.separator+"variantsfile.vcf";
 		txtOutputFile.setText(suggestedOutFile);
 		
-		btnOutputFile = new Button(shlMergeVcf, SWT.NONE);
+		btnOutputFile = new Button(shell, SWT.NONE);
+		btnOutputFile.setBounds(760, 450, 25, 25);
 		btnOutputFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shlMergeVcf,  SWT.SAVE, selectedFile, txtOutputFile);
+				SpecialFieldsHelper.updateFileTextBox(shell,  SWT.SAVE, selectedFiles.iterator().next(), txtOutputFile);
 			}
 		});
 		btnOutputFile.setText("...");
-		btnOutputFile.setBounds(900, 400, 25, 25);
 		
 
-		text = new Text(shlMergeVcf, SWT.BORDER);
-		text.setBounds(661, 444, 57, 21);
-		text.setVisible(false);
-
-		btnMixList = new Button(shlMergeVcf, SWT.NONE);
+		btnMixList = new Button(shell, SWT.NONE);
 		btnMixList.setText("Determine list of variants");
-		btnMixList.setBounds(200, 500, 200, 30);
+		btnMixList.setBounds(50, 500, 200, 30);
 		btnMixList.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -303,9 +243,9 @@ public class MainMergeVCF {
 		});
 		
 
-		btnMergeVcfFiles = new Button(shlMergeVcf, SWT.NONE);
+		btnMergeVcfFiles = new Button(shell, SWT.NONE);
 		btnMergeVcfFiles.setText("Merge vcf files");
-		btnMergeVcfFiles.setBounds(450, 500, 200, 30);
+		btnMergeVcfFiles.setBounds(300, 500, 200, 30);
 		btnMergeVcfFiles.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -313,16 +253,15 @@ public class MainMergeVCF {
 			}
 		});
 		
-		btnCancel = new Button(shlMergeVcf, SWT.NONE);
+		btnCancel = new Button(shell, SWT.NONE);
 		btnCancel.setText("Cancel");
-		btnCancel.setBounds(700, 500, 110, 30);
+		btnCancel.setBounds(550, 500, 200, 30);
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				shlMergeVcf.close();
+				shell.close();
 			}
 		});
-		
 		return true;
 	}
 
@@ -331,32 +270,34 @@ public class MainMergeVCF {
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		String nameFileDeterminateVariants=null;
 		ArrayList<String> errors = new ArrayList<String>();
+		if (txtReferenceFile.getText() == null || txtReferenceFile.getText().equals("")) {
+			errors.add(FieldValidator.buildMessage(lblReferenceFile.getText(), FieldValidator.ERROR_MANDATORY));
+			txtReferenceFile.setBackground(oc);
+		}
 		if (txtOutputFile.getText() == null || txtOutputFile.getText().equals("")) {
-			errors.add(FieldValidator.buildMessage(lbloutputFile.getText(), FieldValidator.ERROR_MANDATORY));
+			errors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_MANDATORY));
 			txtOutputFile.setBackground(oc);
 		}
 		
 		if (errors.size() > 0) {
-			FieldValidator.paintErrors(errors, shlMergeVcf, "Determine variants");
+			FieldValidator.paintErrors(errors, shell, "Determine variants");
 			return;
 		}
 		
 		
 		
-		List<String> vcfFiles = new ArrayList<String>();
-		String referenceFile = fillVCFFilesList(vcfFiles);
-		if(referenceFile == null) return;
+		List<String> vcfFiles = getSelectedFiles();
 		
 		
 		if(vcfFiles.size()<2){
-			MessageDialog.openError(shlMergeVcf, " Determine variants error"," Select at least two samples ");
+			MessageDialog.openError(shell, " Determine variants error"," Select at least two files ");
 			return;
 		}
 		ReferenceGenome genome;
 		try {
-			genome = ReferenceGenomesFactory.getInstance().getGenome(referenceFile, shlMergeVcf);
+			genome = ReferenceGenomesFactory.getInstance().getGenome(txtReferenceFile.getText(), shell);
 		} catch (IOException e) {
-			MessageDialog.openError(shlMergeVcf, " Error loading reference genome",e.getMessage());
+			MessageDialog.openError(shell, " Error loading reference genome",e.getMessage());
 			return;
 		}
 		String outFile = txtOutputFile.getText();
@@ -369,11 +310,12 @@ public class MainMergeVCF {
 		try {
 			syncDetermineVariants.schedule();
 		} catch (Exception e) {
-			MessageDialog.openError(shlMergeVcf, " Determine variants Error",e.getMessage());
+			MessageDialog.openError(shell, " Determine variants Error",e.getMessage());
 			return;
 		}
-		MessageDialog.openInformation(shlMergeVcf,"Determine Variants is running",LoggingHelper.MESSAGE_PROGRESS_BAR + " and check if the file " + nameFileDeterminateVariants + " was created in the outputFile path");
-		shlMergeVcf.dispose();
+		HistoryManager.saveInHistory(HistoryManager.KEY_REFERENCE_FILE, txtReferenceFile.getText());
+		MessageDialog.openInformation(shell,"Determine Variants is running",LoggingHelper.MESSAGE_PROGRESS_BAR + " and check if the file " + nameFileDeterminateVariants + " was created in the outputFile path");
+		shell.dispose();
 		
 	}
 
@@ -381,31 +323,33 @@ public class MainMergeVCF {
 		
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		ArrayList<String> errors = new ArrayList<String>();
+		if (txtReferenceFile.getText() == null || txtReferenceFile.getText().equals("")) {
+			errors.add(FieldValidator.buildMessage(lblReferenceFile.getText(), FieldValidator.ERROR_MANDATORY));
+			txtReferenceFile.setBackground(oc);
+		}
 		if (txtOutputFile.getText() == null || txtOutputFile.getText().equals("")) {
-			errors.add(FieldValidator.buildMessage(lbloutputFile.getText(), FieldValidator.ERROR_MANDATORY));
+			errors.add(FieldValidator.buildMessage(lblOutputFile.getText(), FieldValidator.ERROR_MANDATORY));
 			txtOutputFile.setBackground(oc);
 		}
 
 		if (errors.size() > 0) {
-			FieldValidator.paintErrors(errors, shlMergeVcf, "Merge VCF files");
+			FieldValidator.paintErrors(errors, shell, "Merge VCF files");
 			return;
 		}
 
 		SyncMergeVCF job = new SyncMergeVCF("MergeVCF");
 		
-		List<String> vcfFiles = new ArrayList<String>();
-		String referenceFile = fillVCFFilesList(vcfFiles);
-		if(referenceFile == null) return;
+		List<String> vcfFiles = getSelectedFiles();
 		
 		if(vcfFiles.size()<2){
-			MessageDialog.openError(shlMergeVcf, " Merge VCF Error"," Select at least two samples ");
+			MessageDialog.openError(shell, " Merge VCF Error"," Select at least two files ");
 			return;
 		}
 		ReferenceGenome genome;
 		try {
-			genome = ReferenceGenomesFactory.getInstance().getGenome(referenceFile, shlMergeVcf);
+			genome = ReferenceGenomesFactory.getInstance().getGenome(txtReferenceFile.getText(), shell);
 		} catch (IOException e) {
-			MessageDialog.openError(shlMergeVcf, " Error loading reference genome",e.getMessage());
+			MessageDialog.openError(shell, " Error loading reference genome",e.getMessage());
 			return;
 		}
 		String logFilename = LoggingHelper.getLoggerFilename(txtOutputFile.getText(),"MVCF");
@@ -418,31 +362,24 @@ public class MainMergeVCF {
 		try {
 			job.schedule();
 		} catch (Exception e) {
-			MessageDialog.openError(shlMergeVcf, " Merge VCF Error",e.getMessage());
+			MessageDialog.openError(shell, " Merge VCF Error",e.getMessage());
 			return;
 		}
-		MessageDialog.openInformation(shlMergeVcf, "Merge VCF is running",LoggingHelper.MESSAGE_PROGRESS_BAR + "and check if the file " + filename + " was created in the outputFile path");
-		shlMergeVcf.dispose();
+		HistoryManager.saveInHistory(HistoryManager.KEY_REFERENCE_FILE, txtReferenceFile.getText());
+		MessageDialog.openInformation(shell, "Merge VCF is running",LoggingHelper.MESSAGE_PROGRESS_BAR + "and check if the file " + filename + " was created in the outputFile path");
+		shell.dispose();
 
 	}
 
-	private String fillVCFFilesList (List<String> vcfFiles) {
-		String referenceFile = null;
+	private List<String> getSelectedFiles ( ) {
+		List<String> selectedFiles = new ArrayList<>();
 		for (int i = 0; i < table.getItemCount(); i++) {
-			item = table.getItem(i);
+			TableItem item = table.getItem(i);
 			if (item.getChecked()) {
-				SampleData sample = samplesDB.get(item.getText(1));
-				vcfFiles.add(sample.getVcfFile());
-				String sampleReference = sample.getReferenceFile();
-				if(referenceFile == null) referenceFile = sampleReference;
-				else if (!referenceFile.equals(sampleReference)) {
-					vcfFiles.clear();
-					MessageDialog.openError(shlMergeVcf, " Merge VCF Error","the samples to merge should have the same reference");
-					return null;
-				}
+				selectedFiles.add(item.getText(1));
 			}
 		}
-		return referenceFile;
+		return selectedFiles;
 	}
 	
 }

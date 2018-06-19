@@ -96,6 +96,7 @@ public class MainVariantsDetector {
 		//single variants detection
 		if(!FieldValidator.isFileExistenceWithData(alignmentsFile)) throw new IOException("File "+alignmentsFile+" could not be opened or is empty");
 		initialAlignmentsFile = alignmentsFile;
+		outputPath = extractPrefix(initialAlignmentsFile);
 		behavior = BEHAVIOR_SINGLE;
 	}
 
@@ -120,9 +121,8 @@ public class MainVariantsDetector {
 		
 		if (behavior == BEHAVIOR_SINGLE) {
 			t_VDMainArgs.setInitialAlignmentsFile(initialAlignmentsFile);
-		} else {
-			t_VDMainArgs.setSuggestedOutputPath(outputPath);
 		}
+		t_VDMainArgs.setSuggestedOutputPath(outputPath);
 		t_VDMainArgs.paint();
 		t_VDSNVArgs.paint();
 		if (behavior!= BEHAVIOR_MULTI_COMBINED) {
@@ -234,8 +234,8 @@ public class MainVariantsDetector {
 			ReferenceGenome genome = ReferenceGenomesFactory.getInstance().getGenome(refGenomeFile, shell);
 			commandsVDMain.put("Genome", genome);
 		} catch (IOException e) {
-			e.printStackTrace();
-			MessageDialog.openError(shell, " Error loading reference genome",e.getMessage());
+			String message = LoggingHelper.serializeException(e);
+			MessageDialog.openError(shell, " Error loading reference genome",e.getMessage()+"."+message);
 			return;
 		}
 		if (behavior==BEHAVIOR_SINGLE) {
@@ -249,7 +249,8 @@ public class MainVariantsDetector {
 			}
 
 			String outputFilePrefix = (String) commandsVDMain.remove("destFile");
-			if (commandsVDMain.get("FindSNVs")!=null) {
+			if (commandsVDMain.get("FindSNVs")==null) {
+				//If set, user wants to skip SNV detection
 				if(outputFilePrefix!=null){
 					String vcfFileName = outputFilePrefix+ ".vcf";
 					vd.setOutVarsFilename(vcfFileName);
@@ -259,15 +260,17 @@ public class MainVariantsDetector {
 			if(commandsVDMain.get("RunRDAnalysis")!=null || commandsVDMain.get("FindRepeats")!=null || commandsVDMain.get("RunRPAnalysis")!=null){
 				vd.setOutSVFilename(outputFilePrefix+ "_SV.gff");
 			}
-			copyCommonParams(commandsVDMain,vd);
+			
 			SyncDetector job = new SyncDetector(vd.getSampleId());
 			job.setLogName(outputFilePrefix + "_VD.log");
-			job.setVd(vd);
 			try {
+				copyCommonParams(commandsVDMain,vd);
+				job.setVd(vd);
 				job.schedule();
 			} catch (Exception e1) {
-				MessageDialog.openError(shell, " Variants Detector Error",e1.getMessage());
-				e1.printStackTrace();
+				String message = LoggingHelper.serializeException(e1);
+				MessageDialog.openError(shell, " Variants Detector Error",message);
+				return;
 			}
 		}
 		if (behavior==BEHAVIOR_MULTI_COMBINED) {
@@ -276,8 +279,8 @@ public class MainVariantsDetector {
 			try {
 				copyCommonParams(commandsVDMain,multiVD);
 			} catch (Exception e) {
-				MessageDialog.openError(shell, "Variants Detector Error",e.getMessage());
-				e.printStackTrace();
+				String message = LoggingHelper.serializeException(e);
+				MessageDialog.openError(shell, " Variants Detector Error",message);
 				return;
 			}
 			multiVD.setOutFilename(outFilename);
@@ -294,15 +297,14 @@ public class MainVariantsDetector {
 			try {
 				job.schedule();
 			} catch (Exception e1) {
-				MessageDialog.openError(shell, "Variants Detector Error",e1.getMessage());
-				e1.printStackTrace();
+				String message = LoggingHelper.serializeException(e1);
+				MessageDialog.openError(shell, " Variants Detector Error",message);
 				return;
 			}
 		}
 		if(behavior==BEHAVIOR_MULTI_INDIVIDUAL){
 			List<Job> jobs = new ArrayList<Job>();
-			int numProc = (int)commandsVDMain.get("numProc");
-			commandsVDMain.remove("numProc");
+			int numProc = (int)commandsVDMain.remove("numProc");
 				
 				
 			for (SampleData sd:uniqueData) {
@@ -312,21 +314,15 @@ public class MainVariantsDetector {
 				vdMulti.setAlignmentsFile(sd.getSortedBamFile());
 				// Output files: vfc, covergae.stats, cnv, gff
 
-				if (commandsVDMain.get("FindSNVs")!=null) {
+				if (commandsVDMain.get("FindSNVs")==null) {
 					vdMulti.setOutVarsFilename(sd.getVcfFile());
-				} else {
-					sd.setVcfFile(null);
 				}
 				if (commandsVDMain.get("RunRDAnalysis")!=null || commandsVDMain.get("FindRepeats")!=null || commandsVDMain.get("RunRPAnalysis")!=null) {
 					vdMulti.setOutSVFilename(sd.getSvFile());
 				}
-				if(commandsVDMain.get("KnownVariantsFile")!=null) {
-					sd.setVariantsFile((String)commandsVDMain.get("KnownVariantsFile"));
-				}
-				
-				copyCommonParams(commandsVDMain,vdMulti);	
-				sd.setReferenceFile(vdMulti.getReferenceFile());
+				copyCommonParams(commandsVDMain,vdMulti);
 				SyncDetector job = new SyncDetector(sd.getSampleId());
+				job.setLogName(sd.getVdLogFile());
 				job.setVd(vdMulti);
 				jobs.add(job);
 			}
@@ -358,13 +354,10 @@ public class MainVariantsDetector {
 		String nameBam= samFile.substring(0,index);
 		if (nameBam.contains("Sorted")) {
 			nameBam = nameBam.substring(0,samFile.lastIndexOf("Sorted") - 1);
-			return nameBam;
 		} else if (nameBam.contains("sorted")) {
 			nameBam = nameBam.substring(0,samFile.lastIndexOf("sorted") - 1);
-			return nameBam;
-		} else {
-			return nameBam;
 		}
+		return nameBam;
 	}
 
 

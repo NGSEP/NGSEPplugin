@@ -27,12 +27,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import net.sf.ngsep.control.SampleData;
-import net.sf.ngsep.utilities.EclipseProjectHelper;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -135,6 +133,10 @@ public class TabMapMainArgs extends Composite {
 		txtIndexFile = new Text(this, SWT.BORDER);
 		txtIndexFile.setBounds(177, 138, 600, 21);
 		txtIndexFile.addMouseListener(mouse);
+		
+		// Suggest the latest stored index
+		String historyReference = HistoryManager.getHistory(outputDirectory, HistoryManager.KEY_BOWTIE2_INDEX);
+		if (historyReference!=null) txtIndexFile.setText(historyReference);
 
 		btnIndexFile = new Button(this, SWT.NONE);
 		btnIndexFile.addSelectionListener(new SelectionAdapter() {
@@ -298,21 +300,7 @@ public class TabMapMainArgs extends Composite {
 			lblPlatform.setBounds(17, 300, 124, 21);
 			cmbPlatform.setBounds(177, 300, 158, 28);
 			refreshFields();
-		} 
-		
-		
-
-		try {
-			String directoryProject = EclipseProjectHelper.findProjectDirectory(outputDirectory);
-			String historyFile = HistoryManager.createPathRecordMap(directoryProject);
-			String historyReference = HistoryManager.getPathRecordReference(historyFile);
-			if (historyReference!=null) {
-				txtIndexFile.setText(historyReference);
-			}
-		} catch (Exception e) {
-			MessageDialog.openError(parent.getShell(),"Wizard Map Read Error","There is an error trying to place in the box file path reference, possibly the system can not recover that route."+ e.getMessage());
 		}
-
 	}
 
 	private final MouseListener onMouseClickButtonReport = new MouseListener() {
@@ -370,22 +358,12 @@ public class TabMapMainArgs extends Composite {
 
 		errors.clear();
 
-
-		String directoryProject = null;
-
-		SampleData sample;
-		
-		
-		
-
-
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
-//		List<String> commandArray = new ArrayList<String>();
 		Map<String,Object> userParams = new TreeMap<String, Object>();
 		
 		//For single
 		if (source=='O'){
-			sample = new SampleData();
+			SampleData sample = new SampleData();
 			boolean bFileOne = txtFileOne.getText().length()>0 && txtFileOne.getText() != null;
 			boolean bFileTwo = txtFileTwo.getText().length()>0 && txtFileTwo.getText() != null;
 
@@ -424,7 +402,6 @@ public class TabMapMainArgs extends Composite {
 
 			}
 			userParams.put("singleSample", sample);
-			
 		}
 		
 		if (source=='M'){
@@ -449,8 +426,6 @@ public class TabMapMainArgs extends Composite {
 			
 		}
 		
-		
-		
 		String bowtieCommand = "bowtie2";
 		if (SpecialFieldsHelper.isWindows()) {
 			bowtieCommand = "bowtie2-align.exe";
@@ -468,15 +443,6 @@ public class TabMapMainArgs extends Composite {
 			userParams.put("indexArg", SpecialFieldsHelper.maskWhiteSpaces(txtIndexFile.getText()));
 //			commandArray.add("-x");
 //			commandArray.add(SpecialFieldsHelper.maskWhiteSpaces(txtReferenceFile.getText()));
-		}
-
-		// Validation for Mapping index
-		try {
-			directoryProject = EclipseProjectHelper.findProjectDirectory(outputDirectory);
-			String routeMap = HistoryManager.createPathRecordMap(directoryProject);
-			HistoryManager.createPathRecordFiles(routeMap, txtIndexFile.getText().toString());
-		}catch(Exception e){
-			errors.add(FieldValidator.buildMessage("error while trying to locate the reference path history most recently used",FieldValidator.ERROR_FILE_EMPTY));
 		}
 
 		if (txtMinimunInsIze.getText() != null && txtMinimunInsIze.getText().length()>0) {
@@ -535,14 +501,10 @@ public class TabMapMainArgs extends Composite {
 		}
 		
 
-		if(!errors.isEmpty())
-			return null;
+		if(!errors.isEmpty()) return null;
 
+		HistoryManager.saveInHistory(HistoryManager.KEY_BOWTIE2_INDEX, txtIndexFile.getText());
 		return userParams;
-
-
-
-
 	}
 
 

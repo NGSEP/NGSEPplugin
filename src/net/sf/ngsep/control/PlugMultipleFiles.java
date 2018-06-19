@@ -1,9 +1,9 @@
 package net.sf.ngsep.control;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.view.MultipleFilesInputWindow;
 
 
@@ -28,7 +29,7 @@ public class PlugMultipleFiles extends AbstractHandler {
 		ISelection sel = HandlerUtil.getActiveMenuSelection(event);
 		IStructuredSelection selection = (IStructuredSelection) sel;
 		Iterator<?> it = selection.iterator();
-		Set<String> files = new HashSet<>();
+		Set<String> files = new TreeSet<>();
 		while(it.hasNext()) {
 			Object selectedItem = it.next();
 			if (selectedItem instanceof IFolder) {
@@ -72,8 +73,8 @@ public class PlugMultipleFiles extends AbstractHandler {
 		try {
 			window.open();
 		} catch (Exception e) {
-			MessageDialog.openError(shell, "Error loading window", e.getMessage());
-			e.printStackTrace();
+			String message = LoggingHelper.serializeException(e);
+			MessageDialog.openError(shell, "Error loading window", message);
 		}
 		return null;
 	}
