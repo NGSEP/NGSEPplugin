@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Text;
  * @author Cristian Loaiza
  *
  */
-public class MainKmersCounter {
+public class MainKmersCounter implements SingleFileInputWindow {
 	//General attributes
 	protected Shell shell;
 	private Display display;

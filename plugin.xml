@@ -1,79 +1,146 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-	<extension point="org.eclipse.ui.menus">
-      <menuContribution locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
-            <menu id="NGSEP" label="NGSEP Menu">
-            
-            <command commandId="CreateIndex" label="Create Index Bowtie" style="push">
-               <visibleWhen checkEnabled="false">
-                     <with variable="activeMenuSelection">
-                           <iterate ifEmpty="false" operator="or">
-                           	<adapt type="org.eclipse.core.resources.IFile">
-                       			<or>
-                           			<test property="org.eclipse.core.resources.extension" value="fa" />
-                           			<test property="org.eclipse.core.resources.extension" value="fasta" />
-                           		 	<test property="org.eclipse.core.resources.extension" value="FA" />
-                           			<test property="org.eclipse.core.resources.extension" value="FASTA" />
-                       			</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="MapReads" label="Map Reads" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           			<or>
-	                           			<test property="org.eclipse.core.resources.extension" value="fq" />
-	                           			<test property="org.eclipse.core.resources.extension" value="fastq" />
-	                           			<test property="org.eclipse.core.resources.extension" value="fa" />
-	                           			<test property="org.eclipse.core.resources.extension" value="fasta" />
-	                           			<test property="org.eclipse.core.resources.extension" value="txt" />
-	                           			<test property="org.eclipse.core.resources.extension" value="fna" />
-	                           			<test property="org.eclipse.core.resources.extension" value="mfa" />
-	                           			<test property="org.eclipse.core.resources.extension" value="FQ" />
-	                           			<test property="org.eclipse.core.resources.extension" value="FASTQ" />
-	                           			<test property="org.eclipse.core.resources.extension" value="FA" />
-	                           			<test property="org.eclipse.core.resources.extension" value="FASTA" />
-	                           			<test property="org.eclipse.core.resources.extension" value="TXT" />
-	                           			<test property="org.eclipse.core.resources.extension" value="FNA" />
-	                           			<test property="org.eclipse.core.resources.extension" value="MFA" />
-	                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-	                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainSortAlignment" label="Sort Alignments" style="push">
-               <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="activeMenuSelection">
-                  <iterate
-                        ifEmpty="false"
-                        operator="or">
-                     <adapt
-                           type="org.eclipse.core.resources.IFile">
-                           <or>
-                           		<test property="org.eclipse.core.resources.extension" value="bam" />
-                           		<test property="org.eclipse.core.resources.extension" value="BAM" />
-                           		<test property="org.eclipse.core.resources.extension" value="sam" />
-                          	 	<test property="org.eclipse.core.resources.extension" value="SAM" />
-                           </or>
-                     </adapt>
-                  </iterate>
-               </with>
-            </visibleWhen>
-         </command>     
+<extension point="org.eclipse.core.expressions.definitions">
+	<definition id="net.sf.ngsep.SingleVCFEnablement">
+		<with variable="activeMenuSelection">
+			<count value="1"/>
+			<iterate ifEmpty="false" operator="or">
+				<adapt type="org.eclipse.core.resources.IFile">
+					<or>
+						<test property="org.eclipse.core.resources.extension" value="vcf" />
+						<test property="org.eclipse.core.resources.extension" value="VCF" />
+						<test property="org.eclipse.core.resources.extension" value="gz" />
+					</or>
+				</adapt>
+			</iterate>
+		</with>
+	</definition>
+	<definition id="net.sf.ngsep.SingleBAMEnablement">
+		<with variable="activeMenuSelection">
+			<count value="1"/>
+			<iterate ifEmpty="false" operator="or">
+				<adapt type="org.eclipse.core.resources.IFile">
+					<or>
+						<test property="org.eclipse.core.resources.extension" value="bam" />
+						<test property="org.eclipse.core.resources.extension" value="BAM" />
+					</or>
+				</adapt>
+			</iterate>
+		</with>
+	</definition>
+	<definition id="net.sf.ngsep.SingleFastaEnablement">
+		<with variable="activeMenuSelection">
+			<count value="1"/>
+			<iterate ifEmpty="false" operator="or">
+				<adapt type="org.eclipse.core.resources.IFile">
+					<or>
+						<test property="org.eclipse.core.resources.extension" value="fa" />
+						<test property="org.eclipse.core.resources.extension" value="fasta" />
+						<test property="org.eclipse.core.resources.extension" value="fna" />
+						<test property="org.eclipse.core.resources.extension" value="mfa" />
+						<test property="org.eclipse.core.resources.extension" value="FA" />
+						<test property="org.eclipse.core.resources.extension" value="FASTA" />
+               			<test property="org.eclipse.core.resources.extension" value="FNA" />
+               			<test property="org.eclipse.core.resources.extension" value="MFA" />
+					</or>
+				</adapt>
+			</iterate>
+		</with>
+	</definition>
+	<definition id="net.sf.ngsep.SingleTextFileEnablement">
+		<with variable="activeMenuSelection">
+			<count value="1"/>
+			<iterate ifEmpty="false" operator="or">
+				<adapt type="org.eclipse.core.resources.IFile">
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="fq" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="fastq" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="gz" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="FASTQ" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="FQ" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="bam" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="bai" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="sam" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="vcf" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="log" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="png" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="ini" />
+					</not>
+					<not>
+						<test property="org.eclipse.core.resources.extension" value="properties" />
+					</not>
+				</adapt>
+			</iterate>
+		</with>
+	</definition>
+ </extension>
+<extension point="org.eclipse.ui.menus">
+	<menuContribution locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
+		<menu id="NGSEP" label="NGSEP Menu">    
+			<command commandId="CreateIndex" label="Create Index Bowtie" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleFastaEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="MapReads" label="Map Reads" style="push">
+				<visibleWhen checkEnabled="false">
+					<with variable="activeMenuSelection">
+						<or>
+							<count value="1"/>
+							<count value="2"/>
+						</or>
+						<iterate ifEmpty="false" operator="or">
+							<adapt type="org.eclipse.core.resources.IFile">
+								<or>
+									<test property="org.eclipse.core.resources.extension" value="fq" />
+									<test property="org.eclipse.core.resources.extension" value="fastq" />
+									<test property="org.eclipse.core.resources.extension" value="fa" />
+									<test property="org.eclipse.core.resources.extension" value="fasta" />
+									<test property="org.eclipse.core.resources.extension" value="txt" />
+									<test property="org.eclipse.core.resources.extension" value="fna" />
+									<test property="org.eclipse.core.resources.extension" value="mfa" />
+									<test property="org.eclipse.core.resources.extension" value="FQ" />
+									<test property="org.eclipse.core.resources.extension" value="FASTQ" />
+									<test property="org.eclipse.core.resources.extension" value="FA" />
+									<test property="org.eclipse.core.resources.extension" value="FASTA" />
+									<test property="org.eclipse.core.resources.extension" value="TXT" />
+									<test property="org.eclipse.core.resources.extension" value="FNA" />
+									<test property="org.eclipse.core.resources.extension" value="MFA" />
+									<test property="org.eclipse.core.resources.extension" value="gz" />
+								</or>
+							</adapt>
+						</iterate>
+					</with>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainSortAlignment" label="Sort Alignments" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleBAMEnablement"/>
+				</visibleWhen>
+			</command>     
          <command commandId="WizardSingleEnd" label="Wizard Single End" style="push">
                <visibleWhen
                      checkEnabled="false">
@@ -138,375 +205,95 @@
                </visibleWhen>
          </command>
          
-         <command commandId="net.sf.ngsep.view.MainBasePairQualityStatistics" label="Calculate Quality Statistics" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                                 type="org.eclipse.core.resources.IFile">
-								<or>
-                           			<test property="org.eclipse.core.resources.extension" value="bam" />
-                           			<test property="org.eclipse.core.resources.extension" value="BAM" />
-                           		</or>
-                           </adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainPlotQualityStatistics" label="Plot Quality Statistics" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                                 type="org.eclipse.core.resources.IFile">
-                                 <or>
-                                 	<test property="org.eclipse.core.resources.extension" value="stats" />
-                                 	<test property="org.eclipse.core.resources.extension" value="txt" />
-                                 </or>
-                           </adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainCoverageStatisticsCalculator" label="Calculate Coverage Statistics" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                                 type="org.eclipse.core.resources.IFile">
-                                 <or>
-                           			<test property="org.eclipse.core.resources.extension" value="bam" />
-                           			<test property="org.eclipse.core.resources.extension" value="BAM" />
-                           		</or>
-                           </adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainPlotCoverageStatistics" label="Plot Coverage Statistics" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                                 type="org.eclipse.core.resources.IFile">
-                                 <or>
-                                 	<test property="org.eclipse.core.resources.extension" value="stats" />
-                                 	<test property="org.eclipse.core.resources.extension" value="txt" />
-                                 </or>
-                           </adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainRelativeAlleleCountsCalculator" label="Calculate Relative Allele Counts" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                                 type="org.eclipse.core.resources.IFile">
-								<or>
-                           			<test property="org.eclipse.core.resources.extension" value="bam" />
-                           			<test property="org.eclipse.core.resources.extension" value="BAM" />
-                           		</or>
-                           </adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="VariantsDetector" label="Find Variants" style="push">
-               <visibleWhen checkEnabled="false">
-               <with variable="activeMenuSelection">
-                  <iterate ifEmpty="false" operator="or">
-                     <adapt type="org.eclipse.core.resources.IFile">
-                           <or>
-                           	<test property="org.eclipse.core.resources.extension" value="bam" />
-                           	<test property="org.eclipse.core.resources.extension" value="BAM" />
-                           </or>
-                     </adapt>
-                  </iterate>
-               </with>
-            </visibleWhen>
-         </command>
-		 <command commandId="net.sf.ngsep.view.MainMultiVariantsDetector" label="Multi Variants Detector" style="push">
-         </command>
-         <command commandId="net.sf.ngsep.view.MainMergeVCF" label="Merge VCF" style="push">
-         </command>
-         <command commandId="net.sf.ngsep.view.MainVCFFunctionalAnnotator" label="Variants Functional Annotation" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           		<or>
-                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
-                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
-                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainVCFFilter" label="VCF Filter" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           		<or>
-                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
-                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
-                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainVCFConverter" label="VCF Converter" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           		<or>
-                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
-                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
-                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainVCFSummaryStatistics" label="VCF Summary Statistics" style="push">
-               <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="activeMenuSelection">
-                  <iterate
-                        ifEmpty="false"
-                        operator="or">
-                     <adapt
-                           type="org.eclipse.core.resources.IFile">
-                           <or>
-                           		<test property="org.eclipse.core.resources.extension" value="vcf" />
-                           		<test property="org.eclipse.core.resources.extension" value="VCF" />
-                           		<test property="org.eclipse.core.resources.extension" value="gz" />
-                           </or>
-                     </adapt>
-                  </iterate>
-               </with>
-            </visibleWhen>
-         </command>  
-         <command commandId="net.sf.ngsep.view.MainPlotVCFSummaryStatistics" label="Plot VCF Summary Statistics" style="push">
-               <visibleWhen
-                  checkEnabled="false">
-               <with
-                     variable="activeMenuSelection">
-                  <iterate
-                        ifEmpty="false"
-                        operator="or">
-                     <adapt
-                           type="org.eclipse.core.resources.IFile">
-                           <or>
-                           		<test property="org.eclipse.core.resources.extension" value="txt" />
-                           		<test property="org.eclipse.core.resources.extension" value="stats" />
-                           </or>
-                     </adapt>
-                  </iterate>
-               </with>
-            </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainVCFDiversityCalculator" label="VCF Diversity Calculator" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           		<or>
-                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
-                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
-                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>     
-         </command>
-         <command commandId="net.sf.ngsep.view.MainAlleleSharingStatistics" label="Allele Sharing Statistics" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           		<or>
-                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
-                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
-                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainVCFComparator" label="VCF Comparator" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           		<or>
-                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
-                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
-                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainImputeGenotype" label="Genotype imputation" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           		<or>
-                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
-                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
-                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainVCFIntrogressionAnalysis" label="Introgression Analysis" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           		<or>
-                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
-                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
-                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainReadsDemultiplex" label="Reads Demultiplex" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="fq" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="fastq" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="FASTQ" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="FQ" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="bam" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="bai" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="sam" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="stats" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="log" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="png" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="ini" />
-                           		</not>
-                           		<not>
-                           			<test property="org.eclipse.core.resources.extension" value="projectNGSEP" />
-                           		</not>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
+			<command commandId="net.sf.ngsep.view.MainBasePairQualityStatistics" label="Calculate Quality Statistics" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleBAMEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainPlotQualityStatistics" label="Plot Quality Statistics" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleTextFileEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainCoverageStatisticsCalculator" label="Calculate Coverage Statistics" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleBAMEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainPlotCoverageStatistics" label="Plot Coverage Statistics" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleTextFileEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainRelativeAlleleCountsCalculator" label="Calculate Relative Allele Counts" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleBAMEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="VariantsDetector" label="Find Variants" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleBAMEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainMultiVariantsDetector" label="Multi Variants Detector" style="push">
+			</command>
+			<command commandId="net.sf.ngsep.view.MainMergeVCF" label="Merge VCF" style="push">
+			</command>
+			<command commandId="net.sf.ngsep.view.MainVCFFunctionalAnnotator" label="Variants Functional Annotation" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainVCFFilter" label="VCF Filter" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainVCFConverter" label="VCF Converter" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainVCFSummaryStatistics" label="VCF Summary Statistics" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>  
+			<command commandId="net.sf.ngsep.view.MainPlotVCFSummaryStatistics" label="Plot VCF Summary Statistics" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleTextFileEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainVCFDiversityCalculator" label="VCF Diversity Calculator" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainAlleleSharingStatistics" label="Allele Sharing Statistics" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainVCFComparator" label="VCF Comparator" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainImputeGenotype" label="Genotype imputation" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainVCFIntrogressionAnalysis" label="Introgression Analysis" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainReadsDemultiplex" label="Reads Demultiplex" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleTextFileEnablement"/>
+				</visibleWhen>
+			</command>
          <command commandId="ReadDepthComparator" label="Read Depth Comparator" style="push">
                <visibleWhen
                      checkEnabled="false">
@@ -526,127 +313,60 @@
                      </with>
                </visibleWhen>
          </command>
-         <command commandId="KmersCounter" label="Kmers Counter" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           			<or>
-	                           			<test property="org.eclipse.core.resources.extension" value="fq" />
-	                           			<test property="org.eclipse.core.resources.extension" value="fastq" />
-	                           			<test property="org.eclipse.core.resources.extension" value="fa" />
-	                           			<test property="org.eclipse.core.resources.extension" value="fasta" />
-	                           			<test property="org.eclipse.core.resources.extension" value="txt" />
-	                           			<test property="org.eclipse.core.resources.extension" value="fna" />
-	                           			<test property="org.eclipse.core.resources.extension" value="mfa" />
-	                           			<test property="org.eclipse.core.resources.extension" value="FQ" />
-	                           			<test property="org.eclipse.core.resources.extension" value="FASTQ" />
-	                           			<test property="org.eclipse.core.resources.extension" value="FA" />
-	                           			<test property="org.eclipse.core.resources.extension" value="FASTA" />
-	                           			<test property="org.eclipse.core.resources.extension" value="TXT" />
-	                           			<test property="org.eclipse.core.resources.extension" value="FNA" />
-	                           			<test property="org.eclipse.core.resources.extension" value="MFA" />
-	                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-	                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="DistanceMatrixCalculator" label="Distance Matrix Calculator" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           			<or>
-	                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
-	                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
-	                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-	                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="NeighborJoining" label="Neighbor Joining Generator" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           			<or>
-	                           			<test property="org.eclipse.core.resources.extension" value="txt" />
-	                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
-         <command commandId="net.sf.ngsep.view.MainSingleIndividualSimulator" label="Single Individual Simulator" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           		<or>
-                           			<test property="org.eclipse.core.resources.extension" value="fa" />
-                           			<test property="org.eclipse.core.resources.extension" value="fasta" />
-                           			<test property="org.eclipse.core.resources.extension" value="fna" />
-                           			<test property="org.eclipse.core.resources.extension" value="mfa" />
-                           			<test property="org.eclipse.core.resources.extension" value="FA" />
-                           			<test property="org.eclipse.core.resources.extension" value="FASTA" />
-	                           		<test property="org.eclipse.core.resources.extension" value="FNA" />
-	                           		<test property="org.eclipse.core.resources.extension" value="MFA" />
-                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
+			<command commandId="net.sf.ngsep.view.MainKmersCounter" label="Kmers Counter" style="push">
+				<visibleWhen checkEnabled="false">
+					<with variable="activeMenuSelection">
+						<count value="1"/>
+						<iterate ifEmpty="false" operator="or">
+							<adapt type="org.eclipse.core.resources.IFile">
+								<or>
+									<test property="org.eclipse.core.resources.extension" value="fq" />
+									<test property="org.eclipse.core.resources.extension" value="fastq" />
+									<test property="org.eclipse.core.resources.extension" value="fa" />
+									<test property="org.eclipse.core.resources.extension" value="fasta" />
+									<test property="org.eclipse.core.resources.extension" value="txt" />
+									<test property="org.eclipse.core.resources.extension" value="fna" />
+									<test property="org.eclipse.core.resources.extension" value="mfa" />
+									<test property="org.eclipse.core.resources.extension" value="FQ" />
+									<test property="org.eclipse.core.resources.extension" value="FASTQ" />
+									<test property="org.eclipse.core.resources.extension" value="FA" />
+									<test property="org.eclipse.core.resources.extension" value="FASTA" />
+									<test property="org.eclipse.core.resources.extension" value="TXT" />
+									<test property="org.eclipse.core.resources.extension" value="FNA" />
+									<test property="org.eclipse.core.resources.extension" value="MFA" />
+									<test property="org.eclipse.core.resources.extension" value="gz" />
+								</or>
+							</adapt>
+						</iterate>
+					</with>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainDistanceMatrixCalculator" label="Distance Matrix Calculator" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainNeighborJoining" label="Neighbor Joining Generator" style="push">
+ 				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleTextFileEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainSingleIndividualSimulator" label="Single Individual Simulator" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleFastaEnablement"/>
+				</visibleWhen>
+			</command>
 <!--         <command commandId="net.sf.ngsep.view.MainMutatedPeptidesExtractor" label="Mutated Peptides Extractor" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                           		<or>
-                           			<test property="org.eclipse.core.resources.extension" value="vcf" />
-                           			<test property="org.eclipse.core.resources.extension" value="VCF" />
-                           			<test property="org.eclipse.core.resources.extension" value="gz" />
-                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
 -->
          </menu>
       </menuContribution>
-   </extension>
-   <extension point="org.eclipse.ui.commands">
-      <command id="CreateIndex" name="Create Index Bowtie2" defaultHandler="net.sf.ngsep.control.PlugIndexBowtie"/>
+</extension>
+<extension point="org.eclipse.ui.commands">
+      <command id="net.sf.ngsep.view.MainIndexBowtie" name="Create Index Bowtie2" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="MapReads" name="Map reads" defaultHandler="net.sf.ngsep.control.PlugMapRead"/>
       <command id="net.sf.ngsep.view.MainSortAlignment" name="Sort Aligments" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="WizardSingleEnd" name="Wizard Single End" defaultHandler="net.sf.ngsep.control.PlugWizardSingleEndReads"/>
@@ -673,15 +393,14 @@
       <command id="net.sf.ngsep.view.MainVCFIntrogressionAnalysis" name="Introgression Analysis" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainReadsDemultiplex" name="Reads Demultiplex" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="ReadDepthComparator" name="Read Depth Comparator" defaultHandler="net.sf.ngsep.control.PlugCNVcompare"/>
-      <command id="KmersCounter" name="Kmers Counter" defaultHandler="net.sf.ngsep.control.PlugKmersCounter"/>
-      <command id="DistanceMatrixCalculator" name="Distance Matrix Calculator" defaultHandler="net.sf.ngsep.control.PlugDistanceMatrixCalculator"/>
- 	  <command id="NeighborJoining" name="Neighbor Joining Generation" defaultHandler="net.sf.ngsep.control.PlugNeighborJoining"/>
+      <command id="net.sf.ngsep.view.MainKmersCounter" name="Kmers Counter" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainDistanceMatrixCalculator" name="Distance Matrix Calculator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+ 	  <command id="net.sf.ngsep.view.MainNeighborJoining" name="Neighbor Joining Generation" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
  	  <command id="net.sf.ngsep.view.MainSingleIndividualSimulator" name="Single Individual Simulator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
 <!-- 	  <command id="net.sf.ngsep.view.MainMutatedPeptidesExtractor" name="Mutated Peptides Extractor" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
 -->
-   </extension>
-  <extension
-		point="org.eclipse.ui.views">
+</extension>
+<extension point="org.eclipse.ui.views">
 	<view
 		name="NGSEPView"
 		icon="icons/ProgreesBarLogger.gif"
@@ -691,16 +410,14 @@
 	</view>
 </extension>
 <extension point="org.eclipse.ui.editors">
-   <editor
-         class="net.sf.ngsep.view.SimpleSAMBrowseEditor"
+   <editor class="net.sf.ngsep.view.SimpleSAMBrowseEditor"
          default="true"
          extensions="bam,sam"
          icon="icons/sample.gif"
          id="SimpleBAMBrowse"
          name="Simple BAM Browse">
    </editor>
-  <editor
-        class="net.sf.ngsep.view.SimpleVCFBrowseEditor"
+  <editor class="net.sf.ngsep.view.SimpleVCFBrowseEditor"
         default="true"
         extensions="vcf"
         icon="icons/sample.gif"
@@ -709,4 +426,3 @@
   </editor>
 </extension>
 </plugin>
-

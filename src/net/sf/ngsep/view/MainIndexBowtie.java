@@ -22,7 +22,6 @@ package net.sf.ngsep.view;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
 
 import net.sf.ngsep.control.SyncIndexBowtie;
 import net.sf.ngsep.utilities.FieldValidator;
@@ -42,22 +41,32 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * 
  * @author Juan Camilo Quintero
- *
+ * @author Jorge Duitama
  */
-public class MainIndexBowtie {
+public class MainIndexBowtie implements SingleFileInputWindow {
 
-	protected Shell shlCreate;
-	// address directory
-	private String aliFile;
+	//General variables 
+	private Shell shell;
 	private Display display;
-	private Text txtReference;
-	private Text txtIndexBowtie;
-	private Label lblreference;
-	private Label lblindexPrefixBowtie;
-	private Button btnIndexBowtie;
+	
+	//File selected initially by the user
+	private String selectedFile;
+	public String getSelectedFile() {
+		return selectedFile;
+	}
+	public void setSelectedFile(String selectedFile) {
+		this.selectedFile = selectedFile;
+	}
+	
+	private Label lblReferenceFile;
+	private Text txtReferenceFile;
 	private Button btnReferenceFile;
+	
+	private Label lblIndexBowtie;
+	private Text txtIndexBowtie;
+	private Button btnIndexBowtie;
+	
 	private Button btnCreateIndex;
 	private Button btnCancel;
 
@@ -69,9 +78,9 @@ public class MainIndexBowtie {
 	public void open() {
 		display = Display.getDefault();
 		createContents();
-		shlCreate.open();
-		shlCreate.layout();
-		while (!shlCreate.isDisposed()) {
+		shell.open();
+		shell.layout();
+		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {
 				display.sleep();
 			}
@@ -82,53 +91,52 @@ public class MainIndexBowtie {
 	 * Create contents of the shell.
 	 */
 	protected void createContents() {
-		shlCreate = new Shell(display, SWT.SHELL_TRIM);
-		shlCreate.setSize(810, 247);
-		shlCreate.setText("Create index Bowtie2");
-		shlCreate.setLocation(150, 200);
+		shell = new Shell(display, SWT.SHELL_TRIM);
+		shell.setSize(800, 250);
+		shell.setText("Create index Bowtie2");
+		shell.setLocation(150, 200);
 		MouseListenerNgsep mouse = new MouseListenerNgsep();
-		lblreference = new Label(shlCreate, SWT.NONE);
-		lblreference.setText("(*)Reference:");
-		lblreference.setBounds(10, 38, 161, 21);
+		
+		lblReferenceFile = new Label(shell, SWT.NONE);
+		lblReferenceFile.setText("(*)Reference:");
+		lblReferenceFile.setBounds(10, 30, 180, 25);
 
-		txtIndexBowtie = new Text(shlCreate, SWT.BORDER);
-		txtIndexBowtie.setBounds(181, 75, 545, 26);
-		txtIndexBowtie.addMouseListener(mouse);
-		txtReference = new Text(shlCreate, SWT.BORDER);
-		txtReference.setEnabled(true);
-		txtReference.setBounds(181, 35, 545, 26);
-		txtReference.addMouseListener(mouse);
-		String referenceFile = getAliFile();
-		if (referenceFile != null && !referenceFile.equals("")) {
-			txtReference.setText(referenceFile);
-			txtIndexBowtie.setText(referenceFile);
-		}
-		lblindexPrefixBowtie = new Label(shlCreate, SWT.NONE);
-		lblindexPrefixBowtie.setText("(*)Index Bowtie2 Prefix:");
-		lblindexPrefixBowtie.setBounds(10, 78, 161, 21);
-
-		btnIndexBowtie = new Button(shlCreate, SWT.NONE);
-		btnIndexBowtie.setText("...");
-		btnIndexBowtie.setBounds(745, 73, 24, 25);
-		btnIndexBowtie.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shlCreate, SWT.SAVE, aliFile,txtIndexBowtie);
-			}
-		});
-
-		btnReferenceFile = new Button(shlCreate, SWT.NONE);
+		txtReferenceFile = new Text(shell, SWT.BORDER);
+		txtReferenceFile.setBounds(200, 30, 550, 25);
+		txtReferenceFile.addMouseListener(mouse);
+		txtReferenceFile.setText(selectedFile);
+		
+		btnReferenceFile = new Button(shell, SWT.NONE);
 		btnReferenceFile.setText("...");
-		btnReferenceFile.setBounds(745, 34, 24, 25);
+		btnReferenceFile.setBounds(760, 30, 25, 25);
 		btnReferenceFile.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SpecialFieldsHelper.updateFileTextBox(shlCreate, SWT.OPEN, aliFile,txtReference);
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.OPEN, selectedFile, txtReferenceFile);
+			}
+		});
+		
+		lblIndexBowtie = new Label(shell, SWT.NONE);
+		lblIndexBowtie.setText("(*)Bowtie2 Index Prefix:");
+		lblIndexBowtie.setBounds(10, 70, 180, 25);
+		
+		txtIndexBowtie = new Text(shell, SWT.BORDER);
+		txtIndexBowtie.setBounds(200, 70, 550, 25);
+		txtIndexBowtie.addMouseListener(mouse);
+		txtIndexBowtie.setText(selectedFile);
+
+		btnIndexBowtie = new Button(shell, SWT.NONE);
+		btnIndexBowtie.setText("...");
+		btnIndexBowtie.setBounds(760, 70, 25, 25);
+		btnIndexBowtie.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				SpecialFieldsHelper.updateFileTextBox(shell, SWT.SAVE, selectedFile,txtIndexBowtie);
 			}
 		});
 
-		btnCreateIndex = new Button(shlCreate, SWT.NONE);
-		btnCreateIndex.setBounds(181, 154, 124, 30);
+		btnCreateIndex = new Button(shell, SWT.NONE);
+		btnCreateIndex.setBounds(150, 150, 200, 50);
 		btnCreateIndex.setText("Create Index");
 		btnCreateIndex.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -137,73 +145,64 @@ public class MainIndexBowtie {
 			}
 		});
 
-		btnCancel = new Button(shlCreate, SWT.NONE);
+		btnCancel = new Button(shell, SWT.NONE);
 		btnCancel.setText("Cancel");
-		btnCancel.setBounds(364, 154, 124, 30);
+		btnCancel.setBounds(450, 150, 200, 50);
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				shlCreate.close();
+				shell.close();
 			}
 		});
 
 	}
 
 	public void proceed() {
+		
+		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
+		
+		//String strReference=null;
+		//String strIndexBowtie=null;
+		String strCommand = "bowtie2-build";
+		if (SpecialFieldsHelper.isWindows()) {
+			strCommand = "bowtie2-build.exe";
+		}
+		List<String> commandArray = new ArrayList<String>();
+		commandArray.add(strCommand);
+		ArrayList<String> listErrors = new ArrayList<String>();
+		if (txtReferenceFile.getText() == null|| txtReferenceFile.getText().equals("")) {
+			listErrors.add(FieldValidator.buildMessage(lblReferenceFile.getText(),FieldValidator.ERROR_MANDATORY));
+			txtReferenceFile.setBackground(oc);
+		} else {
+			commandArray.add(SpecialFieldsHelper.maskWhiteSpaces(txtReferenceFile.getText()));
+		}
+
+		if (txtIndexBowtie.getText() == null|| txtIndexBowtie.getText().equals("")) {
+			listErrors.add(FieldValidator.buildMessage(lblIndexBowtie.getText(),FieldValidator.ERROR_MANDATORY));
+			txtIndexBowtie.setBackground(oc);
+		} else {
+			commandArray.add(SpecialFieldsHelper.maskWhiteSpaces(txtIndexBowtie.getText()));
+		}
+
+		if (listErrors.size() > 0) {
+			FieldValidator.paintErrors(listErrors, shell, "Create index Bowtie2");
+			return;
+		}
+		String outputFile=txtIndexBowtie.getText();
+		String logFilename = LoggingHelper.getLoggerFilename(outputFile,"CS");
+		SyncIndexBowtie indexBowtie = new SyncIndexBowtie("Create Index Bowtie");
+		indexBowtie.setCommandArray(commandArray);
+		indexBowtie.setLogName(logFilename);
+		indexBowtie.setNameProgressBar(new File(outputFile).getName());
 		try {
-			Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
-			SyncIndexBowtie indexBowtie = new SyncIndexBowtie();
-			//String strReference=null;
-			//String strIndexBowtie=null;
-			String strCommand = "bowtie2-build";
-			if (SpecialFieldsHelper.isWindows()) {
-				strCommand = "bowtie2-build.exe";
-			}
-			List<String> commandArray = new ArrayList<String>();
-			commandArray.add(strCommand);
-			ArrayList<String> listErrors = new ArrayList<String>();
-			if (txtReference.getText() == null|| txtReference.getText().equals("")) {
-				listErrors.add(FieldValidator.buildMessage(lblreference.getText(),FieldValidator.ERROR_MANDATORY));
-				txtReference.setBackground(oc);
-			} else {
-				commandArray.add(SpecialFieldsHelper.maskWhiteSpaces(txtReference.getText()));
-			}
-
-			if (txtIndexBowtie.getText() == null|| txtIndexBowtie.getText().equals("")) {
-				listErrors.add(FieldValidator.buildMessage(lblindexPrefixBowtie.getText(),FieldValidator.ERROR_MANDATORY));
-				txtIndexBowtie.setBackground(oc);
-			} else {
-				commandArray.add(SpecialFieldsHelper.maskWhiteSpaces(txtIndexBowtie.getText()));
-			}
-
-			if (listErrors.size() > 0) {
-				FieldValidator.paintErrors(listErrors, shlCreate, "Create index Bowtie2");
-				return;
-			}
-			// this piece is stored in the project path in the system and the
-			// address entered by the user to the reference file,
-			// then stored in a file such routes that will have the long history
-			// of the last reference entered.
-			String outputFile=txtIndexBowtie.getText();
-			String logFilename = LoggingHelper.getLoggerFilename(outputFile,"CS");
-			FileHandler logFile = new FileHandler(logFilename, false);
-			indexBowtie.setCommandArray(commandArray);
-			indexBowtie.setLogName(logFilename);
-			indexBowtie.setLogFile(logFile);
-			indexBowtie.setNameProgressBar(new File(outputFile).getName());
-			indexBowtie.runJob();
-			MessageDialog.openInformation(shlCreate, "Create Index Bowtie is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
-			shlCreate.dispose();
+			indexBowtie.schedule();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public String getAliFile() {
-		return aliFile;
-	}
-
-	public void setAliFile(String aliFile) {
-		this.aliFile = aliFile;
+		
+		HistoryManager.saveInHistory(HistoryManager.KEY_REFERENCE_FILE, txtReferenceFile.getText());
+		HistoryManager.saveInHistory(HistoryManager.KEY_BOWTIE2_INDEX, txtIndexBowtie.getText());
+		MessageDialog.openInformation(shell, "Create Index Bowtie is running",LoggingHelper.MESSAGE_PROGRESS_BAR);
+		shell.dispose();
 	}
 }

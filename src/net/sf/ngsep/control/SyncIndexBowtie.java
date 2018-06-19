@@ -35,81 +35,80 @@ import org.eclipse.core.runtime.jobs.Job;
 /**
  * 
  * @author Juan Camilo Quintero
+ * @author Jorge Duitama
  *
  */
-public class SyncIndexBowtie {
+public class SyncIndexBowtie extends Job {
 	private List<String> commandArray;
 	private String logName;
-	private FileHandler logFile;
 	private String nameProgressBar;
 
-	private final Job job = new Job("Create Index Bowtie Process") {
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			Logger log = LoggingHelper.createLogger(logName, logFile);
-			try {
-				monitor.beginTask(getNameProgressBar(), 500);
-				log.info("Started Create Index Bowtie");
-				Process p = Runtime.getRuntime().exec(commandArray.toArray(new String[0]));
-				InputStream stdoutStream = p.getInputStream();
-				StringBuffer buffer = new StringBuffer();
-				while (true) {
-					int message = stdoutStream.read();
-					if (message == -1) break;
-					monitor.worked(1);
-					// End process if user requests so
-					if (monitor.isCanceled()) {
-						p.destroy();
-						log.info("Process canceled by user");
-						return Status.CANCEL_STATUS;
-					}
-					buffer.append((char) message);
-				}
-				if(buffer.length()>0) log.info(buffer.toString());
-				stdoutStream.close();
-				InputStream stderrStream = p.getErrorStream();
-				StringBuffer bufferOne = new StringBuffer();
-				while (true) {
-					int failure = stderrStream.read();
-					if (failure == -1)
-						break;
-					bufferOne.append((char) failure);
-				}
-				if (bufferOne.length() > 0) log.severe(bufferOne.toString());
-				stderrStream.close();
-				log.info("Process finished");
-				monitor.done();
-			} catch (Exception e) {
-				log.info("Error executing Create Index Bowtie: ");
-				String message = LoggingHelper.serializeException(e);
-				log.severe(message);
-			} finally {
-				LoggingHelper.closeLogger(log);
-			}
-			return Status.OK_STATUS;
-		}
-	};
-
-	public void runJob() {
-		job.schedule();
+	/**
+	 * Creates a build bowtie2 index Job with the given name
+	 * @param name of the job
+	 */
+	public SyncIndexBowtie(String name) {
+		super(name);
 	}
-
 	
+	@Override
+	protected IStatus run(IProgressMonitor monitor) {
+		FileHandler logFile = null;
+		Logger log = null;
+		
+		try {
+			//Create log
+			logFile = new FileHandler(logName, false);
+			log = LoggingHelper.createLogger(logName, logFile);
+			
+			//Start progress bar
+			monitor.beginTask(getNameProgressBar(), 500);
+			log.info("Started Create Index Bowtie");
+			Process p = Runtime.getRuntime().exec(commandArray.toArray(new String[0]));
+			InputStream stdoutStream = p.getInputStream();
+			StringBuffer buffer = new StringBuffer();
+			while (true) {
+				int message = stdoutStream.read();
+				if (message == -1) break;
+				monitor.worked(1);
+				// End process if user requests so
+				if (monitor.isCanceled()) {
+					p.destroy();
+					log.info("Process canceled by user");
+					return Status.CANCEL_STATUS;
+				}
+				buffer.append((char) message);
+			}
+			if(buffer.length()>0) log.info(buffer.toString());
+			stdoutStream.close();
+			InputStream stderrStream = p.getErrorStream();
+			StringBuffer bufferOne = new StringBuffer();
+			while (true) {
+				int failure = stderrStream.read();
+				if (failure == -1)
+					break;
+				bufferOne.append((char) failure);
+			}
+			if (bufferOne.length() > 0) log.severe(bufferOne.toString());
+			stderrStream.close();
+			log.info("Process finished");
+			monitor.done();
+		} catch (Exception e) {
+			log.info("Error executing Create Index Bowtie: ");
+			String message = LoggingHelper.serializeException(e);
+			log.severe(message);
+		} finally {
+			LoggingHelper.closeLogger(log);
+		}
+		return Status.OK_STATUS;
+	}
 
 	public String getLogName() {
 		return logName;
 	}
 
-	public FileHandler getLogFile() {
-		return logFile;
-	}
-
 	public void setLogName(String logName) {
 		this.logName = logName;
-	}
-
-	public void setLogFile(FileHandler logFile) {
-		this.logFile = logFile;
 	}
 
 	public String getNameProgressBar() {
