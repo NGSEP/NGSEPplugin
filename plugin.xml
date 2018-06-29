@@ -29,6 +29,14 @@
 			</iterate>
 		</with>
 	</definition>
+	<definition id="net.sf.ngsep.FolderEnablement">
+		<with variable="activeMenuSelection">
+			<iterate ifEmpty="false" operator="or">
+				<adapt type="org.eclipse.core.resources.IFolder">
+				</adapt>
+			</iterate>
+		</with>
+	</definition>
 	<definition id="net.sf.ngsep.SingleFastaEnablement">
 		<with variable="activeMenuSelection">
 			<count value="1"/>
@@ -154,64 +162,26 @@
 					<reference definitionId="net.sf.ngsep.SingleBAMEnablement"/>
 				</visibleWhen>
 			</command>     
-         <command commandId="WizardSingleEnd" label="Wizard Single End" style="push">
-               <visibleWhen checkEnabled="false">
-                     <with variable="activeMenuSelection">
-                           <iterate ifEmpty="false" operator="or">
-                           	<adapt type="org.eclipse.core.resources.IFolder">
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-       	    </command>            
-            <command
-               commandId="WizardPairedEnd"
-               label="Wizard Paired End"
-               style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFolder">
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-       	    </command>
-            <command commandId="net.sf.ngsep.view.MainMultiMapping" label="Multi Mapping Single End" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFolder">
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-       	    </command>
-            <command commandId="net.sf.ngsep.view.MainMultiMappingPairedEnd" label="Multi Mapping Paired End" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFolder">
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
+			<command commandId="WizardSingleEnd" label="Wizard Single End" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.FolderEnablement"/>
+				</visibleWhen>
+			</command>            
+			<command commandId="WizardPairedEnd" label="Wizard Paired End" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.FolderEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainMultiMapping" label="Multi Mapping Single End" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.FolderEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainMultiMappingPairedEnd" label="Multi Mapping Paired End" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.FolderEnablement"/>
+				</visibleWhen>
+			</command>
          
 			<command commandId="net.sf.ngsep.view.MainBasePairQualityStatistics" label="Calculate Quality Statistics" style="push">
 				<visibleWhen checkEnabled="false">
@@ -245,23 +215,13 @@
 			</command>
 			<command commandId="net.sf.ngsep.view.MainMultiVariantsDetector" label="Multi Variants Detector" style="push">
 				<visibleWhen checkEnabled="false">
-                     <with variable="activeMenuSelection">
-                           <iterate ifEmpty="false" operator="or">
-                           	<adapt type="org.eclipse.core.resources.IFolder">
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
+					<reference definitionId="net.sf.ngsep.FolderEnablement"/>
+				</visibleWhen>
 			</command>
 			<command commandId="net.sf.ngsep.view.MainMergeVCF" label="Merge VCF" style="push">
 				<visibleWhen checkEnabled="false">
-                     <with variable="activeMenuSelection">
-                           <iterate ifEmpty="false" operator="or">
-                           	<adapt type="org.eclipse.core.resources.IFolder">
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
+					<reference definitionId="net.sf.ngsep.FolderEnablement"/>
+				</visibleWhen>
 			</command>
 			<command commandId="net.sf.ngsep.view.MainVCFFunctionalAnnotator" label="Variants Functional Annotation" style="push">
 				<visibleWhen checkEnabled="false">
@@ -318,25 +278,21 @@
 					<reference definitionId="net.sf.ngsep.SingleTextFileEnablement"/>
 				</visibleWhen>
 			</command>
-         <command commandId="ReadDepthComparator" label="Read Depth Comparator" style="push">
-               <visibleWhen
-                     checkEnabled="false">
-                     <with
-                           variable="activeMenuSelection">
-                           <iterate
-                           		ifEmpty="false"
-                           		operator="or">
-                           	<adapt
-                           		type="org.eclipse.core.resources.IFile">
-                        		<or>
-                           			<test property="org.eclipse.core.resources.extension" value="bam" />
-                           			<test property="org.eclipse.core.resources.extension" value="BAM" />
-                           		</or>
-                           	</adapt>
-                           </iterate>
-                     </with>
-               </visibleWhen>
-         </command>
+			<command commandId="ReadDepthComparator" label="Read Depth Comparator" style="push">
+				<visibleWhen checkEnabled="false">
+					<with variable="activeMenuSelection">
+						<count value="2"/>
+						<iterate ifEmpty="false" operator="or">
+							<adapt type="org.eclipse.core.resources.IFile">
+								<or>
+									<test property="org.eclipse.core.resources.extension" value="bam" />
+									<test property="org.eclipse.core.resources.extension" value="BAM" />
+								</or>
+							</adapt>
+						</iterate>
+					</with>
+				</visibleWhen>
+			</command>
 			<command commandId="net.sf.ngsep.view.MainKmersCounter" label="Kmers Counter" style="push">
 				<visibleWhen checkEnabled="false">
 					<with variable="activeMenuSelection">
