@@ -204,15 +204,14 @@ public class MainKmersCounter implements SingleFileInputWindow {
 			txtFile.setBackground(oc);
 		}
 		
-		if (txtKmerSize.getText() == null || txtOutput.getText().length()==0) {
-			if (!FieldValidator.isNumeric(txtKmerSize.getText(), new Integer(0))) {
-				listErrors.add(FieldValidator.buildMessage(lblKmerSize.getText(), FieldValidator.ERROR_INTEGER));
-				txtKmerSize.setBackground(oc);
-			} else {
-				instance.setKmerSize(Integer.parseInt(txtKmerSize.getText()));
-			}
-			listErrors.add(FieldValidator.buildMessage(lblOutput.getText(), FieldValidator.ERROR_MANDATORY));
+		if (txtKmerSize.getText() == null || txtKmerSize.getText().length()==0) {
+			listErrors.add(FieldValidator.buildMessage(lblKmerSize.getText(), FieldValidator.ERROR_MANDATORY));
 			txtKmerSize.setBackground(oc);
+		} else if (!FieldValidator.isNumeric(txtKmerSize.getText(), new Integer(0))) {
+			listErrors.add(FieldValidator.buildMessage(lblKmerSize.getText(), FieldValidator.ERROR_INTEGER));
+			txtKmerSize.setBackground(oc);
+		} else {
+			instance.setKmerSize(Integer.parseInt(txtKmerSize.getText()));
 		}
 		
 		if (txtOutput.getText() == null || txtOutput.getText().length()==0) {
