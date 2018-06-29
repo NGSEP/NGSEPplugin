@@ -155,7 +155,7 @@ public class MainKmersCounter implements SingleFileInputWindow {
 		txtKmerSize = new Text (shell, SWT.BORDER);
 		txtKmerSize.setBounds(200, 200, 50, 22);
 		txtKmerSize.addMouseListener(mouse);
-		txtKmerSize.setText("31");
+		txtKmerSize.setText(""+KmersCounter.DEFAULT_KMER_SIZE);
 		
 		//Calculate both strands
 		

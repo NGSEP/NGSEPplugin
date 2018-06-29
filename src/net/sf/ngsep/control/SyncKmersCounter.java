@@ -73,7 +73,7 @@ public class SyncKmersCounter extends Job {
 			//Start progress bar
 			monitor.beginTask(getNameProgressBar(), 1000);
 			log.info("Started k-mers count analysis");
-			
+			log.info("K-Mer size: "+instance.getKmerSize());
 			instance.setLog(log);
 			instance.setProgressNotifier(new DefaultProgressNotifier(monitor));
 			if (inputFile != null) {

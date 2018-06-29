@@ -90,7 +90,7 @@ public class MainSingleIndividualSimulator implements SingleFileInputWindow {
 	public void open() {
 		display = Display.getDefault();
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setText("Compare VCFs");
+		shell.setText("Single Individual Simulator");
 		shell.setLocation(150, 200);
 		shell.setSize(800, 350);
 		createContents();
