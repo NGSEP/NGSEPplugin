@@ -164,7 +164,11 @@ public class TabVDSNVArgs extends Composite {
 		txtHete.addMouseListener(mouse);
 		
 		lblMinQuality = new Label(this, SWT.NONE);
-		lblMinQuality.setText("Minimum Genotype Quality Score:");
+		if (behavior == MainVariantsDetector.BEHAVIOR_MULTI_COMBINED) {
+			lblMinQuality.setText("Minimum Variant Quality Score:");
+		} else {
+			lblMinQuality.setText("Minimum Genotype Quality Score:");
+		}
 		lblMinQuality.setBounds(10, 140, 300, 22);
 
 		txtMinQuality = new Text(this, SWT.BORDER);
