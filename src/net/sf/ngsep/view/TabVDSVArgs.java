@@ -50,8 +50,8 @@ public class TabVDSVArgs extends Composite {
 	 * @param style
 	 */
 	
-	private Label lblGenomicSize;
-	private Text txtGenomicSize;
+	private Label lblInputGenomeSize;
+	private Text txtInputGenomeSize;
 	private Label lblBinSize;
 	private Text txtBinSize;
 	private Button btnIgnoreProperPairFlagChk;
@@ -85,13 +85,13 @@ public class TabVDSVArgs extends Composite {
 		
 
 		
-		lblGenomicSize = new Label(this, SWT.NONE);
-		lblGenomicSize.setText("Genome Size:");
-		lblGenomicSize.setBounds(10, 20, 160, 22);
+		lblInputGenomeSize = new Label(this, SWT.NONE);
+		lblInputGenomeSize.setText("Genome Size:");
+		lblInputGenomeSize.setBounds(10, 20, 160, 22);
 
-		txtGenomicSize = new Text(this, SWT.BORDER);
-		txtGenomicSize.setBounds(180, 20, 180, 22);
-		txtGenomicSize.addMouseListener(mouse);
+		txtInputGenomeSize = new Text(this, SWT.BORDER);
+		txtInputGenomeSize.setBounds(180, 20, 180, 22);
+		txtInputGenomeSize.addMouseListener(mouse);
 		
 		lblBinSize = new Label(this, SWT.NONE);
 		lblBinSize.setText("Bin Size:");
@@ -172,12 +172,12 @@ public class TabVDSVArgs extends Composite {
 		Color oc = MouseListenerNgsep.COLOR_EXCEPCION;
 		
 		
-		if (txtGenomicSize.getText() != null && !txtGenomicSize.getText().equals("")) {
-			if (!FieldValidator.isNumeric(txtGenomicSize.getText(), new Long(0))) {
-				errorsOne.add(FieldValidator.buildMessage(lblGenomicSize.getText(), FieldValidator.ERROR_NUMERIC));
-				txtGenomicSize.setBackground(oc);
+		if (txtInputGenomeSize.getText() != null && !txtInputGenomeSize.getText().equals("")) {
+			if (!FieldValidator.isNumeric(txtInputGenomeSize.getText(), new Long(0))) {
+				errorsOne.add(FieldValidator.buildMessage(lblInputGenomeSize.getText(), FieldValidator.ERROR_NUMERIC));
+				txtInputGenomeSize.setBackground(oc);
 			}else{
-				commonUserParameters.put("GenomeSize", txtGenomicSize.getText());
+				commonUserParameters.put("InputGenomeSize", txtInputGenomeSize.getText());
 			}
 		}
 
