@@ -336,6 +336,16 @@
 					<reference definitionId="net.sf.ngsep.SingleFastaEnablement"/>
 				</visibleWhen>
 			</command>
+			<command commandId="net.sf.ngsep.view.MainGenomesAligner" label="Genomes Aligner" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleFastaEnablement"/>
+				</visibleWhen>
+			</command>
+			<command commandId="net.sf.ngsep.view.MainVCFIndividualGenomeBuilder" label="Individual Genome Builder" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
 <!--         <command commandId="net.sf.ngsep.view.MainMutatedPeptidesExtractor" label="Mutated Peptides Extractor" style="push">
 				<visibleWhen checkEnabled="false">
 					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
@@ -377,6 +387,8 @@
       <command id="net.sf.ngsep.view.MainDistanceMatrixCalculator" name="Distance Matrix Calculator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
  	  <command id="net.sf.ngsep.view.MainNeighborJoining" name="Neighbor Joining Generation" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
  	  <command id="net.sf.ngsep.view.MainSingleIndividualSimulator" name="Single Individual Simulator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+ 	  <command id="net.sf.ngsep.view.MainGenomesAligner" name="Genomes Aligner" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+ 	  <command id="net.sf.ngsep.view.MainVCFIndividualGenomeBuilder" name="Individual Genome Builder" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
 <!-- 	  <command id="net.sf.ngsep.view.MainMutatedPeptidesExtractor" name="Mutated Peptides Extractor" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
 -->
 </extension>
