@@ -58,7 +58,9 @@ public class HistoryManager {
 		} catch (IOException e) {
 			return null;
 		}
-		return p.getProperty(key);
+		String value = p.getProperty(key);
+		System.out.println("Property key "+key+" value: "+value);
+		return value;
 	}
 	/**
 	 * Saves the given path with the given property
@@ -78,6 +80,8 @@ public class HistoryManager {
 				return;
 			}
 		}
+		//Avoid problems due to windows backslashes
+		path = path.replace("\\", "/");
 		if(path.equals(p.getProperty(key))) return;
 		p.setProperty(key, path);
 		try (PrintStream out=new PrintStream(historyFile)) {
@@ -88,5 +92,17 @@ public class HistoryManager {
 		} catch (IOException e) {
 			return;
 		}
+	}
+	
+	public static void main(String[] args) throws Exception {
+		String path = "c:\\windows\\Program files\\c";
+		System.out.println(path);
+		path = path.replace("\\", "/");
+		System.out.println(path);
+		Properties p = new Properties();
+		p.setProperty("R", path);
+		String value = p.getProperty("R");
+		
+		System.out.println("Property R value: "+value);
 	}
 }
