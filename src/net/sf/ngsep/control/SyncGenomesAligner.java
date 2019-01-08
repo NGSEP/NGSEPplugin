@@ -30,7 +30,7 @@ import org.eclipse.core.runtime.jobs.Job;
 
 import net.sf.ngsep.utilities.DefaultProgressNotifier;
 import net.sf.ngsep.utilities.LoggingHelper;
-import ngsep.assembly.GenomesAligner;
+import ngsep.genome.GenomesAligner;
 
 /**
  * Job for genomes aligner

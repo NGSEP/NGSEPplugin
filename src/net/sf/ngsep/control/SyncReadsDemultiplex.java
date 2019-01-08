@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 import net.sf.ngsep.utilities.DefaultProgressNotifier;
 import net.sf.ngsep.utilities.LoggingHelper;
-import ngsep.sequences.ReadsDemultiplex;
+import ngsep.sequencing.ReadsDemultiplex;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -72,15 +72,11 @@ public class SyncReadsDemultiplex extends Job {
 			
 			if (indexFile!=null) {	
 				log.info("Loading Index.");
-				instance.loadIndex(indexFile);
-				String flowCell = instance.getFlowcell();
-				String lane = instance.getLane();
+				instance.loadIndexAndLaneFiles(indexFile);
 				if(instance.getLaneFilesDescriptor()!=null){
 					log.info("Demultiplexing fastq files described in lanes file: "+instance.getLaneFilesDescriptor());
 					instance.demultiplexGroup();
-				} else if(fastqFile1!=null && flowCell!=null && lane!=null){
-					log.info("Loading Lane Info.");
-					instance.loadLaneInfo(flowCell, lane);
+				} else if(fastqFile1!=null) {
 					if(fastqFile2!=null){
 						log.info("processing FASTQ files.");
 						instance.demultiplex(fastqFile1, fastqFile2);

@@ -19,7 +19,7 @@ import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
-import ngsep.assembly.GenomesAligner;
+import ngsep.genome.GenomesAligner;
 
 public class MainGenomesAligner implements SingleFileInputWindow {
 	protected Shell shell;
@@ -56,6 +56,11 @@ public class MainGenomesAligner implements SingleFileInputWindow {
 	private Label lblOutputPrefix;
 	private Text txtOutputPrefix;
 	private Button btnOutputPrefix;
+	
+	private Label lblKmerSize;
+	private Text txtKmerSize;
+	private Label lblMinPctKmers;
+	private Text txtMinPctKmers;
 
 	@Override
 	public void open() {
@@ -72,7 +77,7 @@ public class MainGenomesAligner implements SingleFileInputWindow {
 	}
 	private void createContents() {
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setSize(800, 400);
+		shell.setSize(800, 450);
 		shell.setText("Genomes Aligner");
 		shell.setLocation(10, 10);
 
@@ -173,8 +178,6 @@ public class MainGenomesAligner implements SingleFileInputWindow {
 		String suggestedOutPrefix = SpecialFieldsHelper.buildSuggestedOutputPrefix(selectedFile);
 		txtOutputPrefix.setText(suggestedOutPrefix);
 		
-		
-		
 		btnOutputPrefix = new Button(shell, SWT.NONE);
 		btnOutputPrefix.setBounds(760, 190, 25, 22);
 		btnOutputPrefix.setText("...");
@@ -185,8 +188,26 @@ public class MainGenomesAligner implements SingleFileInputWindow {
 			}
 		});
 		
+		lblKmerSize = new Label(shell, SWT.NONE);
+		lblKmerSize.setText("K-mer size :");
+		lblKmerSize.setBounds(10, 240, 180, 22);
+		
+		txtKmerSize = new Text(shell, SWT.BORDER);
+		txtKmerSize.setBounds(200, 240, 100, 22);
+		txtKmerSize.setText(String.valueOf(GenomesAligner.DEF_KMER_SIZE));
+		txtKmerSize.addMouseListener(mouse);
+		
+		lblMinPctKmers = new Label(shell, SWT.NONE);
+		lblMinPctKmers.setText("Minimum PCT k-mers :");
+		lblMinPctKmers.setBounds(10, 290, 180, 22);
+		
+		txtMinPctKmers = new Text(shell, SWT.BORDER);
+		txtMinPctKmers.setBounds(200, 290, 100, 22);
+		txtMinPctKmers.setText(String.valueOf(GenomesAligner.DEF_KMER_SIZE));
+		txtMinPctKmers.addMouseListener(mouse);
+		
 		btnSubmit = new Button(shell, SWT.NONE);
-		btnSubmit.setBounds(240, 330, 200, 25);
+		btnSubmit.setBounds(240, 370, 200, 25);
 		btnSubmit.setText("Align");
 		btnSubmit.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -195,9 +216,8 @@ public class MainGenomesAligner implements SingleFileInputWindow {
 			}
 		});
 		
-
 		btnCancel = new Button(shell, SWT.NONE);
-		btnCancel.setBounds(460, 330, 200, 25);
+		btnCancel.setBounds(460, 370, 200, 25);
 		btnCancel.setText("Cancel");
 		btnCancel.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -249,6 +269,24 @@ public class MainGenomesAligner implements SingleFileInputWindow {
 			txtOutputPrefix.setBackground(oc);
 		} else {
 			instance.setOutPrefix(txtOutputPrefix.getText());
+		}
+		
+		if (txtKmerSize.getText() != null && txtKmerSize.getText().length()!=0) {
+			if (!FieldValidator.isNumeric(txtKmerSize.getText(),new Integer(0))) {
+				errors.add(FieldValidator.buildMessage(lblKmerSize.getText(), FieldValidator.ERROR_INTEGER));
+				txtKmerSize.setBackground(oc);
+			} else {
+				instance.setKmerSize(txtKmerSize.getText());				
+			}
+		}
+		
+		if (txtMinPctKmers.getText() != null && txtMinPctKmers.getText().length()!=0) {
+			if (!FieldValidator.isNumeric(txtMinPctKmers.getText(),new Integer(0))) {
+				errors.add(FieldValidator.buildMessage(lblMinPctKmers.getText(), FieldValidator.ERROR_INTEGER));
+				txtMinPctKmers.setBackground(oc);
+			} else {
+				instance.setMinPctKmers(txtMinPctKmers.getText());				
+			}
 		}
 		
 		if (errors.size() > 0) {
