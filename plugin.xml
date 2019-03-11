@@ -351,6 +351,11 @@
 					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
 				</visibleWhen>
 			</command>
+			<command commandId="net.sf.ngsep.view.MainVCFVariantDensityCalculator" label="VCF Variant Density Calculator" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
+				</visibleWhen>
+			</command>
 <!--         <command commandId="net.sf.ngsep.view.MainMutatedPeptidesExtractor" label="Mutated Peptides Extractor" style="push">
 				<visibleWhen checkEnabled="false">
 					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
@@ -395,6 +400,7 @@
  	  <command id="net.sf.ngsep.view.MainGenomesAligner" name="Genomes Aligner" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
  	  <command id="net.sf.ngsep.view.MainVCFIndividualGenomeBuilder" name="Individual Genome Builder" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainVCFGoldStandardComparator" name="VCF Gold Standard Comparator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainVCFVariantDensityCalculator" name="VCF Variant Density Calculator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
 <!-- 	  <command id="net.sf.ngsep.view.MainMutatedPeptidesExtractor" name="Mutated Peptides Extractor" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
 -->
 </extension>
