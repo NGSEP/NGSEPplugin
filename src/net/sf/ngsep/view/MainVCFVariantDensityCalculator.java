@@ -34,15 +34,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import net.sf.ngsep.control.SyncVCFFunctionalAnnotator;
 import net.sf.ngsep.control.SyncVCFVariantDensityCalculator;
 import net.sf.ngsep.utilities.FieldValidator;
 import net.sf.ngsep.utilities.LoggingHelper;
 import net.sf.ngsep.utilities.MouseListenerNgsep;
 import net.sf.ngsep.utilities.SpecialFieldsHelper;
 import ngsep.genome.ReferenceGenome;
-import ngsep.transcriptome.VariantAnnotationParameters;
-import ngsep.vcf.VCFFunctionalAnnotator;
 import ngsep.vcf.VCFVariantDensityCalculator;
 
 /**
@@ -99,7 +96,7 @@ public class MainVCFVariantDensityCalculator implements SingleFileInputWindow {
 
 	private void createContents() {
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setSize(800, 300);
+		shell.setSize(800, 350);
 		shell.setText("VCF variant density calculator");
 		shell.setLocation(10, 10);
 
