@@ -29,6 +29,21 @@
 			</iterate>
 		</with>
 	</definition>
+	<definition id="net.sf.ngsep.SingleGFFEnablement">
+		<with variable="activeMenuSelection">
+			<count value="1"/>
+			<iterate ifEmpty="false" operator="or">
+				<adapt type="org.eclipse.core.resources.IFile">
+					<or>
+						<test property="org.eclipse.core.resources.extension" value="gff" />
+						<test property="org.eclipse.core.resources.extension" value="GFF" />
+						<test property="org.eclipse.core.resources.extension" value="gff3" />
+						<test property="org.eclipse.core.resources.extension" value="GFF3" />
+					</or>
+				</adapt>
+			</iterate>
+		</with>
+	</definition>
 	<definition id="net.sf.ngsep.FolderEnablement">
 		<with variable="activeMenuSelection">
 			<iterate ifEmpty="false" operator="or">
@@ -356,6 +371,11 @@
 					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
 				</visibleWhen>
 			</command>
+			<command commandId="net.sf.ngsep.view.MainTranscriptomeAnalyzer" label="Transcriptome Analizer" style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="net.sf.ngsep.SingleGFFEnablement"/>
+				</visibleWhen>
+			</command>
 <!--         <command commandId="net.sf.ngsep.view.MainMutatedPeptidesExtractor" label="Mutated Peptides Extractor" style="push">
 				<visibleWhen checkEnabled="false">
 					<reference definitionId="net.sf.ngsep.SingleVCFEnablement"/>
@@ -401,6 +421,7 @@
  	  <command id="net.sf.ngsep.view.MainVCFIndividualGenomeBuilder" name="Individual Genome Builder" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainVCFGoldStandardComparator" name="VCF Gold Standard Comparator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
       <command id="net.sf.ngsep.view.MainVCFVariantDensityCalculator" name="VCF Variant Density Calculator" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
+      <command id="net.sf.ngsep.view.MainTranscriptomeAnalyzer" name="Transcriptome Analizer" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
 <!-- 	  <command id="net.sf.ngsep.view.MainMutatedPeptidesExtractor" name="Mutated Peptides Extractor" defaultHandler="net.sf.ngsep.control.PlugSingleFile"/>
 -->
 </extension>

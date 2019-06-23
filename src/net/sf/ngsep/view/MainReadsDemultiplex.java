@@ -229,7 +229,7 @@ public class MainReadsDemultiplex implements SingleFileInputWindow {
 		
 		lblTrimSeq = new Label(shell, SWT.NONE);
 		lblTrimSeq.setBounds(50, 290, 150, 22);
-		lblTrimSeq.setText("Trim sequence:");
+		lblTrimSeq.setText("Trim sequences:");
 		
 		txtTrimSeq = new Text(shell, SWT.BORDER);
 		txtTrimSeq.setBounds(200, 290, 250, 22);
@@ -312,7 +312,7 @@ public class MainReadsDemultiplex implements SingleFileInputWindow {
 			instance.setLaneFilesDescriptor(txtLaneFilesDescriptor.getText());
 		}
 		if (txtTrimSeq.getText() != null && txtTrimSeq.getText().length() != 0){
-			instance.setTrimSequence(txtTrimSeq.getText());
+			instance.setTrimSequences(txtTrimSeq.getText());
 		}
 		if (listErrors.size() > 0) {
 			FieldValidator.paintErrors(listErrors, shell, "Reads demultiplex");
